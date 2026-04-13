@@ -5,7 +5,7 @@ import InvoiceLayout from "@/components/InvoiceLayout"
 
 type Props = {
     params: Promise<{
-        VNo: number
+        VNo: string
     }>
 }
 
