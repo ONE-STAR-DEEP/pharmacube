@@ -49,13 +49,13 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(95.213% 0.00011 271.152);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.527 0.154 150.069);
+  --primary: #021A54;
   --primary-foreground: oklch(0.982 0.018 155.826);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -121,10 +121,42 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply m-0 p-0 bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+
+  .rt-border {
+    @apply border-t border-r border-black print:border-t-[0.5px] print:border-r-[0.5px];
+  }
+
+  .r-border {
+    @apply border-r border-black  print:border-r-[0.5px];
+  }
+
+  .t-border {
+    @apply border-t border-black print:border-t-[0.5px]; 
+  }
+}
+
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
 }

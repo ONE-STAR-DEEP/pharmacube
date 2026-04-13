@@ -1,6 +1,6 @@
 import { config } from "@/utils/db/pool";
+import { Invoice } from "@/utils/types/DataTypes";
 import sql from "mssql";
-
 
 export async function getData() {
   try {
@@ -11,9 +11,9 @@ export async function getData() {
              Acm.telephone as 'Tel',
              Acm.GSTNo as 'GST No.',
              Acm.DLNO, Acm.DLNO1,
-             Salepurchase1.GSTVno AS 'Bill No.',
+             Salepurchase1.GSTVno AS 'Bill No',
              CONVERT(VARCHAR(10), Salepurchase1.Vdt, 103) AS 'Dated',
-             Salepurchase1.NoOfItem as 'No. Of Items',
+             Salepurchase1.NoOfItem as 'No Of Items',
              Salepurchase1.Uid as 'Made By',
              Salepurchase1.Ouid as 'Print By',
              Salepurchase1.mTime as 'Make Time',
@@ -22,7 +22,7 @@ export async function getData() {
              Salepurchase1.Amt01 as 'Taxable Amt.',
              Salepurchase1.Taxamt as 'Tax Amt',
              Salepurchase1.Amt01 + Salepurchase1.Taxamt as 'Net Amount',
-             Salepurchase1.Amt01 + Salepurchase1.Taxamt + Salepurchase1.Rndamt as 'Inv. Amt.'
+             Salepurchase1.Amt01 + Salepurchase1.Taxamt + Salepurchase1.Rndamt as 'Inv Amt'
       FROM Salepurchase1
       INNER JOIN Acm ON Acm.code = Salepurchase1.Acno
       WHERE Salepurchase1.Vtyp='S1'
@@ -35,7 +35,40 @@ export async function getData() {
   }
 }
 
-export async function getInvoiceItems() {
+export async function getBillByBillNo(VNo: number) {
+  try {
+    await sql.connect(config);
+
+    const result = await sql.query(`
+      SELECT Acm.name, Acm.address, Acm.address1, Acm.address2,
+          Acm.telephone as 'Tel',
+          Acm.GSTNo as 'GST No.',
+          Acm.DLNO, Acm.DLNO1,
+          Salepurchase1.GSTVno AS 'Bill No',
+          CONVERT(VARCHAR(10), Salepurchase1.Vdt, 103) AS 'Dated',
+          Salepurchase1.NoOfItem as 'No Of Items',
+          Salepurchase1.Uid as 'Made By',
+          Salepurchase1.Ouid as 'Print By',
+          Salepurchase1.mTime as 'Make Time',
+          Salepurchase1.Amt01 + Salepurchase1.disamtit as 'Gross Amt',
+          Salepurchase1.disamtit as 'Disc. Amt',
+          Salepurchase1.Amt01 as 'Taxable Amt.',
+          Salepurchase1.Taxamt as 'Tax Amt',
+          Salepurchase1.Amt01 + Salepurchase1.Taxamt as 'Net Amount',
+          Salepurchase1.Amt01 + Salepurchase1.Taxamt + Salepurchase1.Rndamt as 'Inv Amt'
+          FROM Salepurchase1
+          INNER JOIN Acm ON Acm.code = Salepurchase1.Acno
+          WHERE Salepurchase1.Vtyp ='S1'
+          AND Salepurchase1.Vno = '${VNo}'
+    `);
+
+    return result.recordset[0] as Invoice;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getInvoiceItems(VNo: number) {
   try {
     await sql.connect(config);
 
@@ -59,8 +92,7 @@ export async function getInvoiceItems() {
       FROM Salepurchase2
       INNER JOIN Item ON Item.code = SalePurchase2.Itemc
       WHERE SalePurchase2.Vtype='S1'
-        AND SalePurchase2.Vno=1031
-        AND SalePurchase2.Vdt='2026-01-02 00:00:00'
+        AND SalePurchase2.Vno= ${VNo}
       ORDER BY Item.Compname ASC
     `);
 
