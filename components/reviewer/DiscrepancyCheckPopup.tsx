@@ -24,7 +24,7 @@ import { discrepancyAction, fetchInvoiceByVNo, fetchInvoiceItems, updateInvoiceI
 import { BillItem, DeliveryBoy, Invoice } from '@/utils/types/DataTypes'
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { fetchDeliveryBoy, riderAction } from '@/lib/actions/rider'
+import { fetchDeliveryBoy, riderSelection } from '@/lib/actions/rider'
 
 type SelectOption = {
   label: string;
@@ -47,7 +47,6 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
   const [deliveryBoys, setDeliveryBoys] = useState<DeliveryBoy[] | null>(null);
   const [selectedDeliveryBoy, setSelectedDeliveryBoy] = useState("");
   const [discrepancy, setDiscrepancy] = useState(false);
-  const [action, setAction] = useState("");
   const router = useRouter()
 
   useEffect(() => {
@@ -81,13 +80,13 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
     e.preventDefault()
 
     if (discrepancy) {
-      const res = await discrepancyAction(formData || [], discrepancy, action, VNo)
+      const res = await discrepancyAction(formData || [], discrepancy, VNo)
       if (!res.success) {
         alert("Failed")
       }
     }
     else {
-      const res = await riderAction(selectedDeliveryBoy, VNo)
+      const res = await riderSelection(selectedDeliveryBoy, VNo)
 
       if (!res.success) {
         alert("Failed")

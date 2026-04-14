@@ -137,6 +137,7 @@ export const fetchInvoiceByVNo = async (
                 Acm.GSTNo AS 'GST No.',
                 Acm.DLNO,
                 Acm.DLNO1,
+                Salepurchase1.id,
                 Salepurchase1.discrepancy,
                 Salepurchase1.GSTVno AS 'Bill No',
                 DATE_FORMAT(Salepurchase1.Vdt, '%d/%m/%Y') AS Dated,
@@ -659,7 +660,6 @@ export const updateInvoiceItems = async (
 export const discrepancyAction = async (
     billItems: BillItem[],
     discrepancy: boolean,
-    action: string,
     VNo: string
 ) => {
     const session = await getCurrentUserSafe();
@@ -669,18 +669,6 @@ export const discrepancyAction = async (
 
     if (!userId || iss !== "pharmacube") {
         return { success: false, message: "Unauthorized" };
-    }
-
-    let status;
-
-    if (action === "reject") {
-        status = 10;
-    }
-    else if (action === "approvedWithDiscrepancy") {
-        status = 3
-    }
-    else if (action === "accept") {
-        status = 3
     }
 
     const conn = await db.getConnection();
@@ -706,25 +694,24 @@ export const discrepancyAction = async (
             );
         }
 
-
         if (discrepancy) {
             await conn.execute(
                 `
                 UPDATE Salepurchase1
                 SET 
                 discrepancy = 1,
-                status = ?
+                status = 2
                 WHERE Vno = ?
                 AND Vtyp = "S1" 
                 `,
-                [status!, VNo]
+                [VNo]
             );
         } else {
             await conn.execute(
                 `
                 UPDATE Salepurchase1
                 SET
-                status = ?
+                status = 3
                 WHERE Vno = ?
                 AND Vtyp = "S1" 
                 `,

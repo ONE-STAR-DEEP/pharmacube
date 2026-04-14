@@ -9,8 +9,14 @@ import {
     SidebarMenu,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion"
 import Link from "next/link";
-import { Users, FileText, LogOut, Home, LayoutDashboard } from "lucide-react";
+import { FileText, LogOut, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
@@ -53,26 +59,42 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
                         {/* Invoices */}
-                        <SidebarMenuItem>
-                            <Link
-                                href="/rider/dashboard/invoices"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
-                            >
-                                <FileText size={18} />
-                                <span>Invoices</span>
-                            </Link>
-                        </SidebarMenuItem>
 
-                        {/* Logout */}
-                        <SidebarMenuItem>
-                            <button
-                                onClick={logout}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
-                            >
-                                <LogOut size={18} />
-                                <span>Logout</span>
-                            </button>
-                        </SidebarMenuItem>
+                            <Accordion type="single" collapsible className="w-full border-none bg-none">
+                                <AccordionItem value="invoices" className="border-none bg-none">
+
+                                    <AccordionTrigger className="p-0  bg-none">
+                                        <SidebarMenuItem>
+                                            <div className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition w-full">
+                                                <FileText size={18} />
+                                                <span>Invoices</span>
+                                            </div>
+                                        </SidebarMenuItem>
+                                    </AccordionTrigger>
+
+                                    <AccordionContent className="pl-8 v space-y-1">
+                                        <Link href="/rider/dashboard/invoices" className="block px-3 py-1 hover:bg-muted rounded-md no-underline decoration-transparent">
+                                            <span>All Invoices</span>
+                                        </Link>
+                                        <Link href="/rider/dashboard/invoices/accepted" className="block px-3 py-1 hover:bg-muted rounded-md no-underline decoration-transparent">
+                                            Accepted Invoices
+                                        </Link>
+                                    </AccordionContent>
+
+                                </AccordionItem>
+                            </Accordion>
+
+
+                            {/* Logout */}
+                            <SidebarMenuItem>
+                                <button
+                                    onClick={logout}
+                                    className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                >
+                                    <LogOut size={18} />
+                                    <span>Logout</span>
+                                </button>
+                            </SidebarMenuItem>
 
                     </SidebarMenu>
                 </SidebarGroup>

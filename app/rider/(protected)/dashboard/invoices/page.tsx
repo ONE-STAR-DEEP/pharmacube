@@ -24,7 +24,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const status = params?.status
 
     const data = await fetchAllValidInvoices(page, limit, search);
-    console.log(data)
+
     return (
         <div className='p-4 space-y-8'>
             <header className='bg-white p-4'>

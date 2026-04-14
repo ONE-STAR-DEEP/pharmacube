@@ -54,20 +54,11 @@ export const getCurrentLocation = (): Promise<LocationCoords> => {
   });
 };
 
-const mapUsersToOptions = (users: DeliveryBoy[]): SelectOption[] => {
-  return users.map((user) => ({
-    label: `${user.name} (${user.email})`, // customize as needed
-    value: user.id.toString(), // Select expects string
-  }));
-};
-
 const RequestPopup = ({ VNo }: { VNo: string }) => {
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<BillItem[] | null>(null);
-  const [deliveryBoys, setDeliveryBoys] = useState<DeliveryBoy[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
-  const [formData, setFormData] = useState<BillItem[] | null>(null);
   const [loading, setLloading] = useState(false)
   const router = useRouter()
 
@@ -84,7 +75,6 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
         }
         setData(res.data || [])
         setInvoice(invRes.data || null);
-        setFormData(res.data || [])
       } catch (error) {
         console.log(error);
       }
@@ -94,23 +84,23 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
 
 
   const handleSubmit = async (e: FormEvent) => {
-    
-    if(loading) return;
+
+    if (loading) return;
     e.preventDefault()
 
     setLloading(true)
 
     try {
       const location = await getCurrentLocation();
-      
-      console.log("Lat:", location.lat);
-      console.log("Lng:", location.lng);
-      console.log("Accuracy:", location.accuracy, "meters");
-      
-      // const res = await riderAction(selectedDeliveryBoy, VNo)
-      // if (!res.success) {
-      //   alert("Failed")
-      // }
+
+      const lat = location.lat
+      const lng = location.lng
+      const accuracy = location.accuracy
+
+      const res = await riderAction({ VNo, lat, lng, accuracy, action: 'accept' })
+      if (!res.success) {
+        alert("Failed")
+      }
 
     } catch (error) {
       console.error(error);

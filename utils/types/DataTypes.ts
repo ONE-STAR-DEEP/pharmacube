@@ -1,4 +1,5 @@
 export interface Invoice {
+  id: string;
   name: string;
   address: string;
   address1: string;
@@ -99,6 +100,6 @@ export type DeliveryBoy = {
   name: string;
   email: string;
   mobile: string;
-  type: "rider"; // you can expand this if more roles exist
-  created_at: string; // ISO date string
+  type: "rider"; 
+  created_at: string; 
 };
