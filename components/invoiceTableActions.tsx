@@ -12,21 +12,19 @@ const InvoiceTableActions = ({ VNo }: { VNo: string }) => {
     if (type === "warehouse") {
         return (<>W</>)
     } else if (type === "checker") {
-
         return (
             <ItemUpdatePopup VNo={VNo} />
         )
     } else if (type === "reviewer") {
-
         return (
             <DiscrepancyCheckPopup VNo={VNo} />
         )
     } else if (type === "rider") {
-
         return (
             <RequestPopup VNo={VNo} />
         )
     }
+
 }
 
 export default InvoiceTableActions

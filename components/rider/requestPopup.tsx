@@ -7,38 +7,74 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { discrepancyAction, fetchInvoiceByVNo, fetchInvoiceItems } from '@/lib/actions/invoice'
-import { BillItem, Invoice } from '@/utils/types/DataTypes'
-import { act, FormEvent, useEffect, useState } from 'react'
+import { fetchInvoiceByVNo, fetchInvoiceItems } from '@/lib/actions/invoice'
+import { BillItem, DeliveryBoy, Invoice } from '@/utils/types/DataTypes'
+import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { fetchDeliveryBoy, riderAction } from '@/lib/actions/rider'
+
+type SelectOption = {
+  label: string;
+  value: string;
+};
+
+export type LocationCoords = {
+  lat: number;
+  lng: number;
+  accuracy: number; // meters
+};
+
+export const getCurrentLocation = (): Promise<LocationCoords> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("Geolocation not supported"));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+        });
+      },
+      (err) => {
+        reject(err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  });
+};
+
+const mapUsersToOptions = (users: DeliveryBoy[]): SelectOption[] => {
+  return users.map((user) => ({
+    label: `${user.name} (${user.email})`, // customize as needed
+    value: user.id.toString(), // Select expects string
+  }));
+};
 
 const RequestPopup = ({ VNo }: { VNo: string }) => {
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<BillItem[] | null>(null);
+  const [deliveryBoys, setDeliveryBoys] = useState<DeliveryBoy[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
-  const [discrepancy, setDiscrepancy] = useState(false);
-  const [action, setAction] = useState("");
+  const [loading, setLloading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     const loadData = async () => {
       if (!open) return;
       try {
-        setDiscrepancy(false)
         const res = await fetchInvoiceItems(VNo);
         const invRes = await fetchInvoiceByVNo(VNo);
         if (!res.success && !invRes.success) {
@@ -49,8 +85,6 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
         setData(res.data || [])
         setInvoice(invRes.data || null);
         setFormData(res.data || [])
-        console.log(invRes?.data)
-        setDiscrepancy(Boolean(invRes?.data?.discrepancy))
       } catch (error) {
         console.log(error);
       }
@@ -58,26 +92,46 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
     loadData();
   }, [open]);
 
-  const handleChange = async (e: FormEvent) => {
+
+  const handleSubmit = async (e: FormEvent) => {
+    
+    if(loading) return;
     e.preventDefault()
 
-    const res = await discrepancyAction(formData || [], discrepancy, action, VNo)
+    setLloading(true)
 
-    if (!res.success) {
-      alert("Failed")
+    try {
+      const location = await getCurrentLocation();
+      
+      console.log("Lat:", location.lat);
+      console.log("Lng:", location.lng);
+      console.log("Accuracy:", location.accuracy, "meters");
+      
+      // const res = await riderAction(selectedDeliveryBoy, VNo)
+      // if (!res.success) {
+      //   alert("Failed")
+      // }
+
+    } catch (error) {
+      console.error(error);
+      alert("Failed to get location");
+    } finally {
+      setLloading(false)
     }
+
+
     setOpen(false)
     router.refresh();
   }
 
   return (
     <div>
-      <Button onClick={() => { setOpen(true) }}>Check</Button>
+      <Button onClick={() => { setOpen(true) }}>Accept</Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="w-full
-                    max-w-[95vw]
+                    max-w-[90vw]
                     sm:max-w-md
                     lg:max-w-[60vw]
                     min-h-[20vh]
@@ -87,27 +141,39 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
                     overflow-y-auto
                     "
         >
-          <form className='space-y-4' onSubmit={handleChange}>
+          <form className='space-y-4' onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle className='text-2xl'>Request Window</DialogTitle>
               <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
             </DialogHeader>
 
+            <div className='grid grid-cols-[20%_5%_75%]'>
+
+              <p>Tel</p>
+              <p>:</p>
+              <p>{invoice?.Tel}</p>
+
+              <p>Address:</p>
+              <p>:</p>
+              <p>{invoice?.address}</p>
+
+            </div>
+
+            <p className='font-semibold text-base'>Order Items</p>
+
             <FieldGroup >
-              <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] gap-4 mb-0">
+              <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-4 mb-0">
                 <Label>SNo</Label>
                 <Label>HSN</Label>
                 <Label>Particular</Label>
-                <Label>Original Qty</Label>
-                <Label>Current Qty</Label>
-                <Label>Change to</Label>
+                <Label>Qty</Label>
               </div>
 
               {data?.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] gap-4 mb-0">
+                <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr] gap-4 mb-0">
 
                   <Input
-                    name="hsn"
+                    name="sno"
                     defaultValue={index + 1}
                     disabled
                   />
@@ -115,21 +181,7 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
                     <Input
                       name="hsn"
                       defaultValue={item["HSN CODE"]}
-                      onChange={(e) => {
-                        const value = e.target.value;
-
-                        setDiscrepancy(true);
-
-                        setFormData((prev) => {
-                          if (!prev) return prev;
-
-                          return prev.map((billItem) =>
-                            billItem.id === item.id
-                              ? { ...billItem, "HSN CODE": value }
-                              : billItem
-                          );
-                        });
-                      }}
+                      disabled
                     />
                   </Field>
 
@@ -143,77 +195,21 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
 
                   <Field>
                     <Input
-                      name="particular"
+                      name="originalQty"
                       defaultValue={item.old_Qty ? item.old_Qty : "Unaltered"}
                       disabled
                     />
                   </Field>
 
-                  <Field>
-                    <Input
-                      name="qty"
-                      defaultValue={item.Qty}
-                      disabled
-                    />
-                  </Field>
-
-                  <Field>
-                    <Input
-                      name="change"
-                      placeholder={String(item.Qty)}
-                      onChange={(e) => {
-                        const value = Number(e.target.value);
-
-                        setDiscrepancy(true);
-
-                        setFormData((prev) => {
-                          if (!prev) return prev;
-
-                          return prev.map((billItem) =>
-                            billItem.id === item.id
-                              ? { ...billItem, Qty: value }
-                              : billItem
-                          );
-                        });
-                      }}
-                    />
-                  </Field>
                 </div>
               ))}
-
-              <Field className='flex mt-4'>
-                <p className='text-sm'>
-                  Discrepancy Status: {discrepancy ? "Yes" : "No"}
-                </p>
-              </Field>
-
-              <Field className='flex flex-row mt-4 items-center'>
-                <p className='max-w-10'>Action:</p>
-                <Select
-                  onValueChange={(value)=>{
-                    setAction(value);
-                  }}
-                >
-                  <SelectTrigger className="w-full max-w-48">
-                    <SelectValue placeholder="Action" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Action</SelectLabel>
-                      <SelectItem value="reject">Reject</SelectItem>
-                      <SelectItem value="accept">Accept</SelectItem>
-                      <SelectItem value="approvedWithDiscrepancy">Approve with Discrepancy</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
 
             </FieldGroup>
             <DialogFooter className=''>
               <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button type="button" variant="outline">Close</Button>
               </DialogClose>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit" disabled={loading}>{loading ? "Wait..." : "Accept"}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

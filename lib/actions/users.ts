@@ -2,7 +2,7 @@
 
 import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
-import { UserData, UserFormData } from "@/utils/types/DataTypes";
+import { UserFormData } from "@/utils/types/DataTypes";
 
 export const fetchUserData = async (
   page: number = 1,

@@ -35,7 +35,7 @@ export type BillItem = {
   Rate: string; 
   "DIS%": string;
   Tax: string;
-  old_Qty?: string
+  old_Qty?: number
 };
 
 export type SessionUser = {
@@ -93,3 +93,12 @@ export interface InvoiceData {
   Rndamt: string;
   inserted_at: string; // ISO date string
 }
+
+export type DeliveryBoy = {
+  id: number;
+  name: string;
+  email: string;
+  mobile: string;
+  type: "rider"; // you can expand this if more roles exist
+  created_at: string; // ISO date string
+};

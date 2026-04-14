@@ -41,9 +41,11 @@ export default function DashboardHeader({type}:{type:string}) {
         <h1 className="text-xl font-semibold">
           Pharma Cube {type} Dashboard
         </h1>
+        { type === "Rider" ? <></> : 
         <p className="text-sm text-gray-500">
           Manage all invoice insights
         </p>
+        }
       </div>
 
       {/* Right Side */}

@@ -3,9 +3,9 @@
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import InvoiceTableActions from "./invoiceTableActions";
+import InvoiceTableActions from "../invoiceTableActions";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -23,21 +23,21 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 40,
     cell: ({ row }) => row.index + 1,
   },
-  {
-    accessorKey: "Vdt",
-    header: "Date",
-    size: 80,
-    cell: ({ row }) => {
-      const value = row.getValue("Vdt") as string;
-      const date = new Date(value);
-      return date.toLocaleDateString("en-GB");
-    },
-  },
-  {
-    accessorKey: "mTime",
-    header: "Time",
-    size: 80,
-  },
+  // {
+  //   accessorKey: "Vdt",
+  //   header: "Date",
+  //   size: 80,
+  //   cell: ({ row }) => {
+  //     const value = row.getValue("Vdt") as string;
+  //     const date = new Date(value);
+  //     return date.toLocaleDateString("en-GB");
+  //   },
+  // },
+  // {
+  //   accessorKey: "mTime",
+  //   header: "Time",
+  //   size: 80,
+  // },
   {
     accessorKey: "Vno",
     header: "Vno",
@@ -58,35 +58,35 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "No of Items",
     size: 80,
   },
-  {
-    accessorKey: "InvAmt",
-    header: "Amount",
-    size: 100,
-    cell: ({ row }) => {
-      const value = row.getValue("InvAmt") as string;
-      return (
-        <div className="flex items-center" >
-          <IndianRupee size={12} />
-          <p>
-            {value}</p>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "discrepancy",
-    header: "Discrepancy",
-    size: 80,
-    cell: ({ row }) => {
-      const value = row.getValue("discrepancy") as string;
-      return (
-        <div className="flex items-center" >
-          <p className={`${value ? "text-red-600" : "text-green-600"}`}>
-            {value ? "Yes" : "No"}</p>
-        </div>
-      )
-    },
-  },
+  // {
+  //   accessorKey: "InvAmt",
+  //   header: "Amount",
+  //   size: 100,
+  //   cell: ({ row }) => {
+  //     const value = row.getValue("InvAmt") as string;
+  //     return (
+  //       <div className="flex items-center" >
+  //         <IndianRupee size={12} />
+  //         <p>
+  //           {value}</p>
+  //       </div>
+  //     )
+  //   },
+  // },
+  // {
+  //   accessorKey: "discrepancy",
+  //   header: "Discrepancy",
+  //   size: 80,
+  //   cell: ({ row }) => {
+  //     const value = row.getValue("discrepancy") as string;
+  //     return (
+  //       <div className="flex items-center" >
+  //         <p className={`${value ? "text-red-600" : "text-green-600"}`}>
+  //           {value ? "Yes" : "No"}</p>
+  //       </div>
+  //     )
+  //   },
+  // },
   {
     id: "action",
     header: () => (

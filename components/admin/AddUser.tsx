@@ -211,7 +211,7 @@ const AddUser = () => {
                                 </Field>
                                 <Field>
                                     <Label htmlFor="password">Password</Label>
-                                    <Input id="password" name="password" placeholder="Password" required
+                                    <Input id="password" type="password" name="password" placeholder="Password" required
                                         className="h-10"
                                         minLength={8}
                                         value={data.password}

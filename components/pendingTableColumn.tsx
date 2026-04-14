@@ -52,7 +52,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "InvAmt",
     header: "Amount",
-    size: 120,
+    size: 80,
     cell: ({ row }) => {
       const value = row.getValue("InvAmt") as string;
       return (
@@ -67,7 +67,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
-    size: 120,
+    size: 150,
     cell: ({ row }) => {
       const value = row.getValue("Vno") as string;
       const router = useRouter();

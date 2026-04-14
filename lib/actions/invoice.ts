@@ -3,7 +3,7 @@
 import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
 import { BillItem, Invoice, InvoiceData } from "@/utils/types/DataTypes";
-import { act } from "react";
+
 
 type Role = "warehouse" | "checker" | "reviewer" | "rider";
 
@@ -591,7 +591,6 @@ export const approveInvoice = async (Vno: string) => {
 
 export const updateInvoiceItems = async (
     billItems: BillItem[],
-    discrepancy: boolean,
     VNo: string
 ) => {
     const session = await getCurrentUserSafe();
@@ -626,18 +625,17 @@ export const updateInvoiceItems = async (
             );
         }
 
-        if (discrepancy) {
             await conn.execute(
                 `
                 UPDATE Salepurchase1
                 SET 
+                status = 2,
                 discrepancy = 1
                 WHERE Vno = ?
                 AND Vtyp = "S1" 
                 `,
                 [VNo]
             );
-        }
 
         await conn.commit();
 
@@ -659,101 +657,6 @@ export const updateInvoiceItems = async (
 };
 
 export const discrepancyAction = async (
-    billItems: BillItem[],
-    discrepancy: boolean,
-    action: string,
-    VNo: string
-) => {
-    const session = await getCurrentUserSafe();
-
-    const userId = session?.id;
-    const iss = session?.iss;
-
-    if (!userId || iss !== "pharmacube") {
-        return { success: false, message: "Unauthorized" };
-    }
-
-    let status;
-
-    if (action === "reject") {
-        status = 10;
-    }
-    else if (action === "approvedWithDiscrepancy") {
-        status = 3
-    }
-    else if (action === "accept") {
-        status = 3
-    }
-
-    const conn = await db.getConnection();
-
-    try {
-        await conn.beginTransaction();
-
-        for (const item of billItems) {
-            await conn.execute(
-                `
-                UPDATE Salepurchase2
-                SET 
-                old_Qty = IF(old_Qty IS NULL, Qty, old_Qty),
-                Qty = ?,
-                HSNCode = ?
-                WHERE id = ?
-                `,
-                [
-                    item.Qty,
-                    item["HSN CODE"],
-                    item.id,
-                ]
-            );
-        }
-
-
-        if (discrepancy) {
-            await conn.execute(
-                `
-                UPDATE Salepurchase1
-                SET 
-                discrepancy = 1,
-                status = ?
-                WHERE Vno = ?
-                AND Vtyp = "S1" 
-                `,
-                [status!, VNo]
-            );
-        } else {
-            await conn.execute(
-                `
-                UPDATE Salepurchase1
-                SET
-                status = ?
-                WHERE Vno = ?
-                AND Vtyp = "S1" 
-                `,
-                [status!, VNo]
-            );
-        }
-
-        await conn.commit();
-
-        return {
-            success: true,
-            message: "Invoice items updated successfully",
-        };
-    } catch (error) {
-        await conn.rollback();
-        console.error(error);
-
-        return {
-            success: false,
-            message: "Failed to update invoice items",
-        };
-    } finally {
-        conn.release();
-    }
-};
-
-export const riderAction = async (
     billItems: BillItem[],
     discrepancy: boolean,
     action: string,

@@ -1,4 +1,4 @@
-import { invoiceColumns } from '@/components/invWithDiscTableColumn';
+import { invoiceColumns } from '@/components/rider/requestTable';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
@@ -27,26 +27,19 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const data = await fetchPendingInvoices(page, limit, search);
 
-  console.log(data)
-
   return (
     <div className='p-4 space-y-4'>
 
-      <DashboardHeader type='Checker'/>
+      <DashboardHeader type='Rider'/>
 
       <header className='bg-white p-4'>
         <p className='font-semibold text-lg'>
-          Pending Invoices - {data.pagination?.total}
+          Assigned Delivery - {data.pagination?.total}
         </p>
       </header>
 
       <section className='space-y-2'>
-        <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
-          <div className='max-w-60'>
-            <SearchComponent placeholder='Search invoice' />
-          </div>
-
-        </div>
+       
         <div className='bg-white  p-4'>
           <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
           <Pagination totalPages={data.pagination?.totalPages || 1} />

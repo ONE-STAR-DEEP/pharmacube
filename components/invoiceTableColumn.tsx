@@ -10,7 +10,7 @@ export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
   1: "Sent to Checker",
   2: "Check Passed",
-  3: "Reviewed",
+  3: "Assigned for Delivery",
 
   10: "Rejected",
   11: "Approved with Discrepancy",
@@ -84,7 +84,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         0: "text-red-600",
         1: "text-blue-600",
         2: "text-green-600",
-        3: "text-purple-600",
+        3: "text-amber-600",
         10: "text-orange-600",
         5: "text-gray-600",
         11: "text-yellow-600",

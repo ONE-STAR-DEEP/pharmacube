@@ -8,21 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { fetchInvoiceByVNo, fetchInvoiceItems, updateInvoiceItems } from '@/lib/actions/invoice'
 import { BillItem, Invoice } from '@/utils/types/DataTypes'
 import { FormEvent, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
 
@@ -30,7 +22,8 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
   const [data, setData] = useState<BillItem[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
-  const [discrepancy, setDiscrepancy] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const loadData = async () => {
@@ -57,17 +50,18 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
   const handleChange = async (e: FormEvent) => {
     e.preventDefault()
 
-    const res = await updateInvoiceItems(formData || [], discrepancy, VNo)
+    const res = await updateInvoiceItems(formData || [], VNo)
 
     if (!res.success) {
       alert("Failed")
     }
     setOpen(false)
+    router.refresh();
   }
 
   return (
     <div>
-      <Button onClick={() => { setOpen(true) }}>Edit</Button>
+      <Button onClick={() => { setOpen(true) }}>Acknowledge</Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
@@ -115,8 +109,6 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                       onChange={(e) => {
                         const value = e.target.value;
 
-                        setDiscrepancy(true);
-
                         setFormData((prev) => {
                           if (!prev) return prev;
 
@@ -153,8 +145,6 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                       onChange={(e) => {
                         const value = Number(e.target.value);
 
-                        setDiscrepancy(true);
-
                         setFormData((prev) => {
                           if (!prev) return prev;
 
@@ -169,29 +159,9 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                   </Field>
                 </div>
               ))}
-
-              <Field>
-                <FieldLabel>Discrepancy Found</FieldLabel>
-                <Select
-                  onValueChange={(value) => {
-                    setDiscrepancy(value === "true");
-                  }}
-                >
-                  <SelectTrigger className="w-full max-w-48">
-                    <SelectValue placeholder={discrepancy ? "Yes" : "No"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Discrepancy?</SelectLabel>
-                      <SelectItem value="true">Yes</SelectItem>
-                      <SelectItem value="false">No</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
-
             </FieldGroup>
-            <DialogFooter className=''>
+            
+            <DialogFooter className='mt-10'>
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
