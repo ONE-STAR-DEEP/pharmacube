@@ -593,7 +593,8 @@ export const approveInvoice = async (Vno: string) => {
 
 export const updateInvoiceItems = async (
     billItems: BillItem[],
-    VNo: string
+    VNo: string,
+    discrepancy: boolean,
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -627,6 +628,7 @@ export const updateInvoiceItems = async (
             );
         }
 
+        if (discrepancy) {
             await conn.execute(
                 `
                 UPDATE Salepurchase1
@@ -638,6 +640,18 @@ export const updateInvoiceItems = async (
                 `,
                 [VNo]
             );
+        } else {
+            await conn.execute(
+                `
+                UPDATE Salepurchase1
+                SET 
+                status = 2
+                WHERE Vno = ?
+                AND Vtyp = "S1" 
+                `,
+                [VNo]
+            );
+        }
 
         await conn.commit();
 

@@ -22,6 +22,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
   const [data, setData] = useState<BillItem[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
+  const [discrepancy, setDiscrepancy] = useState(false);
 
   const router = useRouter();
 
@@ -50,7 +51,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
   const handleChange = async (e: FormEvent) => {
     e.preventDefault()
 
-    const res = await updateInvoiceItems(formData || [], VNo)
+    const res = await updateInvoiceItems(formData || [], VNo, discrepancy)
 
     if (!res.success) {
       alert("Failed")
@@ -78,7 +79,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
         >
           <form className='space-y-4' onSubmit={handleChange}>
             <DialogHeader>
-              <DialogTitle className='text-2xl'>Discrepency Window</DialogTitle>
+              <DialogTitle className='text-2xl'>Discrepency Check</DialogTitle>
               <DialogDescription>
                 Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
               </DialogDescription>
@@ -108,6 +109,8 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                       defaultValue={item["HSN CODE"]}
                       onChange={(e) => {
                         const value = e.target.value;
+
+                        setDiscrepancy(true);
 
                         setFormData((prev) => {
                           if (!prev) return prev;
@@ -145,6 +148,8 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                       onChange={(e) => {
                         const value = Number(e.target.value);
 
+                        setDiscrepancy(true);
+
                         setFormData((prev) => {
                           if (!prev) return prev;
 
@@ -165,7 +170,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit">Confirm</Button>
             </DialogFooter>
           </form>
         </DialogContent>

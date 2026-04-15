@@ -115,7 +115,7 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
           >
             <form className='space-y-4' onSubmit={handleSubmit}>
               <DialogHeader>
-                <DialogTitle className='text-2xl'>Discrepency Window</DialogTitle>
+                <DialogTitle className='text-2xl'>{invoice?.discrepancy ? "Discrepency Check" : "Assign Rider" }</DialogTitle>
                 <DialogDescription>
                   Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
                 </DialogDescription>

@@ -29,7 +29,7 @@ const AcceptedInvoices = async ({ searchParams }: PageProps) => {
         <div className='p-4 space-y-8'>
             <header className='bg-white p-4'>
                 <p className='font-semibold text-lg'>
-                    Accepted Invoices - {data.pagination?.total}
+                    Delivered - {data.pagination?.total}
                 </p>
             </header>
 

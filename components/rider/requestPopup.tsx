@@ -27,8 +27,6 @@ const status = {
   5: "Out for Delivery",
   6: "Delivered To Client",
   7: "Delivery Failed",
-  8: "Discrepancy Reported",
-  9: "Discrepancy Resolved",
 };
 
 const button = {
@@ -100,6 +98,7 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
     loadData();
   }, [open]);
 
+  const label = status[(invoice?.status || 4) as keyof typeof status] ?? invoice?.status;
 
   const handleSubmit = async (e: FormEvent) => {
 
@@ -119,7 +118,7 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
         alert("Invoice not found")
         return;
       }
-      const res = await riderAction({ id: invoice?.id, lat, lng, accuracy, action: action[(invoice?.status || 4) as keyof typeof action] });
+      const res = await riderAction({ id: invoice?.id, lat, lng, accuracy, action: action[(invoice?.status || 3) as keyof typeof action] });
       if (!res.success) {
         alert(res.message || "Action failed, Try Again");
       }
@@ -130,8 +129,6 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
     } finally {
       setLloading(false)
     }
-
-
     setOpen(false)
     router.refresh();
   }
@@ -171,7 +168,7 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
 
               <p>Status:</p>
               <p>:</p>
-              <p>{status[(invoice?.status || 4) as keyof typeof status]}</p>
+              <p>{label}</p>
 
             </div>
 

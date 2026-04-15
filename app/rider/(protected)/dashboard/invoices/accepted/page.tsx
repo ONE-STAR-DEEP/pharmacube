@@ -2,7 +2,7 @@ import { invoiceColumns } from '@/components/pendingTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
-import { fetchInvoicesByRiderID } from '@/lib/actions/rider';
+import { fetchAcceptedInvoicesByRiderID } from '@/lib/actions/rider';
 
 type PageProps = {
     searchParams: Promise<{
@@ -23,7 +23,7 @@ const AcceptedInvoices = async ({ searchParams }: PageProps) => {
 
     const status = params?.status
 
-    const data = await fetchInvoicesByRiderID(page, limit, search);
+    const data = await fetchAcceptedInvoicesByRiderID(page, limit, search);
 
     return (
         <div className='p-4 space-y-8'>
