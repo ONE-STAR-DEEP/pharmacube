@@ -20,7 +20,8 @@ export interface Invoice {
   "Tax Amt": number;
   "Net Amount": number;
   "Inv Amt": number;
-  discrepancy: string
+  discrepancy: string;
+  status: string;
 }
 
 export type BillItem = {

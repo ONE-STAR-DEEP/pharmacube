@@ -8,6 +8,7 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import {
     Accordion,
@@ -21,10 +22,11 @@ import Image from "next/image";
 import { logout } from "@/lib/logout";
 
 export function AppSidebar() {
-    return (
 
+    const { toggleSidebar } = useSidebar();
+
+    return (
         <Sidebar
-            variant="sidebar"
             className="mt-12 h-[calc(100vh-3rem)] flex flex-col "
         >
             {/* Header */}
@@ -49,52 +51,62 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem
+                            onClick={() => {toggleSidebar()}}
+                        >
                             <Link
                                 href="/rider/dashboard"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
                                 <LayoutDashboard size={18} />
-                                <span>Dashboard</span>
+                                <span className="text-base font-medium">Dashboard</span>
                             </Link>
                         </SidebarMenuItem>
                         {/* Invoices */}
 
-                            <Accordion type="single" collapsible className="w-full border-none bg-none">
-                                <AccordionItem value="invoices" className="border-none bg-none">
+                        <SidebarMenuItem>
+                            <Accordion type="single" collapsible className="w-full hover:bg-muted border-none bg-transparent ">
+                                <AccordionItem value="invoices" className="border-none bg-transparent data-open:bg-transparent">
 
-                                    <AccordionTrigger className="p-0  bg-none">
-                                        <SidebarMenuItem>
-                                            <div className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition w-full">
-                                                <FileText size={18} />
-                                                <span>Invoices</span>
-                                            </div>
-                                        </SidebarMenuItem>
+                                    <AccordionTrigger className="p-0 decoration-transparent items-center" >
+                                        <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-transparent hover:bg-muted transition w-full decoration-transparent">
+                                            <FileText size={18} />
+                                            <span className="text-base font-medium">Invoices</span>
+                                        </div>
                                     </AccordionTrigger>
 
-                                    <AccordionContent className="pl-8 v space-y-1">
-                                        <Link href="/rider/dashboard/invoices" className="block px-3 py-1 hover:bg-muted rounded-md no-underline decoration-transparent">
+                                    <AccordionContent className="pl-8 v space-y-1 bg-transparent">
+                                        <Link href="/rider/dashboard/invoices" className="block px-3 py-1 hover:bg-muted rounded-md no-underline decoration-transparent"
+                                            onClick={toggleSidebar}
+                                        >
                                             <span>All Invoices</span>
                                         </Link>
-                                        <Link href="/rider/dashboard/invoices/accepted" className="block px-3 py-1 hover:bg-muted rounded-md no-underline decoration-transparent">
+                                        <Link href="/rider/dashboard/invoices/accepted" className="block px-3 py-1 hover:bg-muted rounded-md no-underline decoration-transparent"
+                                            onClick={toggleSidebar}
+                                        >
                                             Accepted Invoices
+                                        </Link>
+                                        <Link href="/rider/dashboard/invoices/delivered" className="block px-3 py-1 hover:bg-muted rounded-md no-underline decoration-transparent"
+                                            onClick={toggleSidebar}
+                                        >
+                                            Delivered
                                         </Link>
                                     </AccordionContent>
 
                                 </AccordionItem>
                             </Accordion>
+                        </SidebarMenuItem>
 
-
-                            {/* Logout */}
-                            <SidebarMenuItem>
-                                <button
-                                    onClick={logout}
-                                    className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
-                                >
-                                    <LogOut size={18} />
-                                    <span>Logout</span>
-                                </button>
-                            </SidebarMenuItem>
+                        {/* Logout */}
+                        <SidebarMenuItem>
+                            <button
+                                onClick={logout}
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                            >
+                                <LogOut size={18} />
+                                <span className="text-base font-medium">Logout</span>
+                            </button>
+                        </SidebarMenuItem>
 
                     </SidebarMenu>
                 </SidebarGroup>

@@ -11,20 +11,38 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { fetchInvoiceByVNo, fetchInvoiceItems } from '@/lib/actions/invoice'
-import { BillItem, DeliveryBoy, Invoice } from '@/utils/types/DataTypes'
+import { BillItem, Invoice } from '@/utils/types/DataTypes'
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { fetchDeliveryBoy, riderAction } from '@/lib/actions/rider'
-
-type SelectOption = {
-  label: string;
-  value: string;
-};
+import { riderAction } from '@/lib/actions/rider'
 
 export type LocationCoords = {
   lat: number;
   lng: number;
   accuracy: number; // meters
+};
+
+const status = {
+  4: "Accepted",
+  5: "Out for Delivery",
+  6: "Delivered To Client",
+  7: "Delivery Failed",
+  8: "Discrepancy Reported",
+  9: "Discrepancy Resolved",
+};
+
+const button = {
+  3: "Accept",
+  4: "Confirm Pickup",
+  5: "Deliver",
+  6: "Delivered",
+};
+
+const action = {
+  3: "accepted",
+  4: "picked",
+  5: "delivered",
+  6: "delivered",
 };
 
 export const getCurrentLocation = (): Promise<LocationCoords> => {
@@ -97,9 +115,13 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
       const lng = location.lng
       const accuracy = location.accuracy
 
-      const res = await riderAction({ VNo, lat, lng, accuracy, action: 'accept' })
+      if(!invoice?.id){
+        alert("Invoice not found")
+        return;
+      }
+      const res = await riderAction({ id: invoice?.id, lat, lng, accuracy, action: action[(invoice?.status || 4) as keyof typeof action] });
       if (!res.success) {
-        alert("Failed")
+        alert(res.message || "Action failed, Try Again");
       }
 
     } catch (error) {
@@ -116,7 +138,7 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
 
   return (
     <div>
-      <Button onClick={() => { setOpen(true) }}>Accept</Button>
+      <Button onClick={() => { setOpen(true) }}>Action</Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
@@ -146,6 +168,10 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
               <p>Address:</p>
               <p>:</p>
               <p>{invoice?.address}</p>
+
+              <p>Status:</p>
+              <p>:</p>
+              <p>{status[(invoice?.status || 4) as keyof typeof status]}</p>
 
             </div>
 
@@ -199,7 +225,8 @@ const RequestPopup = ({ VNo }: { VNo: string }) => {
               <DialogClose asChild>
                 <Button type="button" variant="outline">Close</Button>
               </DialogClose>
-              <Button type="submit" disabled={loading}>{loading ? "Wait..." : "Accept"}</Button>
+              
+              <Button type="submit" disabled={loading || Number(invoice?.status) === 6}>{loading ? "Wait..." : button[(invoice?.status || 4) as keyof typeof button]}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

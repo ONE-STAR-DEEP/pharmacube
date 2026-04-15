@@ -150,7 +150,8 @@ export const fetchInvoiceByVNo = async (
                 Salepurchase1.Amt01 AS 'Taxable Amt.',
                 Salepurchase1.Taxamt AS 'Tax Amt',
                 (Salepurchase1.Amt01 + Salepurchase1.Taxamt) AS 'Net Amount',
-                (Salepurchase1.Amt01 + Salepurchase1.Taxamt + Salepurchase1.Rndamt) AS 'Inv Amt'
+                (Salepurchase1.Amt01 + Salepurchase1.Taxamt + Salepurchase1.Rndamt) AS 'Inv Amt',
+                Salepurchase1.status
                 FROM Salepurchase1
                 INNER JOIN Acm ON Acm.code = Salepurchase1.Acno
                 WHERE Salepurchase1.Vtyp = 'S1'

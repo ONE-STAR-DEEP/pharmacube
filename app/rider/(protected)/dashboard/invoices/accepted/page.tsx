@@ -1,8 +1,7 @@
-import { invoiceColumns } from '@/components/invoiceTableColumn';
+import { invoiceColumns } from '@/components/pendingTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
-import { fetchAllValidInvoices } from '@/lib/actions/invoice';
 import { fetchInvoicesByRiderID } from '@/lib/actions/rider';
 
 type PageProps = {
@@ -14,7 +13,7 @@ type PageProps = {
     }>;
 };
 
-const Invoices = async ({ searchParams }: PageProps) => {
+const AcceptedInvoices = async ({ searchParams }: PageProps) => {
     const params = await searchParams;
 
     const page = Number(params?.page) || 1;
@@ -30,7 +29,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
         <div className='p-4 space-y-8'>
             <header className='bg-white p-4'>
                 <p className='font-semibold text-lg'>
-                    Invoices - {data.pagination?.total}
+                    Accepted Invoices - {data.pagination?.total}
                 </p>
             </header>
 
@@ -50,4 +49,4 @@ const Invoices = async ({ searchParams }: PageProps) => {
     )
 }
 
-export default Invoices
+export default AcceptedInvoices
