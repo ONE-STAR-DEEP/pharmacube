@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { discrepancyAction, fetchInvoiceByVNo, fetchInvoiceItems, updateInvoiceItems } from '@/lib/actions/invoice'
@@ -38,7 +38,7 @@ const mapUsersToOptions = (users: DeliveryBoy[]): SelectOption[] => {
   }));
 };
 
-const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
+const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<BillItem[] | null>(null);
@@ -98,7 +98,7 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
 
     return (
       <div>
-        <Button onClick={() => { setOpen(true) }}>Actions</Button>
+        <Button onClick={() => { setOpen(true) }}>Check</Button>
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent
@@ -115,7 +115,7 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
           >
             <form className='space-y-4' onSubmit={handleSubmit}>
               <DialogHeader>
-                <DialogTitle className='text-2xl'>{invoice?.discrepancy ? "Discrepency Check" : "Assign Rider" }</DialogTitle>
+                <DialogTitle className='text-2xl'>Delivery Check</DialogTitle>
                 <DialogDescription>
                   Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
                 </DialogDescription>
@@ -223,4 +223,4 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
     )
   }
 
-  export default DiscrepancyCheckPopup
+  export default DeliveryCheckPopup

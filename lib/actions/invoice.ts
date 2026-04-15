@@ -5,13 +5,14 @@ import { getCurrentUserSafe } from "../sessionCheck";
 import { BillItem, Invoice, InvoiceData } from "@/utils/types/DataTypes";
 
 
-type Role = "warehouse" | "checker" | "reviewer" | "rider";
+type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery"; ;
 
 const transitions: Record<Role, { from: number; to: number }> = {
     warehouse: { from: 0, to: 1 },
     checker: { from: 1, to: 2 },
     reviewer: { from: 2, to: 3 },
     rider: { from: 3, to: 4 },
+    delivery: { from: 6, to: 7 },
 };
 
 const discrepancyRule: Record<Role, { from: number; to: number }> = {
@@ -19,6 +20,7 @@ const discrepancyRule: Record<Role, { from: number; to: number }> = {
     checker: { from: 1, to: 2 },
     reviewer: { from: 10, to: 11 },
     rider: { from: 11, to: 12 },
+    delivery: { from: 12, to: 13 },
 };
 
 const successMessages: Record<Role, string> = {
@@ -26,6 +28,7 @@ const successMessages: Record<Role, string> = {
     checker: "Invoice fully approved",
     reviewer: "Invoice successfully reviewed",
     rider: "Accepted",
+    delivery: "Invoice delivered",
 };
 
 export const fetchInvoices = async (

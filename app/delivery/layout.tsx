@@ -11,7 +11,7 @@ export default async function ProtectedLayout({
 }) {
     const user = await getCurrentUserSafe();
 
-    if (!user || user.type !== "checker" || user.iss !== "pharmacube") {
+    if (!user || user.type !== "delivery" || user.iss !== "pharmacube") {
         redirect("/");
     }
 

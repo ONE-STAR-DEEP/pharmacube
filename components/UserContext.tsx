@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 
-type Role = "warehouse" | "checker" | "reviewer" | "admin" | "rider" | "";
+type Role = "warehouse" | "checker" | "reviewer" | "admin" | "rider" | "delivery"| "";
 
 const RoleContext = createContext<Role>("");
 
