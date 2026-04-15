@@ -5,9 +5,9 @@ import { getCurrentUserSafe } from "../sessionCheck";
 import { InvoiceData } from "@/utils/types/DataTypes";
 
 const newStatus = {
-  "accepted": 4,
-  "picked": 5,
-  "delivered": 6
+    "accepted": 4,
+    "picked": 5,
+    "delivered": 6
 };
 
 export const fetchDeliveryBoy = async () => {
@@ -105,7 +105,7 @@ export const riderSelection = async (
 
 export const riderAction = async (
     data: {
-        id: string;
+        id: number;
         lat: number;
         lng: number;
         accuracy: number;
@@ -125,11 +125,11 @@ export const riderAction = async (
 
     try {
 
-        const {id, lat, lng, accuracy, action: action} = data;
+        const { id, lat, lng, accuracy, action: action } = data;
         const status = newStatus[action as keyof typeof newStatus];
-        
+
         await conn.beginTransaction();
-        
+
         const [check]: any = await conn.execute(
             `
             SELECT status FROM Salepurchase1
@@ -138,17 +138,15 @@ export const riderAction = async (
             [id]
         );
 
-        console.log(check)
-          
-        if(!check[0]){
-          await conn.rollback();
-          return {
-            success: false,
-            message: "Invoice not found"
-          };
+        if (!check[0]) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: "Invoice not found"
+            };
         }
 
-        if(Number(check[0].status) === 6){
+        if (Number(check[0].status) === 6) {
             await conn.rollback();
             return {
                 success: false,
@@ -179,7 +177,7 @@ export const riderAction = async (
 
         return {
             success: true,
-            message: "Delivery boy assigned successfully",
+            message: "Successfully updated status",
         };
     } catch (error) {
         await conn.rollback();
@@ -187,7 +185,95 @@ export const riderAction = async (
 
         return {
             success: false,
-            message: "Failed to assign Delivery boy",
+            message: "Failed to perform action, Try Again",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
+export const riderAllAction = async (
+    data: {
+        lat: number;
+        lng: number;
+        accuracy: number;
+        action: string;
+    }
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+
+    if (!userId || type !== "rider") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+
+        const { lat, lng, accuracy } = data;
+        const status = newStatus[data.action as keyof typeof newStatus];
+
+        const [rows]: any = await conn.execute(
+            `
+            SELECT id FROM Salepurchase1
+            Where status = ? and rider = ? 
+            `,
+            [status - 1, userId]
+        );
+
+        const ids = rows.map((r: any) => r.id);
+
+        if (ids.length === 0) {
+            return { success: false, message: "No invoices found" };
+        }
+
+        await conn.beginTransaction();
+
+        const placeholders = ids.map(() => "?").join(",");
+
+        await conn.execute(
+            `
+                UPDATE Salepurchase1
+                SET status = ?
+                WHERE id IN (${placeholders})
+            `,
+            [status, ...ids]
+        );
+
+        const values = ids.map((id: number) => [
+            userId,
+            id,
+            lat,
+            lng,
+            accuracy,
+            data.action,
+        ]);
+
+        await conn.query(
+            `
+                INSERT INTO rider_locations
+                (rider_id, invoice_id, lat, lng, accuracy, action)
+                VALUES ?
+            `,
+            [values]
+        );
+
+        await conn.commit();
+
+        return {
+            success: true,
+            message: "Successfully updated status",
+        };
+    } catch (error) {
+        await conn.rollback();
+        console.error(error);
+
+        return {
+            success: false,
+            message: "Failed to perform action, Try Again",
         };
     } finally {
         conn.release();
@@ -195,9 +281,7 @@ export const riderAction = async (
 };
 
 export const fetchPendingInvoicesByRiderID = async (
-    page: number = 1,
-    limit: number = 20,
-    search?: string
+    invoiceType: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -211,28 +295,25 @@ export const fetchPendingInvoicesByRiderID = async (
 
     const conn = await db.getConnection();
 
+    let status;
+    if (invoiceType === "pending") {
+        status = 3;
+    }
+    else if (invoiceType === "accepted") {
+        status = 4;
+    } else if (invoiceType === "picked") {
+        status = 5;
+    }
+
     try {
-        const offset = (page - 1) * limit;
-
-        const safeLimit = Math.min(100, Number(limit) || 10);
-        const safeOffset = Math.max(0, Number(offset) || 0);
-
-        const searchTerm = search ? `%${search}%` : `%`;
 
         const where = `
-        WHERE (
-        status = 3
+        WHERE 
+        status = ?
         AND rider = ?
-        AND
-            (
-            Vno LIKE ?
-            OR GSTVno  LIKE ?
-            OR Vtyp LIKE ?
-            )
-        )
         `;
 
-        const params: any[] = [userId, searchTerm, searchTerm, searchTerm];
+        const params: any[] = [status, userId];
 
         const [rows]: any = await conn.execute(
             `
@@ -244,7 +325,6 @@ export const fetchPendingInvoicesByRiderID = async (
             LEFT JOIN Acm acm ON sp.Acno = acm.code
             ${where}
             ORDER BY sp.inserted_at DESC
-            LIMIT ${safeLimit} OFFSET ${safeOffset}
             `,
             params
         );
@@ -259,17 +339,12 @@ export const fetchPendingInvoicesByRiderID = async (
         );
 
         const total = countResult[0].total;
-        const totalPages = Math.ceil(total / safeLimit);
+
 
         return {
             success: true,
             data: rows as InvoiceData[],
-            pagination: {
-                total,
-                totalPages,
-                currentPage: page,
-                limit: safeLimit,
-            },
+            total: total
         };
 
     } catch (error) {
