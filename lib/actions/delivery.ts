@@ -25,7 +25,7 @@ export async function uploadFile(file: File) {
         writeStream.on("finish", resolve)
     })
 
-    return `/pc_recipts/${filename}`
+    return `/${filename}`
 }
 
 export const updateDelivery = async (

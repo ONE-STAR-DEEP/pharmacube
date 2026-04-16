@@ -148,7 +148,11 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
                         }
                       </Button>
                       :
-                      <Button>View Recipt</Button>
+                      <Button
+                        onClick={() => window.open(`/receipts/${invoice?.recipt}`, "_blank")}
+                      >
+                        View Receipt
+                      </Button>
                   }
                 </div>
               </div>
