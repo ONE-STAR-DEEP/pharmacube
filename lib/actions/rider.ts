@@ -563,7 +563,8 @@ export const fetchDeliveredInvoicesByRiderID = async (
 
         const where = `
         WHERE (
-        status = 6
+        status >= 6
+        AND status <= 8
         AND rider = ?
         AND
             (

@@ -32,6 +32,12 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
       <DashboardHeader type='Reviewer'/>
 
+      <header className='bg-white p-4'>
+        <p className='font-semibold text-lg'>
+          Pending Invoices - {data.pagination?.total}
+        </p>
+      </header>
+
       <section className='space-y-2'>
         <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
           <div className='max-w-60'>
