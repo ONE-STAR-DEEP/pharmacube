@@ -55,7 +55,7 @@ export function AppSidebar() {
                             onClick={() => { toggleSidebar() }}
                         >
                             <Link
-                                href="/rider/dashboard"
+                                href="/delivery/dashboard"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
                                 <LayoutDashboard size={18} />
@@ -67,7 +67,7 @@ export function AppSidebar() {
                         <SidebarMenuItem
                             onClick={toggleSidebar}
                         >
-                            <Link href="/rider/dashboard/invoices"
+                            <Link href="/delivery/dashboard/invoices"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
                                 <FileText size={18} />

@@ -105,7 +105,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
               router.push(`/invoice/${value}`);
             }}
           >
-            View
+            Invoice
           </Button>
           <InvoiceTableActions VNo={value} />
         </div>

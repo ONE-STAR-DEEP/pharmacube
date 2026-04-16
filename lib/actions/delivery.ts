@@ -73,7 +73,7 @@ export const updateDelivery = async (
                 `
                 UPDATE Salepurchase1
                 SET 
-                status = 7,
+                status = 8,
                 discrepancy = 1,
                 recipt = ?
                 WHERE id = ?

@@ -69,6 +69,8 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
     loadData();
   }, [open]);
 
+  const currentStatus = Number(invoice?.status)
+
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -79,12 +81,12 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
     if (image) {
       imageData.append("receipt", image);
     }
-    if(!invoice){
+    if (!invoice) {
       return
     }
     const res = await updateDelivery(formData || [], invoice?.id, discrepancy, image);
 
-    if(!res.success){
+    if (!res.success) {
       alert("Failed to update delivery details. Try Again");
       return;
     }
@@ -129,20 +131,25 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
                   />
 
                   {/* Button */}
-                  <Button
-                    type='button'
-                    onClick={handleClick}
-                  >
-                    {image ?
-                      <>
-                        <Check /> Selected
-                      </>
+                  {
+                    currentStatus === 6 ?
+                      <Button
+                        type='button'
+                        onClick={handleClick}
+                      >
+                        {image ?
+                          <>
+                            <Check /> Selected
+                          </>
+                          :
+                          <>
+                            <Camera /> Recipt
+                          </>
+                        }
+                      </Button>
                       :
-                      <>
-                        <Camera /> Recipt
-                      </>
-                    }
-                  </Button>
+                      <Button>View Recipt</Button>
+                  }
                 </div>
               </div>
             </DialogHeader>
@@ -215,9 +222,11 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
             </FieldGroup>
             <DialogFooter className=''>
               <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">Close</Button>
               </DialogClose>
-              <Button type="submit">Submit</Button>
+              {Number(invoice?.status) === 6 && (
+                <Button type="submit">Submit</Button>
+              )}
             </DialogFooter>
           </form>
         </DialogContent>
