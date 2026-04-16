@@ -1,3 +1,5 @@
+"use server"
+
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { SessionUser } from "@/utils/types/DataTypes";
