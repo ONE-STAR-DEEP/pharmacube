@@ -1,3 +1,5 @@
+"use server"
+
 import { config } from "@/utils/db/pool";
 import { Invoice } from "@/utils/types/DataTypes";
 import sql from "mssql";

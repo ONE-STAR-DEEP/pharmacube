@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUserSafe } from "@/lib/sessionCheck";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/checker/sidebar";
+import { AppSidebar } from "@/components/delivery/sidebar";
 import { RoleProvider } from "@/components/UserContext";
 export default async function ProtectedLayout({
     children,

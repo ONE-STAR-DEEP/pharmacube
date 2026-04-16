@@ -1,7 +1,7 @@
 "use client";
 
 import ItemUpdatePopup from "./checker/ItemUpdatePopup";
-import DeliveryCheckPopup from "./delivery/DiscrepancyCheckPopup copy";
+import DeliveryCheckPopup from "./delivery/DeliveryCheckPopup";
 import DiscrepancyCheckPopup from "./reviewer/DiscrepancyCheckPopup";
 import { useRole } from "./UserContext";
 
