@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import SessionActivityTracker from "@/utils/activityTracker";
 
 const inter = Inter({
-  variable:'--font-sans',
-  subsets:['latin']
+  variable: '--font-sans',
+  subsets: ['latin']
 });
 
 export const metadata: Metadata = {
@@ -19,13 +20,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+
   return (
     <html
       lang="en"
       className={cn("h-full", "antialiased", inter.className)}
     >
       <body className="min-h-full flex flex-col">{children}</body>
+      <SessionActivityTracker />
     </html>
   );
 }
