@@ -149,7 +149,8 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
                       </Button>
                       :
                       <Button
-                        onClick={() => window.open(`/receipts/${invoice?.recipt}`, "_blank")}
+                        onClick={() => window.open(`/receipts${invoice?.recipt}`, "_blank")}
+                        type='button'
                       >
                         View Receipt
                       </Button>
@@ -226,7 +227,7 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
             </FieldGroup>
             <DialogFooter className=''>
               <DialogClose asChild>
-                <Button variant="outline">Close</Button>
+                <Button variant="outline" type='button'>Close</Button>
               </DialogClose>
               {Number(invoice?.status) === 6 && (
                 <Button type="submit">Submit</Button>
