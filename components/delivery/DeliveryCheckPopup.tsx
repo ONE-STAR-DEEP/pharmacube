@@ -19,11 +19,6 @@ import { useRouter } from 'next/navigation'
 import { Camera, Check } from 'lucide-react'
 import { updateDelivery } from '@/lib/actions/delivery'
 
-type SelectOption = {
-  label: string;
-  value: string;
-};
-
 const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
 
   const [open, setOpen] = useState(false);
@@ -204,6 +199,7 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
                     <Input
                       name="qty"
                       defaultValue={item.Qty}
+                      disabled={currentStatus !== 6}
                       onChange={(e) => {
                         const value = Number(e.target.value);
 
