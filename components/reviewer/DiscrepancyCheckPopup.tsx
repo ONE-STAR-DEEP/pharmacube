@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { discrepancyAction, fetchInvoiceByVNo, fetchInvoiceItems, updateInvoiceItems } from '@/lib/actions/invoice'
@@ -41,6 +41,7 @@ const mapUsersToOptions = (users: DeliveryBoy[]): SelectOption[] => {
 const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
 
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<BillItem[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
@@ -52,12 +53,20 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
   useEffect(() => {
     const loadData = async () => {
       if (!open) return;
+      setSelectedDeliveryBoy("");
+      setInvoice(null);
+      setData(null);
       try {
         setDiscrepancy(false)
         const res = await fetchInvoiceItems(VNo);
         const invRes = await fetchInvoiceByVNo(VNo);
         const deliveryBoysRes = await fetchDeliveryBoy();
         setDeliveryBoys(deliveryBoysRes.data);
+
+        if (deliveryBoysRes.data.length === 1) {
+          console.log(deliveryBoysRes.data[0].id.toString())
+          setSelectedDeliveryBoy(deliveryBoysRes.data[0].id.toString());
+        }
         if (!res.success && !invRes.success) {
           alert("Failed to fetch data Try Again");
           setOpen(false);
@@ -66,7 +75,7 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
         setData(res.data || [])
         setInvoice(invRes.data || null);
         setFormData(res.data || [])
-        setDiscrepancy(Boolean(invRes?.data?.discrepancy))
+        setDiscrepancy((invRes?.data?.discrepancy === 1))
       } catch (error) {
         console.log(error);
       }
@@ -79,30 +88,43 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if (discrepancy) {
-      const res = await discrepancyAction(formData || [], discrepancy, VNo)
-      if (!res.success) {
-        alert("Failed")
-      }
-    }
-    else {
-      const res = await riderSelection(selectedDeliveryBoy, VNo)
+    if (loading) return;
 
-      if (!res.success) {
-        alert("Failed")
+    setLoading(true);
+
+    try {
+
+      if (discrepancy) {
+        const res = await discrepancyAction(formData || [], VNo)
+        if (!res.success) {
+          alert("Failed")
+        }
       }
-    }
+      else {
+        const res = await riderSelection(selectedDeliveryBoy, VNo)
+
+        if (!res.success) {
+          alert("Failed")
+        }
+      }
       setOpen(false)
+      setLoading(false);
       router.refresh();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
 
-    return (
-      <div>
-        <Button onClick={() => { setOpen(true) }}>Actions</Button>
+  }
 
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent
-            className="w-full
+  return (
+    <div>
+      <Button onClick={() => { setOpen(true) }}>Actions</Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent
+          className="w-full
                     max-w-[95vw]
                     sm:max-w-md
                     lg:max-w-[60vw]
@@ -112,115 +134,125 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
                     p-4
                     overflow-y-auto
                     "
-          >
-            <form className='space-y-4' onSubmit={handleSubmit}>
-              <DialogHeader>
-                <DialogTitle className='text-2xl'>{invoice?.discrepancy ? "Discrepency Check" : "Assign Rider" }</DialogTitle>
-                <DialogDescription>
-                  Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
-                </DialogDescription>
-                <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
-              </DialogHeader>
+        >
+          <form className='space-y-4' onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle className='text-2xl'>{invoice?.discrepancy ? "Discrepency Check" : "Assign Rider"}</DialogTitle>
+              <DialogDescription>
+                Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
+              </DialogDescription>
+              <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
+            </DialogHeader>
 
-              <FieldGroup >
-                <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
-                  <Label>SNo</Label>
-                  <Label>HSN</Label>
-                  <Label>Particular</Label>
-                  <Label>Original Qty</Label>
-                  <Label>Current Qty</Label>
-                </div>
+            <FieldGroup >
+              <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+                <Label>SNo</Label>
+                <Label>HSN</Label>
+                <Label>Particular</Label>
+                <Label>Original Qty</Label>
+                <Label>Current Qty</Label>
+              </div>
 
-                {data?.map((item, index) => (
-                  <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+              {data?.map((item, index) => (
+                <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
 
+                  <Input
+                    name="hsn"
+                    defaultValue={index + 1}
+                    disabled
+                  />
+                  <Field>
                     <Input
                       name="hsn"
-                      defaultValue={index + 1}
+                      defaultValue={item["HSN CODE"]}
                       disabled
                     />
-                    <Field>
-                      <Input
-                        name="hsn"
-                        defaultValue={item["HSN CODE"]}
-                        disabled
-                      />
-                    </Field>
+                  </Field>
 
-                    <Field>
-                      <Input
-                        name="particular"
-                        defaultValue={item.PARTICULARS}
-                        disabled
-                      />
-                    </Field>
+                  <Field>
+                    <Input
+                      name="particular"
+                      defaultValue={item.PARTICULARS}
+                      disabled
+                    />
+                  </Field>
 
-                    <Field>
-                      <Input
-                        name="particular"
-                        defaultValue={item.old_Qty ? item.old_Qty : "Unaltered"}
-                        disabled
-                      />
-                    </Field>
+                  <Field>
+                    <Input
+                      name="particular"
+                      defaultValue={item.old_Qty ? item.old_Qty : "Unaltered"}
+                      disabled
+                    />
+                  </Field>
 
-                    <Field>
-                      <Input
-                        name="qty"
-                        defaultValue={item.Qty}
-                        disabled
-                        className={`${item.Qty !== item.old_Qty ? "bg-red-300 text-black" : ""}`}
-                      />
-                    </Field>
+                  <Field>
+                    <Input
+                      name="qty"
+                      defaultValue={item.Qty}
+                      disabled
+                      className={`${item.Qty !== item.old_Qty ? "bg-red-300 text-black" : ""}`}
+                    />
+                  </Field>
+                </div>
+              ))}
+
+              <Field className='flex mt-4'>
+                {discrepancy ?
+                  <p className='text-sm'>
+                    Discrepancy Status: {discrepancy ? "Yes" : "No"}
+                  </p>
+                  :
+                  <div className='flex items-center gap-2'>
+                    <p className='max-w-10'>Action:</p>
+                    <Select
+                      value={selectedDeliveryBoy}
+                      onValueChange={(value) => {
+                        setSelectedDeliveryBoy(value);
+                      }}
+                    >
+                      <SelectTrigger className="w-full max-w-48">
+                        <SelectValue placeholder="Select Delivery boy" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Delivery Boys</SelectLabel>
+
+                          {options.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
-                ))}
+                }
+              </Field>
 
-                <Field className='flex mt-4'>
-                  {discrepancy ?
-                    <p className='text-sm'>
-                      Discrepancy Status: {discrepancy ? "Yes" : "No"}
-                    </p>
-                    :
-                    <div className='flex items-center gap-2'>
-                      <p className='max-w-10'>Action:</p>
-                      <Select
-                        onValueChange={(value) => {
-                          setSelectedDeliveryBoy(value);
-                        }}
-                      >
-                        <SelectTrigger className="w-full max-w-48">
-                          <SelectValue placeholder="Select Delivery boy" />
-                        </SelectTrigger>
+            </FieldGroup>
+            <DialogFooter className=''>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
 
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Delivery Boys</SelectLabel>
+              {Number(invoice?.discrepancy) === 1 ? (
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Processing..." : "Request New Invoice"}
+                </Button>
+              ) :
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Assigning..." : "Assign Rider"}
+                </Button>
+              }
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-                            {options.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
+    </div>
+  )
+}
 
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  }
-                </Field>
-
-              </FieldGroup>
-              <DialogFooter className=''>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button type="submit">Submit</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-
-      </div>
-    )
-  }
-
-  export default DiscrepancyCheckPopup
+export default DiscrepancyCheckPopup

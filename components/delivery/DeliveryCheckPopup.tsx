@@ -32,7 +32,7 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
   const [image, setImage] = useState<File | null>(null);
 
   const handleClick = () => {
-    inputRef.current?.click(); // trigger hidden input
+    inputRef.current?.click();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +56,6 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
         setData(res.data || [])
         setInvoice(invRes.data || null);
         setFormData(res.data || [])
-        setDiscrepancy(Boolean(invRes?.data?.discrepancy))
       } catch (error) {
         console.log(error);
       }
@@ -65,7 +64,6 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
   }, [open]);
 
   const currentStatus = Number(invoice?.status)
-
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()

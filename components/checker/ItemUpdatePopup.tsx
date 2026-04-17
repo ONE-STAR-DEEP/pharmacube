@@ -22,6 +22,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
   const [data, setData] = useState<BillItem[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
+  const [originalData, setOriginalData] = useState<BillItem[]>([]);
   const [discrepancy, setDiscrepancy] = useState(false);
 
   const router = useRouter();
@@ -29,7 +30,8 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
   useEffect(() => {
     const loadData = async () => {
       if (!open) return;
-
+      setInvoice(null);
+      setData(null);
       try {
         const res = await fetchInvoiceItems(VNo);
         const invRes = await fetchInvoiceByVNo(VNo);
@@ -40,6 +42,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
         }
         setData(res.data || [])
         setInvoice(invRes.data || null);
+        setOriginalData(res.data || []);
         setFormData(res.data || [])
       } catch (error) {
         console.log(error);
@@ -48,10 +51,36 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
     loadData();
   }, [open]);
 
+  useEffect(() => {
+    if (!formData || !originalData) return;
+
+    const isDifferent = formData.some((item, i) => {
+      const original = originalData[i];
+      return (
+        item.Qty !== original.Qty ||
+        item["HSN CODE"] !== original["HSN CODE"]
+      );
+    });
+
+    setDiscrepancy(isDifferent);
+  }, [formData]);
+
   const handleChange = async (e: FormEvent) => {
     e.preventDefault()
 
-    const res = await updateInvoiceItems(formData || [], VNo, discrepancy)
+    const cleanedData = (formData || []).map((item, i) => {
+      const original = originalData[i];
+
+      return {
+        ...item,
+        "HSN CODE":
+          item["HSN CODE"] === "" ? original["HSN CODE"] : item["HSN CODE"],
+        Qty:
+          item.Qty === "" ? original.Qty : item.Qty
+      };
+    });
+
+    const res = await updateInvoiceItems(cleanedData, VNo, discrepancy)
 
     if (!res.success) {
       alert("Failed")
@@ -85,7 +114,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
               </DialogDescription>
               <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
             </DialogHeader>
-            
+
             <FieldGroup >
               <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
                 <Label>SNo</Label>
@@ -95,77 +124,124 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                 <Label>Changed to</Label>
               </div>
 
-              {data?.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+              {data?.map((item, index) => {
+                const current = formData?.[index];
+                const original = originalData[index];
+                return (
 
-                  <Input
-                    name="hsn"
-                    defaultValue={index + 1}
-                    disabled
-                  />
-                  <Field>
+                  <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+
                     <Input
                       name="hsn"
-                      defaultValue={item["HSN CODE"]}
-                      onChange={(e) => {
-                        const value = e.target.value;
-
-                        setDiscrepancy(true);
-
-                        setFormData((prev) => {
-                          if (!prev) return prev;
-
-                          return prev.map((billItem) =>
-                            billItem.id === item.id
-                              ? { ...billItem, "HSN CODE": value }
-                              : billItem
-                          );
-                        });
-                      }}
-                    />
-                  </Field>
-
-                  <Field>
-                    <Input
-                      name="particular"
-                      defaultValue={item.PARTICULARS}
+                      defaultValue={index + 1}
                       disabled
                     />
-                  </Field>
+                    <Field>
+                      <Input
+                        name="hsn"
+                        value={current?.['HSN CODE'] || ""}
 
-                  <Field>
-                    <Input
-                      name="qty"
-                      defaultValue={item.Qty}
-                      disabled
-                    />
-                  </Field>
+                        onBlur={() => {
+                          setFormData((prev) => {
+                            if (!prev) return prev;
 
-                  <Field>
-                    <Input
-                      name="changed"
-                      placeholder={String(item.Qty)}
-                      onChange={(e) => {
-                        const value = Number(e.target.value);
+                            return prev.map((billItem, i) => {
+                              if (i !== index) return billItem;
 
-                        setDiscrepancy(true);
+                              return {
+                                ...billItem,
+                                "HSN CODE":
+                                  billItem["HSN CODE"] === ""
+                                    ? original["HSN CODE"]
+                                    : billItem["HSN CODE"]
+                              };
+                            });
+                          });
+                        }}
 
-                        setFormData((prev) => {
-                          if (!prev) return prev;
+                        onChange={(e) => {
+                          const value = e.target.value;
 
-                          return prev.map((billItem) =>
-                            billItem.id === item.id
-                              ? { ...billItem, Qty: value }
-                              : billItem
-                          );
-                        });
-                      }}
-                    />
-                  </Field>
-                </div>
-              ))}
+                          setFormData((prev) => {
+                            if (!prev) return prev;
+
+                            return prev.map((billItem, i) => {
+                              if (i !== index) return billItem;
+
+                              return {
+                                ...billItem,
+                                "HSN CODE": value
+                              };
+                            });
+                          });
+                        }}
+                      />
+                    </Field>
+
+                    <Field>
+                      <Input
+                        name="particular"
+                        defaultValue={item.PARTICULARS}
+                        disabled
+                      />
+                    </Field>
+
+                    <Field>
+                      <Input
+                        name="qty"
+                        defaultValue={item.Qty}
+                        disabled
+                      />
+                    </Field>
+
+                    <Field>
+                      <Input
+                        name="changed"
+                        placeholder={String(item.Qty)}
+                        value={current?.Qty ?? ""}
+
+                        onBlur={() => {
+                          setFormData((prev) => {
+                            if (!prev) return prev;
+
+                            return prev.map((billItem, i) => {
+                              if (i !== index) return billItem;
+
+                              return {
+                                ...billItem,
+                                Qty:
+                                  billItem["Qty"] === ""
+                                    ? original["Qty"]
+                                    : billItem["Qty"]
+                              };
+                            });
+                          });
+                        }}
+
+                        onChange={(e) => {
+                          const value = e.target.value;
+
+                          setFormData((prev) => {
+                            if (!prev) return prev;
+
+                            return prev.map((billItem, i) => {
+                              if (i !== index) return billItem;
+
+                              return {
+                                ...billItem,
+                                Qty: Number(value)
+                              };
+                            });
+                          });
+                        }}
+                      />
+                    </Field>
+                  </div>
+                )
+              })
+              }
             </FieldGroup>
-            
+
             <DialogFooter className='mt-10'>
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>

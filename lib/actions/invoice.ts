@@ -5,7 +5,7 @@ import { getCurrentUserSafe } from "../sessionCheck";
 import { BillItem, Invoice, InvoiceData } from "@/utils/types/DataTypes";
 
 
-type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery"; ;
+type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery";;
 
 const transitions: Record<Role, { from: number; to: number }> = {
     warehouse: { from: 0, to: 1 },
@@ -488,10 +488,10 @@ export const fetchAllValidInvoices = async (
 
         const [countResult]: any = await conn.execute(
             `
-      SELECT COUNT(*) as total
-      FROM Salepurchase1
-      ${where}
-      `,
+            SELECT COUNT(*) as total
+            FROM Salepurchase1
+            ${where}
+            `,
             params
         );
 
@@ -678,7 +678,6 @@ export const updateInvoiceItems = async (
 
 export const discrepancyAction = async (
     billItems: BillItem[],
-    discrepancy: boolean,
     VNo: string
 ) => {
     const session = await getCurrentUserSafe();
@@ -695,54 +694,79 @@ export const discrepancyAction = async (
     try {
         await conn.beginTransaction();
 
+        const [invoiceRes]: any = await conn.execute(
+            `SELECT id FROM Salepurchase1 WHERE Vno = ? AND Vtyp = "S1"`,
+            [VNo]
+        );
+
+        if (!invoiceRes.length) {
+            throw new Error("Invoice not found");
+        }
+
+        const invoiceId = invoiceRes[0].id;
+
+        const [existing]: any = await conn.execute(
+            `SELECT id FROM discrepancy_table WHERE sp1_id = ?`,
+            [invoiceId]
+        );
+
+        if (existing.length) {
+            throw new Error("Discrepancy already recorded");
+        }
+
+        await conn.execute(
+            `
+            INSERT INTO discrepancy_table (
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id
+            )
+            SELECT
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, 9, discrepancy, Rndamt, id
+            FROM Salepurchase1
+            WHERE id = ?
+            `,
+            [invoiceId]
+        );
+
         for (const item of billItems) {
             await conn.execute(
                 `
-                UPDATE Salepurchase2
-                SET 
-                old_Qty = IF(old_Qty IS NULL, Qty, old_Qty),
-                Qty = ?,
-                HSNCode = ?
-                WHERE id = ?
-                `,
+        INSERT INTO discrepancy_items (
+          Vno, Vtype, Vdt, Itemc,
+          Qty, HSNCode, Batch, expiry,
+          Mrp, Ftrate, Dis, CGST, SGST, IGST,
+          invoice_id, old_Qty
+        )
+        SELECT
+          Vno, Vtype, Vdt, Itemc,
+          ?, ?, Batch, expiry,
+          Mrp, Ftrate, Dis, CGST, SGST, IGST,
+          invoice_id, old_qty
+        FROM Salepurchase2
+        WHERE id = ?
+        `,
                 [
                     item.Qty,
                     item["HSN CODE"],
-                    item.id,
+                    item.id
                 ]
             );
         }
 
-        if (discrepancy) {
-            await conn.execute(
-                `
-                UPDATE Salepurchase1
-                SET 
-                discrepancy = 1,
-                status = 2
-                WHERE Vno = ?
-                AND Vtyp = "S1" 
-                `,
-                [VNo]
-            );
-        } else {
-            await conn.execute(
-                `
-                UPDATE Salepurchase1
-                SET
-                status = 3
-                WHERE Vno = ?
-                AND Vtyp = "S1" 
-                `,
-                [status!, VNo]
-            );
-        }
+
+        await conn.execute(
+            `
+        UPDATE Salepurchase1
+        SET discrepancy = 1, status = 9
+        WHERE id = ?
+        `,
+            [invoiceId]
+        );
 
         await conn.commit();
 
         return {
             success: true,
-            message: "Invoice items updated successfully",
+            message: "Discrepancy recorded successfully",
         };
     } catch (error) {
         await conn.rollback();
@@ -750,7 +774,93 @@ export const discrepancyAction = async (
 
         return {
             success: false,
-            message: "Failed to update invoice items",
+            message: "Failed to record discrepancy",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
+export const fetchDiscrepancies = async (
+    page: number = 1,
+    limit: number = 20,
+    search?: string
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+    const iss = session?.iss;
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+        const offset = (page - 1) * limit;
+
+        const safeLimit = Math.min(100, Number(limit) || 10);
+        const safeOffset = Math.max(0, Number(offset) || 0);
+
+        const searchTerm = search ? `%${search}%` : `%`;
+
+        const where = `
+        WHERE (
+            (
+            Vno LIKE ?
+            OR GSTVno  LIKE ?
+            OR Vtyp LIKE ?
+            )
+        )
+        `;
+
+        const params: any[] = [searchTerm, searchTerm, searchTerm];
+
+        const [rows]: any = await conn.execute(
+            `
+            SELECT 
+            sp.*,
+            (sp.Amt01 + sp.Taxamt + sp.Rndamt) AS InvAmt,
+            acm.name AS partyName
+            FROM discrepancy_table sp
+            LEFT JOIN Acm acm ON sp.Acno = acm.code
+            ${where}
+            ORDER BY sp.inserted_at DESC
+            LIMIT ${safeLimit} OFFSET ${safeOffset}
+            `,
+            params
+        );
+
+        const [countResult]: any = await conn.execute(
+            `
+        SELECT COUNT(*) as total
+        FROM discrepancy_table
+        ${where}
+        `,
+            params
+        );
+
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / safeLimit);
+
+        return {
+            success: true,
+            data: rows as InvoiceData[],
+            pagination: {
+                total,
+                totalPages,
+                currentPage: page,
+                limit: safeLimit,
+            },
+        };
+
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to fetch data",
         };
     } finally {
         conn.release();

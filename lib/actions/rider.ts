@@ -72,6 +72,38 @@ export const riderSelection = async (
     try {
         await conn.beginTransaction();
 
+        const [rows]: any = await conn.execute(
+            `
+            SELECT discrepancy FROM Salepurchase1
+            WHERE Vno = ? AND Vtyp = 'S1'
+            `,
+            [VNo]
+        );
+        if (rows[0].length === 0) {
+            await conn.rollback();
+            return { success: false, message: "Invoice not found" };
+        }
+
+
+        console.log(rows)
+
+        if(rows[0].discrepancy === 2){
+
+
+            await conn.execute(
+            `
+                UPDATE discrepancy_table
+                SET 
+                rider = ?,
+                status = 3
+                WHERE Vno = ?
+                AND Vtyp = 'S1'
+                `,
+            [delivery_boy , VNo]
+        );
+
+        }
+
         await conn.execute(
             `
                 UPDATE Salepurchase1
@@ -81,7 +113,7 @@ export const riderSelection = async (
                 WHERE Vno = ?
                 AND Vtyp = 'S1'
                 `,
-            [delivery_boy, VNo]
+            [delivery_boy , VNo]
         );
 
         await conn.commit();

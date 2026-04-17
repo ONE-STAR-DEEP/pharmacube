@@ -7,13 +7,10 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import InvoiceTableActions from "./invoiceTableActions";
 
-export const STATUS_LABEL: Record<number, string> = {
-  0: "Pending",
-  1: "Sent to Checker",
-  2: "Check Passed",
-  3: "Reviewed",
-
-  10: "Discrepancy",
+export const DIscrepancy_LABEL: Record<number, string> = {
+  0: "No",
+  1: "Yes",
+  2: "Resolved",
 };
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
@@ -78,11 +75,18 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Discrepancy",
     size: 80,
     cell: ({ row }) => {
-      const value = row.getValue("discrepancy") as string;
+      const value = row.getValue("discrepancy") as number;
+      
+      const colorMap = {
+        0: "text-green-600",
+        1: "text-red-600",
+        2: "text-blue-600",
+      };
+
       return (
-        <div className="flex items-center" >
-          <p className={`${value ? "text-red-600" : "text-green-600"}`}>
-            {value ? "Yes" : "No"}</p>
+        <div className="flex items-center">
+          <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
+            {DIscrepancy_LABEL[value]}</p>
         </div>
       )
     },

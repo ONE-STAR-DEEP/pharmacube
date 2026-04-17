@@ -5,6 +5,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import InvoiceActions from "./rider/InvoiceActions";
+import InvoiceTableActions from "./invoiceTableActions";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -16,9 +18,8 @@ export const STATUS_LABEL: Record<number, string> = {
   6: "Delivered",
   7: "Delivery Verified",
   8: "Delivered with Discrepancy",
-  9: "Discrepancy Resolved",
-  10: "Rejected",
-  11: "Approved with Discrepancy",
+  9: "Discrepancy Raised",
+  10: "Discrepancy Resolved",
 };
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
@@ -96,8 +97,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         7: "text-blue-700",
         8: "text-yellow-700",
         9: "text-red-700",
-        10: "text-orange-600",
-        11: "text-yellow-600",
+        10: "text-emerald-600",
+        11: "text-violet-600",
       };
       
       return (
@@ -114,7 +115,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Action",
     size: 120,
     cell: ({ row }) => {
-      const value = row.getValue("Vno") as number;
+      const value = row.getValue("Vno") as string;
+      const discrepancy = row.original.status;
       const router = useRouter();
       return (
         <div className="flex items-center">
@@ -123,6 +125,11 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }}>
             View
           </Button>
+          {
+            (discrepancy === 10  && 
+              <InvoiceTableActions VNo={value} />
+            )
+          }
         </div>
       )
     },

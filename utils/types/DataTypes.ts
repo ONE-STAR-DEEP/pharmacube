@@ -20,14 +20,14 @@ export interface Invoice {
   "Tax Amt": number;
   "Net Amount": number;
   "Inv Amt": number;
-  discrepancy: string;
-  status: string;
+  discrepancy: number;
+  status: number;
   recipt: string;
 }
 
 export type BillItem = {
   id: string;
-  Qty: number;
+  Qty: number | string;
   PACK: string;
   COMPANY: string;
   PARTICULARS: string;
@@ -95,6 +95,7 @@ export interface InvoiceData {
   Taxamt: string;
   Rndamt: string;
   inserted_at: string; // ISO date string
+  status: number;
 }
 
 export type DeliveryBoy = {
