@@ -4,7 +4,6 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -22,7 +21,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { discrepancy?: number }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -61,7 +60,7 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 className={
-                  row.original.discrepancy >= 1
+                  row.original.discrepancy && row.original.discrepancy >= 1
                     ? "bg-primary/20"
                     : ""
                 }

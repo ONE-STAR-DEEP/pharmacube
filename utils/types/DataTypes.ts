@@ -96,6 +96,7 @@ export interface InvoiceData {
   Rndamt: string;
   inserted_at: string; // ISO date string
   status: number;
+  discrepancy?: number;
 }
 
 export type DeliveryBoy = {
