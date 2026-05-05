@@ -12,8 +12,10 @@ type Props = {
 export default async function InvoicePage({ params }: Props) {
     const { VNo } = await params
 
-    const billData = await fetchInvoiceByVNo(VNo);
-    const billItems = await fetchInvoiceItems(VNo);
+    const [Vtyp, Vno] = VNo.split("-");
+
+    const billData = await fetchInvoiceByVNo(Vno, Vtyp);
+    const billItems = await fetchInvoiceItems(Vno, Vtyp);
 
     if (!(billData.data && billItems.data)) {
         return;

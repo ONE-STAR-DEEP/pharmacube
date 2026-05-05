@@ -2,9 +2,7 @@
 
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
-import { IndianRupee } from "lucide-react";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
 import InvoiceTableActions from "../invoiceTableActions";
 
 export const STATUS_LABEL: Record<number, string> = {
@@ -94,20 +92,18 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     ),
     size: 150,
     cell: ({ row }) => {
-      const value = row.getValue("Vno") as string;
-      const router = useRouter();
+      const VNo = row.original.Vno as string;
+      const Vtyp = row.original.Vtyp as string;
 
       return (
         <div className="flex items-center justify-center gap-2 w-full">
-          <Button
-            className="m-0 px-2"
+          <Button className="m-0 px-2"
             onClick={() => {
-              router.push(`/invoice/${value}`);
-            }}
-          >
+              window.open(`/invoice/${VNo}`, "_blank", "noopener,noreferrer")
+            }}>
             View
           </Button>
-          <InvoiceTableActions VNo={value} />
+          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
         </div>
       );
     },

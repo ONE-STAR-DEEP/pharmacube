@@ -136,12 +136,14 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Action",
     size: 120,
     cell: ({ row }) => {
-      const value = row.original.Vno;
+      const VNo = row.original.Vno;
+      const Vtyp = row.original.Vtyp;
+
       const router = useRouter();
       return (
         <div className="flex items-center">
           <Button className="m-0 px-2" onClick={() => {
-            router.push(`/invoice/${value}/discrepancy`)
+            router.push(`/invoice/${Vtyp}-${VNo}/discrepancy`)
           }}>
             View
           </Button>

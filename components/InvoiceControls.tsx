@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useState } from "react";
 
-export default function InvoiceControls({ VNo }: { VNo: string }) {
+export default function InvoiceControls({ VNo, Vtyp }: { VNo: string, Vtyp: string }) {
 
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ export default function InvoiceControls({ VNo }: { VNo: string }) {
         if(loading) return
         setLoading(true)
         try {
-            const res = await approveInvoice(VNo);
+            const res = await approveInvoice(VNo, Vtyp);
 
             if (!res.success) {
                 setMsg(res.message);

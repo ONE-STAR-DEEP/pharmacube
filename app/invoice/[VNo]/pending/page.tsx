@@ -12,20 +12,22 @@ type Props = {
 export default async function InvoicePage({ params }: Props) {
     const { VNo } = await params
 
-    const billData = await fetchInvoiceByVNo(VNo);
-    const billItems = await fetchInvoiceItems(VNo);
+    const [Vtyp, Vno] = VNo.split("-");
+
+    const billData = await fetchInvoiceByVNo(Vno, Vtyp);
+    const billItems = await fetchInvoiceItems(Vno, Vtyp);
 
     if (!(billData.data && billItems.data)) {
         return;
     }
-    
+
     return (
         <div className="w-full">
-        <InvoiceLayout billData={billData.data} billItems={billItems.data} />
+            <InvoiceLayout billData={billData.data} billItems={billItems.data} />
 
             <div className="flex w-full justify-center items-center mb-4 gap-4">
                 <BackButton />
-                <InvoiceControls VNo={VNo} />
+                <InvoiceControls VNo={Vno} Vtyp={Vtyp}/>
             </div>
         </div>
     )

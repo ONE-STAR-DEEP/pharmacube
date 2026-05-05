@@ -109,6 +109,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 120,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
+      const Vtyp = row.original.Vtyp as string;
       const discrepancy = row.original.status;
       return (
         <div className="flex items-center">
@@ -119,7 +120,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           </Button>
           {
             (discrepancy === 10  && 
-              <InvoiceTableActions VNo={VNo} />
+              <InvoiceTableActions VNo={VNo} Vtyp={Vtyp}/>
             )
           }
         </div>
