@@ -75,7 +75,9 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
       return {
         ...item,
         "HSN CODE":
-          item["HSN CODE"] === "" ? original["HSN CODE"] : item["HSN CODE"],
+          item['Batch No.'] === "" ? original['Batch No.'] : item['Batch No.'],
+        "Exp.":
+          item['Exp.'] === "" ? original['Exp.'] : item['Exp.'],
         Qty:
           item.Qty === "" ? original.Qty : item.Qty
       };

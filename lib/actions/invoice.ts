@@ -848,13 +848,13 @@ export const discrepancyAction = async (
           Vno, Vtype, Vdt, Itemc,
           Qty, HSNCode, Batch, expiry,
           Mrp, Ftrate, Dis, CGST, SGST, IGST,
-          invoice_id, old_Qty
+          invoice_id, old_Qty, old_batch_no, old_expiry
         )
         SELECT
           Vno, Vtype, Vdt, Itemc,
           ?, ?, Batch, expiry,
           Mrp, Ftrate, Dis, CGST, SGST, IGST,
-          invoice_id, old_qty
+          invoice_id, old_qty, old_batch_no, old_expiry
         FROM Salepurchase2
         WHERE id = ?
         `,
