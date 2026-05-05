@@ -46,14 +46,13 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
   const [deliveryBoys, setDeliveryBoys] = useState<DeliveryBoy[] | null>(null);
-  const [selectedDeliveryBoy, setSelectedDeliveryBoy] = useState("");
+  const [setSelectedDeliveryBoy] = useState("");
   const [discrepancy, setDiscrepancy] = useState(false);
   const router = useRouter()
 
   useEffect(() => {
     const loadData = async () => {
       if (!open) return;
-      setSelectedDeliveryBoy("");
       setInvoice(null);
       setData(null);
       try {
@@ -65,7 +64,6 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
 
         if (deliveryBoysRes.data.length === 1) {
           console.log(deliveryBoysRes.data[0].id.toString())
-          setSelectedDeliveryBoy(deliveryBoysRes.data[0].id.toString());
         }
         if (!res.success && !invRes.success) {
           alert("Failed to fetch data Try Again");
@@ -138,23 +136,24 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
             <DialogHeader>
               <DialogTitle className='text-2xl'>{invoice?.discrepancy ? "Discrepency Check" : "Approve Invoice"}</DialogTitle>
               <DialogDescription>
-                Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
+                Review any mismatches in invoice details such as quantity, Expiry or Batch No before final submission.
               </DialogDescription>
               <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
             </DialogHeader>
 
             <FieldGroup >
-              <div className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
+              <div className={`grid ${invoice?.discrepancy===1 ? "grid-cols-[40px_150px_1fr_100px_100px_150px]" : "grid-cols-[40px_150px_1fr_100px_150px]"}  gap-4 mb-0`}>
                 <Label>SNo</Label>
                 <Label>Batch No.</Label>
                 <Label className='min-w-60'>Particular</Label>
                 <Label>Current Qty</Label>
-                <Label>Changed to</Label>
+                {invoice?.discrepancy === 1 &&
+                  <Label>Changed to</Label>}
                 <Label>Expiry</Label>
               </div>
 
               {data?.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
+                <div key={item.id} className={`grid ${invoice?.discrepancy===1 ? "grid-cols-[40px_150px_1fr_100px_100px_150px]" : "grid-cols-[40px_150px_1fr_100px_150px]"}  gap-4 mb-0`}>
 
                   <Input
                     name="Sno"
@@ -175,25 +174,28 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
                       name="particular"
                       defaultValue={item.PARTICULARS}
                       disabled
+                      className=''
                     />
                   </Field>
 
                   <Field>
                     <Input
                       name="particular"
-                      defaultValue={item.old_Qty ? item.old_Qty : "Unaltered"}
+                      defaultValue={item.old_Qty ? item.old_Qty : item.Qty}
                       disabled
                     />
                   </Field>
 
-                  <Field>
-                    <Input
-                      name="qty"
-                      defaultValue={item.Qty}
-                      disabled
-                      className={`${(item.old_Qty !== null) && (item.Qty !== item.old_Qty) ? "bg-red-300 text-black" : ""}`}
-                    />
-                  </Field>
+                  {invoice?.discrepancy === 1 &&
+                    <Field>
+                      <Input
+                        name="qty"
+                        defaultValue={item.Qty}
+                        disabled
+                        className={`${(item.old_Qty !== null) && (item.Qty !== item.old_Qty) ? "bg-red-300 text-black" : ""}`}
+                      />
+                    </Field>
+                  }
 
                   <Field>
                     <Input
