@@ -21,7 +21,7 @@ import { FileText, LogOut, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
-export function AppSidebar() {
+export function AppSidebar({ plus }: { plus: boolean }) {
 
     const { toggleSidebar } = useSidebar();
 
@@ -52,7 +52,7 @@ export function AppSidebar() {
                     <SidebarMenu>
 
                         <SidebarMenuItem
-                            onClick={() => {toggleSidebar()}}
+                            onClick={() => { toggleSidebar() }}
                         >
                             <Link
                                 href="/rider/dashboard"
@@ -62,6 +62,19 @@ export function AppSidebar() {
                                 <span className="text-base font-medium">Dashboard</span>
                             </Link>
                         </SidebarMenuItem>
+
+                        <SidebarMenuItem
+                            onClick={() => { toggleSidebar() }}
+                        >
+                            <Link
+                                href="/rider/dashboard/delivery"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <LayoutDashboard size={18} />
+                                <span className="text-base font-medium">Delivery</span>
+                            </Link>
+                        </SidebarMenuItem>
+
                         {/* Invoices */}
 
                         <SidebarMenuItem>

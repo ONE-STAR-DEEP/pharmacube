@@ -110,6 +110,7 @@ export const insertUser = async (data: UserFormData) => {
     const city = data.city || null;
     const state = data.state || null;
     const pincode = data.pincode || null;
+    const email = data.email || null;
 
     const mobile = data.mobile.replace(/^0+/, "");
 
@@ -127,11 +128,11 @@ export const insertUser = async (data: UserFormData) => {
 
     const [result]: any = await conn.query(
       `INSERT INTO users 
-      (name, email, mobile, type, address, city, state, pincode, password) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (name, email, mobile, type, address, city, state, pincode, password, plus) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.name,
-        data.email,
+        email,
         mobile,
         data.type,
         address,
@@ -139,6 +140,7 @@ export const insertUser = async (data: UserFormData) => {
         state,
         pincode,
         data.password,
+        data.plus
       ]
     );
 

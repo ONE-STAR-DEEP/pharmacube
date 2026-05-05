@@ -30,11 +30,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 80,
   },
   {
-    accessorKey: "Vno",
-    header: "Vno",
-    size: 60,
-  },
-  {
     accessorKey: "GSTVno",
     header: "GSTVno",
     size: 80,
@@ -69,16 +64,16 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Action",
     size: 150,
     cell: ({ row }) => {
-      const value = row.getValue("Vno") as string;
-      const router = useRouter();
+      const VNo = row.original.Vno as string;
+      const Vtyp = row.original.Vtyp;
       return (
         <div className="flex items-center gap-2">
           <Button className="m-0 px-2" onClick={() => {
-            router.push(`/invoice/${value}/pending`)
+            window.open(`/invoice/${VNo}`, "_blank", "noopener,noreferrer")
           }}>
             View
           </Button>
-          <InvoiceTableActions VNo={value}/>
+          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp}/>
         </div>
       )
     },

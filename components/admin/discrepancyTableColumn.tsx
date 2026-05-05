@@ -1,10 +1,11 @@
 "use client";
-
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+import InvoiceTableActions from "../invoiceTableActions";
 import { IndianRupee } from "lucide-react";
-import { Button } from "./ui/button";
-import InvoiceTableActions from "./invoiceTableActions";
+import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -24,38 +25,44 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
     header: "S.No",
-    size: 40,
+    size: 30,
     cell: ({ row }) => row.index + 1,
   },
   {
     accessorKey: "Vdt",
     header: "Date",
-    size: 80,
     cell: ({ row }) => {
       const value = row.getValue("Vdt") as string;
+
       const date = new Date(value);
-      return date.toLocaleDateString("en-GB");
+
+      const formatted = date.toLocaleDateString("en-GB");
+
+      return formatted;
     },
+    size: 100
   },
   {
     accessorKey: "mTime",
     header: "Time",
-    size: 80,
+    size: 80
   },
   {
     accessorKey: "GSTVno",
     header: "GSTVno",
-    size: 80,
+    size: 100
+
   },
   {
     accessorKey: "partyName",
     header: "Party Name",
-    size: 300,
+    size: 300
   },
   {
     accessorKey: "NoOfItem",
-    header: "No of Items",
-    size: 80,
+    header: "Items",
+    size: 80
+
   },
   {
     accessorKey: "InvAmt",
@@ -68,6 +75,27 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           <IndianRupee size={12} />
           <p>
             {value}</p>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "discrepancy",
+    header: "Discrepancy",
+    size: 80,
+    cell: ({ row }) => {
+      const value = Number(row.original.discrepancy);
+
+      const colorMap = {
+        0: "text-green-600",
+        1: "text-red-600",
+        2: "text-blue-600",
+      };
+
+      return (
+        <div className="flex items-center">
+          <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
+            {Discrepancy_LABEL[value]}</p>
         </div>
       )
     },
@@ -93,12 +121,12 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         10: "text-emerald-600",
         11: "text-violet-600",
       };
-      
+
       return (
         <div className="flex items-center">
           <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
             {STATUS_LABEL[value]}
-            </p>
+          </p>
         </div>
       )
     },
@@ -108,20 +136,15 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Action",
     size: 120,
     cell: ({ row }) => {
-      const VNo = row.original.Vno as string;
-      const discrepancy = row.original.status;
+      const value = row.original.Vno;
+      const router = useRouter();
       return (
         <div className="flex items-center">
           <Button className="m-0 px-2" onClick={() => {
-            window.open(`/invoice/${VNo}`, "_blank", "noopener,noreferrer")
+            router.push(`/invoice/${value}/discrepancy`)
           }}>
             View
           </Button>
-          {
-            (discrepancy === 10  && 
-              <InvoiceTableActions VNo={VNo} />
-            )
-          }
         </div>
       )
     },

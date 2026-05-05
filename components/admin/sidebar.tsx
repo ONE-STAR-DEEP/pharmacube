@@ -10,13 +10,12 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { Users, FileText, LogOut, Home, LayoutDashboard } from "lucide-react";
+import { Users, FileText, LogOut, Home, LayoutDashboard, FileX } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
 export function AppSidebar() {
     return (
-
         <Sidebar
             variant="sidebar"
             className="mt-12 h-[calc(100vh-3rem)] flex flex-col "
@@ -71,6 +70,17 @@ export function AppSidebar() {
                             >
                                 <FileText size={18} />
                                 <span>Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+
+                        {/* Invoices */}
+                        <SidebarMenuItem>
+                            <Link
+                                href="/admin/dashboard/discrepancy"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <FileX size={18} />
+                                <span>Discrepancy</span>
                             </Link>
                         </SidebarMenuItem>
 

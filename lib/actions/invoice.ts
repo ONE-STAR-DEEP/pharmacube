@@ -34,7 +34,8 @@ const successMessages: Record<Role, string> = {
 export const fetchInvoices = async (
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    Vtyp?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -54,22 +55,28 @@ export const fetchInvoices = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const searchTerm = search ? `%${search}%` : `%`;
+        const conditions = [];
+        const params: any[] = [];
 
-        const where = `
-      WHERE (
-        Vno LIKE ?
-        OR GSTVno  LIKE ?
-        OR Vtyp LIKE ?
-      )
-    `;
+        if (search) {
+            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ?)`);
+            params.push(`%${search}%`, `%${search}%`);
+        }
 
-        const params: any[] = [searchTerm, searchTerm, searchTerm];
+        if (Vtyp) {
+            conditions.push(`Vtyp = ?`);
+            params.push(Vtyp);
+        }
+
+        const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+        // const params: any[] = [searchTerm, searchTerm, VtypTerm];
 
         const [rows]: any = await conn.execute(
             `
             SELECT 
             sp.*,
+            (sp.Amt01 + sp.Taxamt + sp.Rndamt) AS InvAmt,
             acm.name AS partyName
             FROM Salepurchase1 sp
             LEFT JOIN Acm acm ON sp.Acno = acm.code
@@ -115,7 +122,8 @@ export const fetchInvoices = async (
 };
 
 export const fetchInvoiceByVNo = async (
-    VNo: string
+    VNo: string,
+    Vtyp: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -158,11 +166,11 @@ export const fetchInvoiceByVNo = async (
                 Salepurchase1.recipt
                 FROM Salepurchase1
                 INNER JOIN Acm ON Acm.code = Salepurchase1.Acno
-                WHERE Salepurchase1.Vtyp = 'S1'
+                WHERE Salepurchase1.Vtyp = ?
                 AND Salepurchase1.Vno = ?
                 LIMIT 1
                 `,
-            [VNo]
+            [Vtyp, VNo]
         );
 
         return {
@@ -182,7 +190,8 @@ export const fetchInvoiceByVNo = async (
 };
 
 export const fetchInvoiceItems = async (
-    VNo: string
+    VNo: string,
+    Vtyp: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -210,6 +219,8 @@ export const fetchInvoiceItems = async (
             Salepurchase2.Ftrate AS 'Rate',
             Salepurchase2.Dis AS 'DIS%',
             Salepurchase2.old_Qty AS 'old_Qty',
+            Salepurchase2.old_batch_no AS 'old_batch_no',
+            Salepurchase2.old_expiry AS 'old_expiry',
             CASE
             WHEN Salepurchase2.CGST > 0 THEN Salepurchase2.CGST
             WHEN Salepurchase2.SGST > 0 THEN Salepurchase2.SGST
@@ -218,10 +229,10 @@ export const fetchInvoiceItems = async (
             END AS 'Tax'
             FROM Salepurchase2
             INNER JOIN Item ON Item.code = Salepurchase2.Itemc
-            WHERE Salepurchase2.Vtype = 'S1'
+            WHERE Salepurchase2.Vtype = ?
             AND Salepurchase2.Vno = ?
             ORDER BY Item.Compname ASC`,
-            [VNo]
+            [Vtyp, VNo]
         );
 
         return {
@@ -243,7 +254,8 @@ export const fetchInvoiceItems = async (
 export const fetchPendingInvoices = async (
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    Vtyp?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -263,11 +275,106 @@ export const fetchPendingInvoices = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
+
+        if (!type || !(type in transitions)) {
+            return { success: false, message: "Access denied. Please log in with valid permissions" };
+        }
+
+        const rule = transitions[type as Role];
+        
+        const conditions = [`status = ?`];
+        const params: any[] = [rule.from];
+
+        if (search) {
+            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ?)`);
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        if (Vtyp) {
+            conditions.push(`Vtyp = ?`);
+            params.push(Vtyp);
+        }
+
+        const where = `WHERE ${conditions.join(" AND ")}`;
+
+        const [rows]: any = await conn.execute(
+            `
+            SELECT 
+            sp.*,
+            (sp.Amt01 + sp.Taxamt + sp.Rndamt) AS InvAmt,
+            acm.name AS partyName
+            FROM Salepurchase1 sp
+            LEFT JOIN Acm acm ON sp.Acno = acm.code
+            ${where}
+            ORDER BY sp.inserted_at DESC
+            LIMIT ${safeLimit} OFFSET ${safeOffset}
+        `,
+            params
+        );
+        const [countResult]: any = await conn.execute(
+            `
+      SELECT COUNT(*) as total
+      FROM Salepurchase1
+      ${where}
+      `,
+            params
+        );
+
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / safeLimit);
+
+        return {
+            success: true,
+            data: rows as InvoiceData[],
+            pagination: {
+                total,
+                totalPages,
+                currentPage: page,
+                limit: safeLimit,
+            },
+        };
+
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to fetch data",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
+export const fetchInvoicesToCheck = async (
+    page: number = 1,
+    limit: number = 20,
+    search?: string,
+    Vtyp?:string
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+    const iss = session?.iss;
+    const plus = session?.plus;
+
+    if (!userId || iss !== "pharmacube" || !plus) {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+        const offset = (page - 1) * limit;
+
+        const safeLimit = Math.min(100, Number(limit) || 10);
+        const safeOffset = Math.max(0, Number(offset) || 0);
+
         const searchTerm = search ? `%${search}%` : `%`;
 
         const where = `
         WHERE (
-        status = ?
+        status = 1
         AND
             (
             Vno LIKE ?
@@ -281,9 +388,7 @@ export const fetchPendingInvoices = async (
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
 
-        const rule = transitions[type as Role];
-
-        const params: any[] = [rule.from, searchTerm, searchTerm, searchTerm];
+        const params: any[] = [searchTerm, searchTerm, searchTerm];
 
         const [rows]: any = await conn.execute(
             `
@@ -429,7 +534,8 @@ export const fetchDiscrepancyInvoices = async (
 export const fetchAllValidInvoices = async (
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    Vtyp?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -520,7 +626,7 @@ export const fetchAllValidInvoices = async (
     }
 };
 
-export const approveInvoice = async (Vno: string) => {
+export const approveInvoice = async (Vno: string, Vtyp: string) => {
 
     const conn = await db.getConnection();
 
@@ -529,6 +635,7 @@ export const approveInvoice = async (Vno: string) => {
     const userId = session?.id;
     const type = session?.type;
     const iss = session?.iss;
+
 
     if (!userId || iss !== "pharmacube") {
         return { success: false, message: "Unauthorized" };
@@ -541,7 +648,7 @@ export const approveInvoice = async (Vno: string) => {
             status
             FROM Salepurchase1
             WHERE
-            Vtyp = "S1"
+            Vtyp = '${Vtyp}'
             AND Vno = ?
             `,
             [Vno]
@@ -576,7 +683,7 @@ export const approveInvoice = async (Vno: string) => {
             `
             UPDATE Salepurchase1 
             SET status = ?
-            WHERE Vtyp = "S1" AND Vno = ? AND status = ?
+            WHERE Vtyp = '${Vtyp}' AND Vno = ? AND status = ?
             `,
             [rule.to, Vno, rule.from]
         );
@@ -597,7 +704,9 @@ export const approveInvoice = async (Vno: string) => {
 
 export const updateInvoiceItems = async (
     billItems: BillItem[],
+    invoiceId: string,
     VNo: string,
+    Vtyp: string,
     discrepancy: boolean,
 ) => {
     const session = await getCurrentUserSafe();
@@ -614,19 +723,25 @@ export const updateInvoiceItems = async (
     try {
         await conn.beginTransaction();
 
+        console.log(discrepancy)
+
         for (const item of billItems) {
             await conn.execute(
                 `
                 UPDATE Salepurchase2
                 SET 
                 old_Qty = IF(old_Qty IS NULL, Qty, old_Qty),
+                old_batch_no  = IF(old_batch_no  IS NULL, Batch, old_batch_no ),
+                old_expiry = IF(old_expiry IS NULL, expiry, old_expiry),
                 Qty = ?,
-                HSNCode = ?
+                Batch = ?,
+                expiry = ?
                 WHERE id = ?
                 `,
                 [
                     item.Qty,
-                    item["HSN CODE"],
+                    item["Batch No."],
+                    item["Exp."],
                     item.id,
                 ]
             );
@@ -639,10 +754,9 @@ export const updateInvoiceItems = async (
                 SET 
                 status = 2,
                 discrepancy = 1
-                WHERE Vno = ?
-                AND Vtyp = "S1" 
+                WHERE id = ?
                 `,
-                [VNo]
+                [invoiceId]
             );
         } else {
             await conn.execute(
@@ -650,10 +764,9 @@ export const updateInvoiceItems = async (
                 UPDATE Salepurchase1
                 SET 
                 status = 2
-                WHERE Vno = ?
-                AND Vtyp = "S1" 
+                WHERE id = ? 
                 `,
-                [VNo]
+                [invoiceId]
             );
         }
 
@@ -678,7 +791,8 @@ export const updateInvoiceItems = async (
 
 export const discrepancyAction = async (
     billItems: BillItem[],
-    VNo: string
+    VNo: string,
+    Vtyp: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -695,7 +809,7 @@ export const discrepancyAction = async (
         await conn.beginTransaction();
 
         const [invoiceRes]: any = await conn.execute(
-            `SELECT id FROM Salepurchase1 WHERE Vno = ? AND Vtyp = "S1"`,
+            `SELECT id FROM Salepurchase1 WHERE Vno = ? AND Vtyp = "${Vtyp}"`,
             [VNo]
         );
 
@@ -854,6 +968,134 @@ export const fetchDiscrepancies = async (
                 currentPage: page,
                 limit: safeLimit,
             },
+        };
+
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to fetch data",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
+export const fetchDiscrepancyeByVNo = async (
+    VNo: string,
+    Vtyp: string
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const iss = session?.iss;
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+
+        const [rows]: any = await conn.execute(
+            `SELECT 
+                Acm.name,
+                Acm.address,
+                Acm.address1,
+                Acm.address2,
+                Acm.telephone AS Tel,
+                Acm.GSTNo AS 'GST No.',
+                Acm.DLNO,
+                Acm.DLNO1,
+                discrepancy_table.id,
+                discrepancy_table.discrepancy,
+                discrepancy_table.GSTVno AS 'Bill No',
+                DATE_FORMAT(discrepancy_table.Vdt, '%d/%m/%Y') AS Dated,
+                discrepancy_table.NoOfItem AS 'No Of Items',
+                discrepancy_table.Uid AS 'Made By',
+                discrepancy_table.Ouid AS 'Print By',
+                discrepancy_table.mTime AS 'Make Time',
+                (discrepancy_table.Amt01 + discrepancy_table.disamtit) AS 'Gross Amt',
+                discrepancy_table.disamtit AS 'Disc.Amt',
+                discrepancy_table.Amt01 AS 'Taxable Amt.',
+                discrepancy_table.Taxamt AS 'Tax Amt',
+                (discrepancy_table.Amt01 + discrepancy_table.Taxamt) AS 'Net Amount',
+                (discrepancy_table.Amt01 + discrepancy_table.Taxamt + discrepancy_table.Rndamt) AS 'Inv Amt',
+                discrepancy_table.status,
+                discrepancy_table.recipt
+                FROM discrepancy_table
+                INNER JOIN Acm ON Acm.code = discrepancy_table.Acno
+                WHERE discrepancy_table.Vtyp = 'S1'
+                AND discrepancy_table.Vno = ?
+                LIMIT 1
+                `,
+            [VNo]
+        );
+
+        return {
+            success: true,
+            data: rows[0] as Invoice,
+        };
+
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to fetch data",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
+export const fetchDiscrepancyItems = async (
+    VNo: string,
+    Vtyp: string
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const iss = session?.iss;
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+        const [rows]: any = await conn.execute(
+            `SELECT
+            discrepancy_items.id,
+            discrepancy_items.Qty,
+            Item.Pack AS 'PACK',
+            Item.Compname AS 'COMPANY',
+            Item.name AS 'PARTICULARS',
+            discrepancy_items.HSNCode AS 'HSN CODE',
+            discrepancy_items.Batch AS 'Batch No.',
+            discrepancy_items.expiry AS 'Exp.',
+            discrepancy_items.Mrp AS 'MRP.',
+            discrepancy_items.Ftrate AS 'Rate',
+            discrepancy_items.Dis AS 'DIS%',
+            discrepancy_items.old_Qty AS 'old_Qty',
+            CASE
+            WHEN discrepancy_items.CGST > 0 THEN discrepancy_items.CGST
+            WHEN discrepancy_items.SGST > 0 THEN discrepancy_items.SGST
+            WHEN discrepancy_items.IGST > 0 THEN discrepancy_items.IGST
+            ELSE 0
+            END AS 'Tax'
+            FROM discrepancy_items
+            INNER JOIN Item ON Item.code = discrepancy_items.Itemc
+            WHERE discrepancy_items.Vtype = 'S1'
+            AND discrepancy_items.Vno = ?
+            ORDER BY Item.Compname ASC`,
+            [VNo]
+        );
+
+        return {
+            success: true,
+            data: rows as BillItem[],
         };
 
     } catch (error) {

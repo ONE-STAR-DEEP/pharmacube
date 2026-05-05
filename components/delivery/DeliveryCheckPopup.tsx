@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -18,14 +20,34 @@ import { FormEvent, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Camera, Check } from 'lucide-react'
 import { updateDelivery } from '@/lib/actions/delivery'
+import imageCompression from "browser-image-compression";
 
-const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
+const MAX_SIZE_MB = 1.5;
+
+const processImage = async (file: File) => {
+  // If already small, send as-is
+  if (file.size / (1024 * 1024) <= MAX_SIZE_MB) {
+    return file;
+  }
+
+  const compressedFile = await imageCompression(file, {
+    maxSizeMB: MAX_SIZE_MB,
+    maxWidthOrHeight: 1920, // optional safety resize
+    useWebWorker: true,
+  });
+
+  return compressedFile;
+};
+
+const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<BillItem[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
   const [discrepancy, setDiscrepancy] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [imgLoading, setImgLoading] = useState(false)
   const router = useRouter()
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -35,10 +57,23 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
     inputRef.current?.click();
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImgLoading(true);
+    const file = e.target.files?.[0];
+    if (!file) {
+      setImgLoading(false)
+      return;
     }
+
+    if (!file.type.startsWith("image/")) {
+      alert("Only image files are allowed (jpg, png, webp, etc.)");
+      setImgLoading(false)
+      return;
+    }
+
+    const compressedImg = await processImage(file)
+    setImage(compressedImg);
+    setImgLoading(false)
   };
 
   useEffect(() => {
@@ -46,8 +81,8 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
       if (!open) return;
       try {
         setDiscrepancy(false)
-        const res = await fetchInvoiceItems(VNo);
-        const invRes = await fetchInvoiceByVNo(VNo);
+        const res = await fetchInvoiceItems(VNo, Vtyp);
+        const invRes = await fetchInvoiceByVNo(VNo, Vtyp);
         if (!res.success && !invRes.success) {
           alert("Failed to fetch data Try Again");
           setOpen(false);
@@ -68,23 +103,31 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    const imageData = new FormData();
+    if (loading) return;
+    setLoading(true);
 
-    // append image ONLY if exists
-    if (image) {
-      imageData.append("receipt", image);
-    }
-    if (!invoice) {
-      return
-    }
-    const res = await updateDelivery(formData || [], invoice?.id, discrepancy, image);
+    try {
+      const imageData = new FormData();
 
-    if (!res.success) {
-      alert("Failed to update delivery details. Try Again");
-      return;
+      if (image) {
+        imageData.append("receipt", image);
+      }
+      if (!invoice) {
+        return;
+      }
+      const res = await updateDelivery(formData || [], invoice?.id, discrepancy, image);
+
+      if (!res.success) {
+        alert("Failed to update delivery details. Try Again");
+        return;
+      }
+      setOpen(false)
+      router.refresh();
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
     }
-    setOpen(false)
-    router.refresh();
   }
 
   return (
@@ -129,6 +172,7 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
                       <Button
                         type='button'
                         onClick={handleClick}
+                        disabled={imgLoading}
                       >
                         {image ?
                           <>
@@ -136,7 +180,7 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
                           </>
                           :
                           <>
-                            <Camera /> Recipt
+                            <Camera /> {imgLoading ? "Wait..." : "Recipt"}
                           </>
                         }
                       </Button>
@@ -224,7 +268,7 @@ const DeliveryCheckPopup = ({ VNo }: { VNo: string }) => {
                 <Button variant="outline" type='button'>Close</Button>
               </DialogClose>
               {Number(invoice?.status) === 6 && (
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={loading}>Submit</Button>
               )}
             </DialogFooter>
           </form>

@@ -54,9 +54,9 @@ export const fetchDeliveryBoy = async () => {
     }
 };
 
-export const riderSelection = async (
-    delivery_boy: string,
-    VNo: string
+export const approveForDelivery = async (
+    VNo: string,
+    Vtyp: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -75,7 +75,7 @@ export const riderSelection = async (
         const [rows]: any = await conn.execute(
             `
             SELECT discrepancy FROM Salepurchase1
-            WHERE Vno = ? AND Vtyp = 'S1'
+            WHERE Vno = ? AND Vtyp = '${Vtyp}'
             `,
             [VNo]
         );
@@ -84,43 +84,37 @@ export const riderSelection = async (
             return { success: false, message: "Invoice not found" };
         }
 
-
-        console.log(rows)
-
-        if(rows[0].discrepancy === 2){
+        if (rows[0].discrepancy === 2) {
 
 
             await conn.execute(
-            `
+                `
                 UPDATE discrepancy_table
-                SET 
-                rider = ?,
+                SET
                 status = 3
                 WHERE Vno = ?
-                AND Vtyp = 'S1'
+                AND Vtyp = '${Vtyp}'
                 `,
-            [delivery_boy , VNo]
-        );
-
+                [VNo]
+            );
         }
 
         await conn.execute(
             `
                 UPDATE Salepurchase1
-                SET 
-                rider = ?,
+                SET
                 status = 3
                 WHERE Vno = ?
-                AND Vtyp = 'S1'
+                AND Vtyp = '${Vtyp}'
                 `,
-            [delivery_boy , VNo]
+            [VNo]
         );
 
         await conn.commit();
 
         return {
             success: true,
-            message: "Delivery boy assigned successfully",
+            message: "Approved for delivery",
         };
     } catch (error) {
         await conn.rollback();
@@ -128,7 +122,7 @@ export const riderSelection = async (
 
         return {
             success: false,
-            message: "Failed to assign Delivery boy",
+            message: "Failed to approve!!!",
         };
     } finally {
         conn.release();
@@ -190,10 +184,11 @@ export const riderAction = async (
             `
                 UPDATE Salepurchase1
                 SET
-                status = ?
+                status = ?,
+                rider = ?
                 WHERE id = ?
                 `,
-            [status, id]
+            [status, userId, id]
         );
 
         await conn.execute(
@@ -597,6 +592,95 @@ export const fetchDeliveredInvoicesByRiderID = async (
         WHERE (
         status >= 6
         AND status <= 8
+        AND rider = ?
+        AND
+            (
+            Vno LIKE ?
+            OR GSTVno  LIKE ?
+            OR Vtyp LIKE ?
+            )
+        )
+        `;
+
+        const params: any[] = [userId, searchTerm, searchTerm, searchTerm];
+
+        const [rows]: any = await conn.execute(
+            `
+            SELECT 
+            sp.*,
+            (sp.Amt01 + sp.Taxamt + sp.Rndamt) AS InvAmt,
+            acm.name AS partyName
+            FROM Salepurchase1 sp
+            LEFT JOIN Acm acm ON sp.Acno = acm.code
+            ${where}
+            ORDER BY sp.inserted_at DESC
+            LIMIT ${safeLimit} OFFSET ${safeOffset}
+            `,
+            params
+        );
+
+        const [countResult]: any = await conn.execute(
+            `
+            SELECT COUNT(*) as total
+            FROM Salepurchase1
+            ${where}
+        `,
+            params
+        );
+
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / safeLimit);
+
+        return {
+            success: true,
+            data: rows as InvoiceData[],
+            pagination: {
+                total,
+                totalPages,
+                currentPage: page,
+                limit: safeLimit,
+            },
+        };
+
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to fetch data",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
+export const fetchPendingDeliveryByRiderID = async (
+    page: number = 1,
+    limit: number = 20,
+    search?: string
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+    const iss = session?.iss;
+
+    if (!userId || type !== "rider" || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+        const offset = (page - 1) * limit;
+
+        const safeLimit = Math.min(100, Number(limit) || 10);
+        const safeOffset = Math.max(0, Number(offset) || 0);
+
+        const searchTerm = search ? `%${search}%` : `%`;
+
+        const where = `
+        WHERE (
+        status = 6
         AND rider = ?
         AND
             (

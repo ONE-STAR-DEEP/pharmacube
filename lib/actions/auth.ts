@@ -16,7 +16,8 @@ export const loginUser = async (data: User) => {
             id,
             name,
             type,
-            password
+            password,
+            plus
             FROM users
             WHERE mobile = ?
         `,
@@ -43,7 +44,8 @@ export const loginUser = async (data: User) => {
             const token = jwt.sign(
                 {
                     id: Number(user.id) as Number,
-                    type: user.type as SessionUser["type"]
+                    type: user.type as SessionUser["type"],
+                    plus: Boolean(user.plus)
                 },
                 JWT_SECRET!,
                 {
@@ -68,7 +70,8 @@ export const loginUser = async (data: User) => {
                 message: "Login successful",
                 user: {
                     id: user.id,
-                    type: user.type
+                    type: user.type,
+                    plus: Boolean(user.plus)
                 }
             }
         }

@@ -1,15 +1,15 @@
 import { DataTable } from '@/components/Datatable';
-import { RefreshOnMount } from '@/components/warehouse/pendingRefresh';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import { fetchPendingInvoicesByRiderID } from '@/lib/actions/rider';
 import { acceptedInvoiceColumns } from '@/components/rider/acceptedTableColumn';
 import { assignedInvoiceColumns } from '@/components/rider/assignedTableColumn';
 import { pickedInvoiceColumns } from '@/components/rider/pickedTableColumn';
 import AllActions from '@/components/rider/AllAction';
+import { fetchPendingInvoices } from '@/lib/actions/invoice';
 
 const Invoices = async () => {
 
-  const pendingInvoices = await fetchPendingInvoicesByRiderID("pending");
+  const pendingInvoices = await fetchPendingInvoices();
   const acceptedInvoices = await fetchPendingInvoicesByRiderID("accepted");
   const pickedInvoices = await fetchPendingInvoicesByRiderID("picked");
 
@@ -20,9 +20,8 @@ const Invoices = async () => {
       <div>
         <header className='flex justify-between items-center bg-white px-4 pt-4'>
           <p className='font-semibold text-lg'>
-            Assigned Delivery - {pendingInvoices.total}
+            Available Delivery - {pendingInvoices?.pagination?.total}
           </p>
-          <AllActions action="accepted" />
         </header>
 
         <section className='space-y-0'>
@@ -64,8 +63,6 @@ const Invoices = async () => {
           </div>
         </section>
       </div>
-
-      <RefreshOnMount />
 
     </div>
   )

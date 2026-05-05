@@ -16,7 +16,7 @@ import { BillItem, Invoice } from '@/utils/types/DataTypes'
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
+const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<BillItem[] | null>(null);
@@ -33,8 +33,8 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
       setInvoice(null);
       setData(null);
       try {
-        const res = await fetchInvoiceItems(VNo);
-        const invRes = await fetchInvoiceByVNo(VNo);
+        const res = await fetchInvoiceItems(VNo, Vtyp);
+        const invRes = await fetchInvoiceByVNo(VNo, Vtyp);
         if (!res.success && !invRes.success) {
           alert("Failed to fetch data Try Again");
           setOpen(false);
@@ -58,7 +58,8 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
       const original = originalData[i];
       return (
         item.Qty !== original.Qty ||
-        item["HSN CODE"] !== original["HSN CODE"]
+        item["Batch No."] !== original["Batch No."] ||
+        item['Exp.'] !== original['Exp.']
       );
     });
 
@@ -80,7 +81,10 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
       };
     });
 
-    const res = await updateInvoiceItems(cleanedData, VNo, discrepancy)
+    if (!invoice?.id) {
+      return
+    }
+    const res = await updateInvoiceItems(cleanedData, invoice?.id, VNo, Vtyp, discrepancy)
 
     if (!res.success) {
       alert("Failed")
@@ -98,7 +102,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
           className="w-full
                     max-w-[95vw]
                     sm:max-w-md
-                    lg:max-w-[60vw]
+                    lg:max-w-[70vw]
                     min-h-[20vh]
                     max-h-[80vh] 
                     flex flex-col
@@ -110,18 +114,19 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
             <DialogHeader>
               <DialogTitle className='text-2xl'>Discrepency Check</DialogTitle>
               <DialogDescription>
-                Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
+                Review and update any mismatches in invoice details such as Quantity, Batch No or Expiry before final submission.
               </DialogDescription>
               <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
             </DialogHeader>
 
-            <FieldGroup >
-              <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+            <FieldGroup className='overflow-y-auto'>
+              <div className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
                 <Label>SNo</Label>
-                <Label>HSN</Label>
-                <Label>Particular</Label>
+                <Label>Batch No.</Label>
+                <Label className='min-w-60'>Particular</Label>
                 <Label>Current Qty</Label>
                 <Label>Changed to</Label>
+                <Label>Expiry</Label>
               </div>
 
               {data?.map((item, index) => {
@@ -129,17 +134,17 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                 const original = originalData[index];
                 return (
 
-                  <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+                  <div key={item.id} className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
 
                     <Input
-                      name="hsn"
+                      name="sno"
                       defaultValue={index + 1}
                       disabled
                     />
                     <Field>
                       <Input
-                        name="hsn"
-                        value={current?.['HSN CODE'] || ""}
+                        name="batch"
+                        value={current?.['Batch No.'] || ""}
 
                         onBlur={() => {
                           setFormData((prev) => {
@@ -150,10 +155,10 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
 
                               return {
                                 ...billItem,
-                                "HSN CODE":
-                                  billItem["HSN CODE"] === ""
-                                    ? original["HSN CODE"]
-                                    : billItem["HSN CODE"]
+                                "Batch No.":
+                                  billItem["Batch No."] === ""
+                                    ? original["Batch No."]
+                                    : billItem["Batch No."]
                               };
                             });
                           });
@@ -170,7 +175,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
 
                               return {
                                 ...billItem,
-                                "HSN CODE": value
+                                "Batch No.": value
                               };
                             });
                           });
@@ -178,7 +183,7 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                       />
                     </Field>
 
-                    <Field>
+                    <Field className='min-w-60'>
                       <Input
                         name="particular"
                         defaultValue={item.PARTICULARS}
@@ -230,6 +235,48 @@ const ItemUpdatePopup = ({ VNo }: { VNo: string }) => {
                               return {
                                 ...billItem,
                                 Qty: Number(value)
+                              };
+                            });
+                          });
+                        }}
+                      />
+                    </Field>
+
+                    <Field>
+                      <Input
+                        name="expiry"
+                        value={current?.['Exp.'] || ""}
+
+                        onBlur={() => {
+                          setFormData((prev) => {
+                            if (!prev) return prev;
+
+                            return prev.map((billItem, i) => {
+                              if (i !== index) return billItem;
+
+                              return {
+                                ...billItem,
+                                "Exp.":
+                                  billItem["Exp."] === ""
+                                    ? original["Exp."]
+                                    : billItem["Exp."]
+                              };
+                            });
+                          });
+                        }}
+
+                        onChange={(e) => {
+                          const value = e.target.value;
+
+                          setFormData((prev) => {
+                            if (!prev) return prev;
+
+                            return prev.map((billItem, i) => {
+                              if (i !== index) return billItem;
+
+                              return {
+                                ...billItem,
+                                "Exp.": value
                               };
                             });
                           });

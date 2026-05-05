@@ -1,9 +1,9 @@
-import { invoiceColumns } from '@/components/pendingTableColumn';
+import { invoiceColumns } from '@/components/rider/deliveryTable';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
-import { fetchPendingInvoices } from '@/lib/actions/invoice';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
+import { fetchPendingDeliveryByRiderID } from '@/lib/actions/rider';
 
 type PageProps = {
   searchParams: Promise<{
@@ -22,18 +22,16 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const search = params?.search
 
-  const status = params?.status
-
-  const data = await fetchPendingInvoices(page, limit, search);
+  const data = await fetchPendingDeliveryByRiderID(page, limit, search);
 
   return (
     <div className='p-4 space-y-4'>
 
-      <DashboardHeader type='Checker'/>
+      <DashboardHeader type='Delivery'/>
 
       <header className='bg-white p-4'>
         <p className='font-semibold text-lg'>
-          Pending Invoices - {data.pagination?.total}
+          Pending Delivery - {data.pagination?.total}
         </p>
       </header>
 
@@ -49,6 +47,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
           <Pagination totalPages={data.pagination?.totalPages || 1} />
         </div>
       </section>
+
     </div>
   )
 }

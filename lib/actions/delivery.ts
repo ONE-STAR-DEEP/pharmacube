@@ -56,13 +56,17 @@ export const updateDelivery = async (
                 UPDATE Salepurchase2
                 SET 
                 old_Qty = IF(old_Qty IS NULL, Qty, old_Qty),
+                old_batch_no  = IF(old_batch_no  IS NULL, Batch, old_batch_no ),
+                old_expiry = IF(old_expiry IS NULL, expiry, old_expiry),
                 Qty = ?,
-                HSNCode = ?
+                Batch = ?,
+                expiry = ?
                 WHERE id = ?
                 `,
                 [
                     item.Qty,
-                    item["HSN CODE"],
+                    item["Batch No."],
+                    item["Exp."],
                     item.id,
                 ]
             );

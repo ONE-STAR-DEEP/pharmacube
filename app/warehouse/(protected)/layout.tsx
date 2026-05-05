@@ -18,7 +18,7 @@ export default async function ProtectedLayout({
 
     return (
         <div className="min-h-screen flex flex-col">
-            <RoleProvider role={user?.type || ""}>
+            <RoleProvider role={user?.type || ""} isPlusUser={user.plus}>
                 <SidebarProvider className="flex flex-1 flex-col">
                     {/* Header */}
                     <header className="h-12 fixed z-50 w-full bg-primary backdrop-blur-md px-4 flex items-center justify-between border-b border-muted-foreground/20">

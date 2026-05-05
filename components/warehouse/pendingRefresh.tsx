@@ -3,11 +3,19 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export function RefreshOnMount() {
+export function RefreshOnFocus() {
   const router = useRouter();
 
   useEffect(() => {
-    router.refresh();
+    const handleFocus = () => {
+      router.refresh();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
   }, []);
 
   return null;

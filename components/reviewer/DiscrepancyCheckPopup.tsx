@@ -24,7 +24,7 @@ import { discrepancyAction, fetchInvoiceByVNo, fetchInvoiceItems, updateInvoiceI
 import { BillItem, DeliveryBoy, Invoice } from '@/utils/types/DataTypes'
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { fetchDeliveryBoy, riderSelection } from '@/lib/actions/rider'
+import { fetchDeliveryBoy, approveForDelivery } from '@/lib/actions/rider'
 
 type SelectOption = {
   label: string;
@@ -38,7 +38,7 @@ const mapUsersToOptions = (users: DeliveryBoy[]): SelectOption[] => {
   }));
 };
 
-const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
+const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,8 +58,8 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
       setData(null);
       try {
         setDiscrepancy(false)
-        const res = await fetchInvoiceItems(VNo);
-        const invRes = await fetchInvoiceByVNo(VNo);
+        const res = await fetchInvoiceItems(VNo, Vtyp);
+        const invRes = await fetchInvoiceByVNo(VNo, Vtyp);
         const deliveryBoysRes = await fetchDeliveryBoy();
         setDeliveryBoys(deliveryBoysRes.data);
 
@@ -93,15 +93,14 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
     setLoading(true);
 
     try {
-
       if (discrepancy) {
-        const res = await discrepancyAction(formData || [], VNo)
+        const res = await discrepancyAction(formData || [], VNo, Vtyp)
         if (!res.success) {
           alert("Failed")
         }
       }
       else {
-        const res = await riderSelection(selectedDeliveryBoy, VNo)
+        const res = await approveForDelivery(VNo, Vtyp)
 
         if (!res.success) {
           alert("Failed")
@@ -127,7 +126,7 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
           className="w-full
                     max-w-[95vw]
                     sm:max-w-md
-                    lg:max-w-[60vw]
+                    lg:max-w-[70vw]
                     min-h-[20vh]
                     max-h-[80vh] 
                     flex flex-col
@@ -137,7 +136,7 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
         >
           <form className='space-y-4' onSubmit={handleSubmit}>
             <DialogHeader>
-              <DialogTitle className='text-2xl'>{invoice?.discrepancy ? "Discrepency Check" : "Assign Rider"}</DialogTitle>
+              <DialogTitle className='text-2xl'>{invoice?.discrepancy ? "Discrepency Check" : "Approve Invoice"}</DialogTitle>
               <DialogDescription>
                 Review and update any mismatches in invoice details such as quantity or HSN code before final submission.
               </DialogDescription>
@@ -145,26 +144,28 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
             </DialogHeader>
 
             <FieldGroup >
-              <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+              <div className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
                 <Label>SNo</Label>
-                <Label>HSN</Label>
-                <Label>Particular</Label>
-                <Label>Original Qty</Label>
+                <Label>Batch No.</Label>
+                <Label className='min-w-60'>Particular</Label>
                 <Label>Current Qty</Label>
+                <Label>Changed to</Label>
+                <Label>Expiry</Label>
               </div>
 
               {data?.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] gap-4 mb-0">
+                <div key={item.id} className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
 
                   <Input
-                    name="hsn"
+                    name="Sno"
                     defaultValue={index + 1}
                     disabled
                   />
                   <Field>
                     <Input
-                      name="hsn"
-                      defaultValue={item["HSN CODE"]}
+                      name="batch"
+                      defaultValue={item['Batch No.']}
+                      className={`${(item.old_batch_no !== null) && (item['Batch No.'] !== item.old_batch_no) ? "bg-red-300 text-black" : ""}`}
                       disabled
                     />
                   </Field>
@@ -190,44 +191,26 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
                       name="qty"
                       defaultValue={item.Qty}
                       disabled
-                      className={`${item.Qty !== item.old_Qty ? "bg-red-300 text-black" : ""}`}
+                      className={`${(item.old_Qty !== null) && (item.Qty !== item.old_Qty) ? "bg-red-300 text-black" : ""}`}
+                    />
+                  </Field>
+
+                  <Field>
+                    <Input
+                      name="expiry"
+                      defaultValue={item['Exp.']}
+                      disabled
+                      className={`${(item.old_expiry !== null) && (item['Exp.'] !== item.old_expiry) ? "bg-red-300 text-black" : ""}`}
                     />
                   </Field>
                 </div>
               ))}
 
               <Field className='flex mt-4'>
-                {discrepancy ?
+                {discrepancy &&
                   <p className='text-sm'>
                     Discrepancy Status: {discrepancy ? "Yes" : "No"}
                   </p>
-                  :
-                  <div className='flex items-center gap-2'>
-                    <p className='max-w-10'>Action:</p>
-                    <Select
-                      value={selectedDeliveryBoy}
-                      onValueChange={(value) => {
-                        setSelectedDeliveryBoy(value);
-                      }}
-                    >
-                      <SelectTrigger className="w-full max-w-48">
-                        <SelectValue placeholder="Select Delivery boy" />
-                      </SelectTrigger>
-
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Delivery Boys</SelectLabel>
-
-                          {options.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 }
               </Field>
 
@@ -243,7 +226,7 @@ const DiscrepancyCheckPopup = ({ VNo }: { VNo: string }) => {
                 </Button>
               ) :
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Assigning..." : "Assign Rider"}
+                  {loading ? "Approving..." : "Approve"}
                 </Button>
               }
             </DialogFooter>

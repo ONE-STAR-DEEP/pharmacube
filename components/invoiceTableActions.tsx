@@ -5,24 +5,27 @@ import DeliveryCheckPopup from "./delivery/DeliveryCheckPopup";
 import DiscrepancyCheckPopup from "./reviewer/DiscrepancyCheckPopup";
 import { useRole } from "./UserContext";
 
-const InvoiceTableActions = ({ VNo }: { VNo: string }) => {
+const InvoiceTableActions = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
-    const type = useRole();
+    const { role, isPlusUser } = useRole();
+    console.log(role, isPlusUser)
 
-    if (type === "warehouse") {
-        return (<>W</>)
-    } else if (type === "checker") {
+    if (role === "warehouse") {
         return (
-            <ItemUpdatePopup VNo={VNo} />
+        <ItemUpdatePopup VNo={VNo} Vtyp={Vtyp} />
+    )
+    } else if (role === "checker") {
+        return (
+            <ItemUpdatePopup VNo={VNo} Vtyp={Vtyp} />
         )
-    } else if (type === "reviewer") {
+    } else if (role === "reviewer") {
         return (
-            <DiscrepancyCheckPopup VNo={VNo} />
+            <DiscrepancyCheckPopup VNo={VNo} Vtyp={Vtyp} />
         )
     }
-    else if (type === "delivery") {
+    else if (role === "delivery") {
         return (
-            <DeliveryCheckPopup VNo={VNo} />
+            <DeliveryCheckPopup VNo={VNo} Vtyp={Vtyp}/>
         )
     }
 }

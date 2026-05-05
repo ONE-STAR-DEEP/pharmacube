@@ -2,19 +2,29 @@
 
 import { createContext, useContext } from "react";
 
-type Role = "warehouse" | "checker" | "reviewer" | "admin" | "rider" | "delivery"| "";
+type Role = "warehouse" | "checker" | "reviewer" | "admin" | "rider" | "delivery" | "";
 
-const RoleContext = createContext<Role>("");
+type RoleContextType = {
+  role: Role;
+  isPlusUser?: boolean; 
+};
+
+const RoleContext = createContext<RoleContextType>({
+  role: "",
+  isPlusUser: false,
+});
 
 export const RoleProvider = ({
   role,
+  isPlusUser,
   children,
 }: {
   role: Role;
+  isPlusUser?: boolean;
   children: React.ReactNode;
 }) => {
   return (
-    <RoleContext.Provider value={role}>
+    <RoleContext.Provider value={{ role, isPlusUser }}>
       {children}
     </RoleContext.Provider>
   );

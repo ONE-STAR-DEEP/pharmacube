@@ -1,10 +1,14 @@
-import { invoiceColumns } from '@/components/warehouse/pendingTableColumn';
+import { pendingInvoiceColumns } from '@/components/warehouse/pendingTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
-import { RefreshOnMount } from '@/components/warehouse/pendingRefresh';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
-import { fetchPendingInvoices } from '@/lib/actions/invoice';
+import { fetchInvoicesToCheck, fetchPendingInvoices } from '@/lib/actions/invoice';
+import { RefreshOnFocus } from '@/components/warehouse/pendingRefresh';
+import { invoiceColumns } from '@/components/pendingTableColumn';
+import { getCurrentUserSafe } from '@/lib/sessionCheck';
+import { redirect } from 'next/navigation';
+import Filter from '@/components/Filter';
 
 type PageProps = {
   searchParams: Promise<{
@@ -12,6 +16,7 @@ type PageProps = {
     limit?: string;
     search?: string;
     status?: string;
+    Vtyp?: string;
   }>;
 };
 
@@ -24,33 +29,67 @@ const Invoices = async ({ searchParams }: PageProps) => {
   const search = params?.search
 
   const status = params?.status
+  const Vtyp = params?.Vtyp
 
-  const data = await fetchPendingInvoices(page, limit, search);
+  const pendingInvoices = await fetchPendingInvoices(page, limit, search, Vtyp);
+  const InvoicesToCheck = await fetchInvoicesToCheck(page, limit, search);
+
+  const user = await getCurrentUserSafe();
+  if (!user || user.type !== "warehouse" || user.iss !== "pharmacube") {
+    redirect("/");
+  }
 
   return (
     <div className='p-4 space-y-4'>
 
-      <DashboardHeader type='Warehouse'/>
+      <DashboardHeader type='Warehouse' />
 
       <header className='bg-white p-4'>
         <p className='font-semibold text-lg'>
-          Pending Invoices - {data.pagination?.total}
+          Pending Invoices - {pendingInvoices.pagination?.total}
         </p>
       </header>
 
       <section className='space-y-2'>
         <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
-          <div className='max-w-60'>
+          <div className='max-w-100 flex gap-4'>
             <SearchComponent placeholder='Search invoice' />
+            <Filter />
           </div>
 
         </div>
         <div className='bg-white  p-4'>
-          <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
-          <Pagination totalPages={data.pagination?.totalPages || 1} />
+          <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={pendingInvoiceColumns} />
+          <Pagination totalPages={pendingInvoices.pagination?.totalPages || 1} />
         </div>
       </section>
-      <RefreshOnMount />
+
+      {user.plus &&
+
+        <div className='mt-10 space-y-4'>
+
+          <header className='bg-white p-4'>
+            <p className='font-semibold text-lg'>
+              Invoices To Check - {InvoicesToCheck.pagination?.total}
+            </p>
+          </header>
+
+          <section className='space-y-2'>
+            <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
+              <div className='max-w-60'>
+                <SearchComponent placeholder='Search invoice' />
+              </div>
+
+            </div>
+            <div className='bg-white  p-4'>
+              <DataTable data={Array.isArray(InvoicesToCheck.data) ? InvoicesToCheck.data : []} columns={invoiceColumns} />
+              <Pagination totalPages={InvoicesToCheck.pagination?.totalPages || 1} />
+            </div>
+          </section>
+        </div>
+      }
+
+      <RefreshOnFocus />
 
     </div>
   )

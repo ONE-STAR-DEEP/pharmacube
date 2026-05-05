@@ -3,9 +3,16 @@
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
+import DeliveryCheckPopup from "../delivery/DeliveryCheckPopup";
 import { Button } from "../ui/button";
 
-export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
+export const Discrepancy_LABEL: Record<number, string> = {
+  0: "No",
+  1: "Yes",
+  2: "Resolved",
+};
+
+export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
     header: "S.No",
@@ -45,7 +52,7 @@ export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "InvAmt",
     header: "Amount",
-    size: 120,
+    size: 100,
     cell: ({ row }) => {
       const value = row.getValue("InvAmt") as string;
       return (
@@ -58,21 +65,49 @@ export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
     },
   },
   {
-    id: "action",
-    header: "Action",
-    size: 120,
+    accessorKey: "discrepancy",
+    header: "Discrepancy",
+    size: 80,
     cell: ({ row }) => {
-      const VNo = row.original.Vno as string;
-      const Vtyp = row.original.Vtyp as string;
+      const value = row.getValue("discrepancy") as number;
+      
+      const colorMap = {
+        0: "text-green-600",
+        1: "text-red-600",
+        2: "text-blue-600",
+      };
+
       return (
         <div className="flex items-center">
-          <Button className="m-0 px-2" onClick={() => {
-            window.open(`/invoice/warehouse/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer")
-          }}>
-            View
-          </Button>
+          <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
+            {Discrepancy_LABEL[value]}</p>
         </div>
       )
     },
   },
+  {
+    id: "action",
+    header: () => (
+      <div className="text-center font-bold w-full">Actions</div>
+    ),
+    size: 150,
+    cell: ({ row }) => {
+      const VNo = row.original.Vno as string;
+      const Vtyp = row.original.Vtyp as string;
+
+      return (
+        <div className="flex items-center justify-center gap-2 w-full">
+          <Button
+            className="m-0 px-2"
+            onClick={() => {
+              window.open(`/invoice/${VNo}`, "_blank", "noopener,noreferrer");
+            }}
+          >
+            Invoice
+          </Button>
+          <DeliveryCheckPopup VNo={VNo} Vtyp={Vtyp}/>
+        </div>
+      );
+    },
+  }
 ];

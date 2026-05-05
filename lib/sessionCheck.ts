@@ -22,6 +22,7 @@ export async function getCurrentUserSafe() {
     return {
       id: Number(decoded.id),
       type: decoded.type as SessionUser["type"],
+      plus: Boolean(decoded.plus),
       iss: decoded.iss
     };
   } catch {

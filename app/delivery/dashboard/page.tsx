@@ -2,7 +2,6 @@ import { invoiceColumns } from '@/components/invWithDiscTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
-import { RefreshOnMount } from '@/components/warehouse/pendingRefresh';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import { fetchPendingInvoices } from '@/lib/actions/invoice';
 
@@ -48,7 +47,6 @@ const Invoices = async ({ searchParams }: PageProps) => {
           <Pagination totalPages={data.pagination?.totalPages || 1} />
         </div>
       </section>
-      <RefreshOnMount />
 
     </div>
   )

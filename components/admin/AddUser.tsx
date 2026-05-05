@@ -12,13 +12,11 @@ import {
 import {
     AlertDialog,
     AlertDialogAction,
-    AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
 import { useEffect, useState } from 'react'
@@ -45,7 +43,7 @@ const AddUser = () => {
 
     const initialUserFormData: UserFormData = {
         name: "",
-        email: "",
+        email: null,
         mobile: "",
         type: "admin",
         address: "",
@@ -53,8 +51,10 @@ const AddUser = () => {
         state: "",
         pincode: "",
         password: "",
+        plus: false
     };
     const [data, setData] = useState<UserFormData>(initialUserFormData);
+    const [loading, setLoading] = useState(false);
 
     const [country, setCountry] = useState<Option | null>(null);
     const [state, setState] = useState<Option | null>(null);
@@ -77,9 +77,11 @@ const AddUser = () => {
     const userTypeOptions: Option[] = [
         { label: "Admin", value: "admin" },
         { label: "Warehouse", value: "warehouse" },
+        { label: "Warehouse+", value: "warehouse+" },
         { label: "Checker", value: "checker" },
         { label: "Reviewer", value: "reviewer" },
         { label: "Rider", value: "rider" },
+        { label: "Rider+", value: "rider+" },
         { label: "Delivery", value: "delivery" }
     ]
 
@@ -125,16 +127,34 @@ const AddUser = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        if (loading) return;
+        setLoading(false);
 
-        const res = await insertUser(data);
+        try {
+            let newData: UserFormData = { ...data };
 
-        if (!res.success) {
-            SetMsg(res.message)
-            setAlertBox(true);
-            return;
+            if (data.type === "warehouse+") {
+                newData.type = "warehouse";
+                newData.plus = true;
+            } else if (data.type === "rider+") {
+                newData.type = "rider";
+                newData.plus = true;
+            }
+
+            const res = await insertUser(newData);
+
+            if (!res.success) {
+                SetMsg(res.message)
+                setAlertBox(true);
+                return;
+            }
+
+            setData(initialUserFormData);
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
         }
-
-        setData(initialUserFormData);
         setOpen(false);
         router.refresh();
     }
@@ -173,8 +193,11 @@ const AddUser = () => {
                             </FieldLabel>
                             <FieldGroup className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
 
-                                <Field>
-                                    <Label htmlFor="name">Name</Label>
+                                <Field className="gap-0">
+                                    <div className="flex ">
+                                        <Label htmlFor="name" className="">Name</Label>
+                                        <span className="text-red-500 ">*</span>
+                                    </div>
                                     <Input id="name" name="name" placeholder="Name" required
                                         className="h-10"
                                         onChange={(e) =>
@@ -185,7 +208,24 @@ const AddUser = () => {
                                         }
                                     />
                                 </Field>
-                                <Field>
+
+                                <Field className="gap-0">
+                                    <div className="flex">
+                                        <Label htmlFor="mobile">Mobile</Label>
+                                        <span className="text-red-500 ">*</span>
+                                    </div>
+                                    <Input id="mobile" name="mobile" placeholder="999999XXXX" required
+                                        className="h-10"
+                                        onChange={(e) =>
+                                            setData(prev => ({
+                                                ...prev,
+                                                mobile: e.target.value
+                                            }))
+                                        }
+                                    />
+                                </Field>
+
+                                <Field >
                                     <Label htmlFor="email">Email</Label>
                                     <Input id="email" name="email" placeholder="ex@example.com"
                                         className="h-10"
@@ -197,20 +237,11 @@ const AddUser = () => {
                                         }
                                     />
                                 </Field>
-                                <Field>
-                                    <Label htmlFor="mobile">Mobile</Label>
-                                    <Input id="mobile" name="mobile" placeholder="999999XXXX" required
-                                        className="h-10"
-                                        onChange={(e) =>
-                                            setData(prev => ({
-                                                ...prev,
-                                                mobile: e.target.value
-                                            }))
-                                        }
-                                    />
-                                </Field>
-                                <Field>
-                                    <Label htmlFor="password">Password</Label>
+
+                                <Field className="gap-0">
+                                    <div className="flex">
+                                        <Label htmlFor="password">Password</Label><span className="text-red-500 ">*</span>
+                                    </div>
                                     <Input id="password" type="password" name="password" placeholder="Password" required
                                         className="h-10"
                                         minLength={8}
@@ -224,14 +255,15 @@ const AddUser = () => {
                                     />
                                 </Field>
 
-                                <Field>
-                                    <Label htmlFor="mobile">User Type</Label>
+                                <Field className="gap-0">
+                                    <div className="flex">
+                                        <Label htmlFor="mobile">User Type</Label><span className="text-red-500 ">*</span>
+                                    </div>
                                     <Select<Option>
                                         required
                                         instanceId={"tax-id"}
                                         options={userTypeOptions}
-                                        defaultValue={{ value: "admin", label: "Admin" }}
-                                        placeholder="User Account Type"
+                                        placeholder="Select User Account Type"
                                         onChange={(val) => {
                                             if (!val) return;
 
@@ -335,9 +367,9 @@ const AddUser = () => {
                         {/* Clean Footer */}
                         <div className="p-6 pt-4 flex justify-end gap-3">
                             <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
+                                <Button variant="outline" type="button">Cancel</Button>
                             </DialogClose>
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit" disabled={loading}>Submit</Button>
                         </div>
                     </form>
                 </DialogContent>

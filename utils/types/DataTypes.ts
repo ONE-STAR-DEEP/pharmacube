@@ -39,12 +39,15 @@ export type BillItem = {
   "DIS%": string;
   Tax: string;
   old_Qty?: number
+  old_batch_no?: string
+  old_expiry?: string
 };
 
 export type SessionUser = {
   id: number
   type: string
   iss: string
+  plus: boolean
 }
 
 export type User = {
@@ -54,14 +57,15 @@ export type User = {
 
 export type UserFormData = {
   name: string;
-  email: string;
+  email: string | null;
   mobile: string;
-  type: "admin" | "warehouse" | "checker" | "reviewer" | "rider" | "delivery";
+  type: "admin" | "warehouse" | "warehouse+" | "checker" | "reviewer" | "rider" | "rider+" | "delivery";
   address: string;
   city: string;
   state: string;
   pincode: string;
   password: string;
+  plus: boolean;
 };
 
 export type UserData = {
