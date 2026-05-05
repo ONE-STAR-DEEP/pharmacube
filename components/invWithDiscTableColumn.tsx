@@ -100,7 +100,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           <Button
             className="m-0 px-2"
             onClick={() => {
-              window.open(`/invoice/${VNo}`, "_blank", "noopener,noreferrer");
+              window.open(`/invoice/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer");
             }}
           >
             Invoice
