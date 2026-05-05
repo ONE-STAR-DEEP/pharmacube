@@ -4,7 +4,6 @@ import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
 import InvoiceTableActions from "./invoiceTableActions";
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
@@ -66,10 +65,11 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp;
+
       return (
         <div className="flex items-center gap-2">
           <Button className="m-0 px-2" onClick={() => {
-            window.open(`/invoice/${VNo}`, "_blank", "noopener,noreferrer")
+            window.open(`/invoice/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer")
           }}>
             View
           </Button>
