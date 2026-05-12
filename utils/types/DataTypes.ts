@@ -79,6 +79,7 @@ export type UserData = {
   state: string | null;
   pincode: string | null;
   password: string;
+  active: boolean;
   plus: boolean;
   created_at: string; // ISO date string
 };

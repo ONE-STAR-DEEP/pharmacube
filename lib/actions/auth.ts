@@ -17,6 +17,7 @@ export const loginUser = async (data: User) => {
             name,
             type,
             password,
+            active,
             plus
             FROM users
             WHERE mobile = ?
@@ -32,7 +33,14 @@ export const loginUser = async (data: User) => {
         }
 
         const user = rows[0]
-        
+
+        if (user.active === 0) {
+            return {
+                success: false,
+                message: "Access Denied!!!"
+            }
+        }
+
         if (data.password === user.password) {
 
             const JWT_SECRET = process.env.JWT_SECRET;
@@ -62,7 +70,7 @@ export const loginUser = async (data: User) => {
                 secure: isProd,
                 sameSite: isProd ? "strict" : "lax",
                 path: "/",
-                maxAge: 24 * 60 * 60,
+                maxAge: 7 * 24 * 60 * 60,
             });
 
             return {

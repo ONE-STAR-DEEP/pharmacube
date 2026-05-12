@@ -135,11 +135,11 @@
   }
 
   .r-border {
-    @apply border-r border-black  print:border-r-[0.5px];
+    @apply border-r border-black print:border-r-[0.5px];
   }
 
   .t-border {
-    @apply border-t border-black print:border-t-[0.5px]; 
+    @apply border-t border-black print:border-t-[0.5px];
   }
 }
 
@@ -162,187 +162,66 @@
 }
 
 
-/* =========================
-   GLOBAL PWA APP SETTINGS
-========================= */
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+@media (display-mode: standalone) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
 
-  /* Prevent pull-to-refresh */
-  overscroll-behavior: none;
-
-  /* Smooth native feel */
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-
-  /* Disable tap highlight */
-  -webkit-tap-highlight-color: transparent;
-
-  /* Disable long press menu */
-  -webkit-touch-callout: none;
-
-  /* Disable text size auto adjust */
-  -webkit-text-size-adjust: 100%;
-
-  background: #101828;
+  * {
+    scrollbar-width: none;
+  }
 }
 
+@media (display-mode: standalone) {
 
-/* =========================
-   APP ROOT
-========================= */
-
-#__next,
-#root {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  a,
+  a:visited,
+  a:hover,
+  a:active {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
-
-/* =========================
-   HIDE SCROLLBAR
-========================= */
-
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+@media (display-mode: standalone) {
+  * {
+    user-select: none;
+    -webkit-user-select: none;
+  }
 }
 
-*::-webkit-scrollbar {
-  display: none;
+@media (display-mode: standalone) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
-
-/* =========================
-   DISABLE TEXT SELECTION
-========================= */
-
-* {
-  user-select: none;
-  -webkit-user-select: none;
+@media (display-mode: standalone) {
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
 }
 
-
-/* =========================
-   DISABLE IMAGE DRAG
-========================= */
-
-img {
-  -webkit-user-drag: none;
-  user-drag: none;
-  pointer-events: none;
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior-y: contain;
+  }
 }
 
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 
-/* =========================
-   REMOVE LINK STYLING
-========================= */
+    /* Prevent swipe navigation */
+    overscroll-behavior-x: none;
+    overflow-x: hidden;
+    touch-action: pan-y;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-  -webkit-touch-callout: none;
-}
-
-
-/* =========================
-   INPUTS & BUTTONS
-========================= */
-
-input,
-textarea,
-button,
-select {
-  font: inherit;
-  outline: none;
-  border: none;
-
-  -webkit-appearance: none;
-  appearance: none;
-
-  border-radius: 0;
-}
-
-
-/* =========================
-   DISABLE BLUE HIGHLIGHT
-========================= */
-
-button,
-a,
-input,
-textarea,
-div {
-  -webkit-tap-highlight-color: transparent;
-}
-
-
-/* =========================
-   PREVENT DOUBLE TAP ZOOM
-========================= */
-
-button,
-a,
-input,
-textarea {
-  touch-action: manipulation;
-}
-
-
-/* =========================
-   SAFE AREA SUPPORT
-========================= */
-
-body {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
-
-/* =========================
-   FIX IOS INPUT SHADOW
-========================= */
-
-input,
-textarea {
-  box-shadow: none !important;
-}
-
-
-/* =========================
-   DISABLE AUTOFILL BG
-========================= */
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  transition: background-color 9999s ease-in-out 0s;
-}
-
-
-/* =========================
-   SMOOTH SCROLL AREAS
-========================= */
-
-.scrollable {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-
-/* =========================
-   PREVENT HORIZONTAL DRAG
-========================= */
-
-body {
-  touch-action: pan-y;
+  html {
+    overflow-x: hidden;
+  }
 }

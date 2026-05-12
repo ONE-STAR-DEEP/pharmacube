@@ -20,11 +20,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Edit, EllipsisVertical, Trash } from "lucide-react";
+import { Ban, Edit, EllipsisVertical, Trash, UserCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddUser from "./AddUser";
-import { deleteUser } from "@/lib/actions/users";
+import { toggleUserState } from "@/lib/actions/users";
 
 
 export const userColumns: ColumnDef<UserData>[] = [
@@ -77,21 +77,42 @@ export const userColumns: ColumnDef<UserData>[] = [
     },
   },
   {
+    accessorKey: "active",
+    header: "isActive",
+    cell: ({ row }) => {
+
+      const isActive = Boolean(row.original.active);
+
+      return (
+        <div>
+
+          {
+            isActive ?
+              <p className="text-green-500">Yes</p>
+              :
+              <p className="text-red-500">No</p>
+          }
+        </ div>
+      )
+    }
+  },
+  {
     accessorKey: "id",
     header: "Actions",
     cell: ({ row }) => {
       const id = row.getValue("id") as number;
+      const isActive = Boolean(row.original.active);
 
       const [deleteOpen, setDeleteOpen] = useState(false)
       const [loading, setLoading] = useState(false);
       const router = useRouter();
 
-      const handelDelete = async () => {
+      const handelToggleActive = async () => {
 
-        if(loading) return
+        if (loading) return
         setLoading(true);
         try {
-          const res = await deleteUser(id);
+          const res = await toggleUserState(id, !isActive);
           if (!res.success) {
             alert(res.message);
             return;
@@ -119,10 +140,10 @@ export const userColumns: ColumnDef<UserData>[] = [
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuItem asChild>
-                    <AddUser mode="edit" id={id}/>
+                    <AddUser mode="edit" id={id} />
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
-                    <Trash />Delete
+                    {isActive ? <><Ban /> Disable</> : <><UserCheck /> Enable</>}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
@@ -131,9 +152,12 @@ export const userColumns: ColumnDef<UserData>[] = [
             <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
               <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
-                  <DialogTitle>Delete User</DialogTitle>
+                  <DialogTitle>{isActive ? <>Disable User?</> : <>Enable User?</>}</DialogTitle>
                   <DialogDescription>
-                    Are you sure you want to delete this user? ALL details will be permanently removed.
+                    {isActive ? 
+                    <>Are you sure you want to disable this user? This user will not be able to access the system.</> 
+                    : 
+                    <>Are you sure you want to Enable this user? This user will be able to access the system.</>}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -141,7 +165,7 @@ export const userColumns: ColumnDef<UserData>[] = [
                   <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit" onClick={() => handelDelete()} disabled={loading}>Confirm</Button>
+                  <Button type="submit" onClick={() => handelToggleActive()} disabled={loading}>Confirm</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

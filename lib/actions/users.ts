@@ -48,6 +48,7 @@ export const fetchUserData = async (
         type,
         city,
         state,
+        active,
         pincode,
         created_at
       FROM users
@@ -239,7 +240,7 @@ export const updateUser = async (id: number, data: UserFormData) => {
   }
 };
 
-export const deleteUser = async (id: number) => {
+export const toggleUserState = async (id: number, state: boolean) => {
   const session = await getCurrentUserSafe();
 
   const userId = session?.id;
@@ -266,22 +267,22 @@ export const deleteUser = async (id: number) => {
     }
 
     const [result]: any = await conn.query(
-      `DELETE FROM users WHERE id = ?`,
+      `UPDATE users SET active = ? WHERE id = ?`,
       [
-        id
+        state, id
       ]
     );
 
     return {
       success: true,
-      message: "User Deleted successfully",
+      message: "User updated successfully",
       userId: result.insertId,
     };
   } catch (error) {
     console.error(error);
     return {
       success: false,
-      message: "Failed to delete user",
+      message: "Failed to update user",
     };
   } finally {
     conn.release();
