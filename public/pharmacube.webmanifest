@@ -1,0 +1,29 @@
+{
+  "id": "pharmacube",
+  "name": "Pharmacube",
+  "short_name": "Pharmacube",
+  "description": "Secure pharmaceutical management and discrepancy tracking system.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
+  "background_color": "#101828",
+  "theme_color": "#101828",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

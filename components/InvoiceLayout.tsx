@@ -74,7 +74,7 @@ const InvoiceLayout = ({ billData, billItems, einvoice }: {
 }) => {
 
     const mappedBillItems = mapBillItems(billItems);
-    const MIN_ROWS = 25;
+    const MIN_ROWS = einvoice ? 26 : 30;
     const emptyRows = Math.max(0, MIN_ROWS - mappedBillItems.length);
 
     const columns = [
@@ -109,8 +109,8 @@ const InvoiceLayout = ({ billData, billItems, einvoice }: {
                     <Image
                         src="/invoice-logo.png"
                         alt="logo"
-                        height={80}
-                        width={80}
+                        height={100}
+                        width={120}
                     />
 
                 </div>
