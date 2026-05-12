@@ -1,4 +1,4 @@
-import { BillItem, Invoice } from '@/utils/types/DataTypes'
+import { BillItem, EInvoiceType, Invoice } from '@/utils/types/DataTypes'
 
 import {
     Table,
@@ -67,9 +67,10 @@ export const mapBillItems = (items: any[]) => {
     }));
 };
 
-const InvoiceLayout = ({ billData, billItems }: {
+const InvoiceLayout = ({ billData, billItems, einvoice }: {
     billData: Invoice;
     billItems: BillItem[];
+    einvoice?: EInvoiceType;
 }) => {
 
     const mappedBillItems = mapBillItems(billItems);
@@ -94,68 +95,101 @@ const InvoiceLayout = ({ billData, billItems }: {
 
 
     return (
-        <div className="w-full max-w-5xl mx-auto bg-white text-black border m-2 border-black border-collapse print:border-[0.5px]">
+        <div className="w-full max-w-5xl mx-auto bg-white text-black border border-black border-collapse print:border-[0.5px]">
 
             <section className="w-full grid grid-cols-[40%_20%_40%] p-2">
                 <div>
                     <h2 className="text-2xl uppercase">Pharma Cube</h2>
-                    <p className="text-[10px] uppercase">SHOP NO. 101,102,103,104,106,107,108 PLOT NO. 1, KRISHNA TOWER POCKET-7, SEC-12, DWARKA, NEW DELHI</p>
-                    <p className="text-[10px]">Phone : 011-45524850,8178670716, 8920139565</p>
+                    <p className="text-[8px] uppercase">SHOP NO. 101,102,103,104,106,107,108 PLOT NO. 1, KRISHNA TOWER POCKET-7, SEC-12, DWARKA, NEW DELHI</p>
+                    <p className="text-[8px]">Phone : 011-45524850,8178670716, 8920139565</p>
                 </div>
 
                 <div className="flex flex-col items-center space-y-2">
                     <p className="underline uppercase">GST INVOICE</p>
                     <Image
-                        src="/logo.png"
+                        src="/invoice-logo.png"
                         alt="logo"
-                        height={100}
-                        width={100}
+                        height={80}
+                        width={80}
                     />
 
                 </div>
 
                 <div className="flex flex-col items-end">
-                    <p className="text-[10px] uppercase">GST No. : 07AATFP9793N1ZV</p>
+                    <p className="text-[8px] uppercase">GST No. : 07AATFP9793N1ZV</p>
                     <div className="flex flex-col items-end">
-                        <p className="text-[10px]">PAN : AATFP9793N</p>
-                        <p className="text-[10px]">MSME NO.(UAM) - DL10D0009379</p>
-                        <p className="text-[10px]">D.L.No. : WLF20B2022DL000560</p>
-                        <p className="text-[10px]">E-mail : sales@pharmacube.in, purchase@pharmacube.in</p>
+                        <p className="text-[8px]">PAN : AATFP9793N</p>
+                        <p className="text-[8px]">MSME NO.(UAM) - DL10D0009379</p>
+                        <p className="text-[8px]">D.L.No. : WLF20B2022DL000560</p>
+                        <p className="text-[8px]">E-mail : sales@pharmacube.in, purchase@pharmacube.in</p>
                     </div>
                 </div>
             </section>
 
             <section className="grid grid-cols-[40%_20%_40%] border-t border-black border-collapse print:border-t-[0.5px]">
 
-                <div className="border-r border-black border-collapse print:border-r-[0.5px] p-2">
-                    <p className="text-lg font-bold">{billData?.name}</p>
-                    <p className="text-[12px]">{billData?.address}</p>
-                    <p className="text-[12px]">{billData?.address1}</p>
-                    <p className="text-[12px]">{billData?.address2}</p>
-                    <p className="text-[12px]">Tel: {billData?.Tel}</p>
+                <div className='border-r border-black border-collapse print:border-r-[0.5px]'>
+                    <div className="p-2 print:p-1">
+                        <p className="text-base print:text-[8px] font-bold">{billData?.name}</p>
+                        <p className="text-[12px] print:text-[8px]">{billData?.address}</p>
+                        <p className="text-[12px] print:text-[8px]">{billData?.address1}</p>
+                        <p className="text-[12px] print:text-[8px]">{billData?.address2}</p>
+                        <p className="text-[12px] print:text-[8px]">Tel: {billData?.Tel}</p>
+                    </div>
+                    {einvoice &&
+                        <div className="flex border-t border-black border-collapse print:border-t-[0.5px] p-2">
+                            {/* <p className="text-[12px] print:text-[8px]">IRN:</p> */}
+                            <p className="text-[12px] print:text-[8px] break-all"><span className='font-semibold'>IRN: </span>{einvoice?.Irn}</p>
+                        </div>
+                    }
+
                 </div>
 
                 <div className="mx-auto my-auto"></div>
 
-                <div className="border-l border-black p-2 grid grid-cols-[30%_70%] gap-y-1 gap-x-2 border-collapse print:border-l-[0.5px]">
-                    <p className="text-sm font-medium">Bill No:</p>
-                    <p className="text-base font-bold">{billData?.["Bill No"]}</p>
+                <div className="border-l border-black  border-collapse print:border-l-[0.5px]">
+                    <div className="p-2 grid grid-cols-[25%_75%] gap-x-2 print:p-1">
+                        <p className="text-sm font-medium print:text-[8px]">Bill No:</p>
+                        <p className="text-base font-bold print:text-[8px]">{billData?.["Bill No"]}</p>
 
-                    <p className="text-xs font-medium">Date:</p>
-                    <p className="text-[12px]">{billData?.Dated}</p>
+                        <p className="text-xs font-medium print:text-[8px]">Date:</p>
+                        <p className="text-[12px] print:text-[8px]">{billData?.Dated}</p>
 
-                    <p className="text-xs font-medium">GST No:</p>
-                    <p className="text-[12px]">{billData?.["GST No."]}</p>
+                        <p className="text-xs font-medium print:text-[8px]">GST No:</p>
+                        <p className="text-[12px] print:text-[8px]">{billData?.["GST No."]}</p>
 
-                    <p className="text-xs font-medium">DL No:</p>
-                    <p className="text-[12px]">{billData?.DLNO}</p>
+                        <p className="text-xs font-medium print:text-[8px]">DL No:</p>
+                        <p className="text-[12px] print:text-[8px]">{billData?.DLNO}</p>
 
-                    <p className="text-xs font-medium">Tel:</p>
-                    <p className="text-[12px]">{billData?.DLNO1}</p>
+                        <p className="text-xs font-medium print:text-[8px]">Tel:</p>
+                        <p className="text-[12px] print:text-[8px]">{billData?.DLNO1}</p>
 
-                    <p className="text-xs font-medium">PAN:</p>
-                    <p className="text-[12px]">-</p>
+                        <p className="text-xs font-medium print:text-[8px]">PAN:</p>
+                        <p className="text-[12px] print:text-[8px]">-</p>
+                    </div>
+                    {einvoice &&
+                        <div className="border-t border-black border-collapse print:border-t-[0.5px] p-2 print:p-1">
+                            <div className='grid grid-cols-[25%_75%] gap-x-2'>
+
+                                <p className="text-xs font-medium print:text-[8px]">Ack No:</p>
+                                <p className="text-[12px] print:text-[8px]">{einvoice.AckNo}</p>
+
+                                <p className="text-xs font-medium print:text-[8px]">Ack Dt:</p>
+                                <p className="text-[12px] print:text-[8px]">{new Date(einvoice.AckDt).toLocaleDateString("en-IN")}</p>
+
+                                <p className="text-xs font-medium print:text-[8px]">EWB No:</p>
+                                <p className="text-[12px] print:text-[8px]">{einvoice.EwbNo}</p>
+
+                                <p className="text-xs font-medium print:text-[8px]">EWB Dt:</p>
+                                <p className="text-[12px] print:text-[8px]">{new Date(einvoice.EwbDt).toLocaleDateString("en-IN")}</p>
+
+                                <p className="text-xs font-medium print:text-[8px]">EWB Validity:</p>
+                                <p className="text-[12px] print:text-[8px]">{new Date(einvoice.EwbValidTill).toLocaleDateString("en-IN")}</p>
+                            </div>
+                        </div>
+                    }
                 </div>
+
             </section>
 
 
@@ -306,18 +340,18 @@ const InvoiceLayout = ({ billData, billItems }: {
                     <p className="text-[8px] px-1">LESS CN:</p>
                     <p className="text-[8px] px-1">0.00</p>
                     <p className="text-[8px] px-1">Inv Amt:</p>
-                    <p className="text-[10px] font-bold px-1">{billData?.["Inv Amt"]}</p>
+                    <p className="text-[8px] font-bold px-1">{billData?.["Inv Amt"]}</p>
                 </div>
             </div>
 
             <div className="t-border p-1 flex items-center justify-between">
-                <p className="text-[10px] font-bold">Total in Words: {numberToWords(billData?.["Inv Amt"] ?? 0)}</p>
-                <p className="text-[10px]">E.&.O.E.</p>
+                <p className="text-[8px] font-bold">Total in Words: {numberToWords(billData?.["Inv Amt"] ?? 0)}</p>
+                <p className="text-[8px]">E.&.O.E.</p>
             </div>
 
             <div className="grid grid-cols-[55%_45%] t-border">
                 <div className="p-1">
-                    <p className="italic text-[10px] font-bold">Terms & Conditions:- <span className="underline">* NOT VALID FOR INPUT TAX *</span> </p>
+                    <p className="italic text-[8px] font-bold">Terms & Conditions:- <span className="underline">* NOT VALID FOR INPUT TAX *</span> </p>
                     <p className="text-[8px] font-bold">All disputes are subject to Delhi Jurisdiction.</p>
                     <p className="text-[8px] font-bold">Goods once sold will not be taken back.</p>
                 </div>
@@ -340,7 +374,7 @@ const InvoiceLayout = ({ billData, billItems }: {
                     </div>
                 </div>
 
-                <p className="m-2 self-end text-[10px] font-bold">
+                <p className="m-2 self-end text-[8px] font-bold">
                     (Computer Generated Invoice)
                 </p>
             </div>

@@ -22,7 +22,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const search = params?.search
 
-  const data = await fetchPendingInvoices(page, limit, search);
+  const data = await fetchPendingInvoices({page, limit, search, Vtyp: "S3"});
 
   return (
     <div className='p-4 space-y-4'>

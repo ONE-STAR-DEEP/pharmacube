@@ -351,7 +351,7 @@ export const fetchPendingInvoicesByRiderID = async (
             FROM Salepurchase1 sp
             LEFT JOIN Acm acm ON sp.Acno = acm.code
             ${where}
-            ORDER BY sp.inserted_at DESC
+            ORDER BY sp.urgent DESC, sp.inserted_at DESC
             `,
             params
         );
@@ -523,7 +523,7 @@ export const fetchAcceptedInvoicesByRiderID = async (
             FROM Salepurchase1 sp
             LEFT JOIN Acm acm ON sp.Acno = acm.code
             ${where}
-            ORDER BY sp.inserted_at DESC
+            ORDER BY sp.urgent DESC, sp.inserted_at DESC
             LIMIT ${safeLimit} OFFSET ${safeOffset}
             `,
             params
@@ -702,7 +702,7 @@ export const fetchPendingDeliveryByRiderID = async (
             FROM Salepurchase1 sp
             LEFT JOIN Acm acm ON sp.Acno = acm.code
             ${where}
-            ORDER BY sp.inserted_at DESC
+            ORDER BY sp.urgent DESC, sp.inserted_at DESC
             LIMIT ${safeLimit} OFFSET ${safeOffset}
             `,
             params

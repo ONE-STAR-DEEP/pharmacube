@@ -18,7 +18,6 @@ const Filter = () => {
 
   const currentFilter = searchParams.get("Vtyp") || "S3";
 
-  // 👇 set default in URL
   useEffect(() => {
     if (!searchParams.get("Vtyp")) {
       const params = new URLSearchParams(searchParams.toString());
@@ -32,7 +31,6 @@ const Filter = () => {
     const params = new URLSearchParams(searchParams.toString());
 
     if (value === "all") {
-      params.delete("Vtyp");
     } else {
       params.set("Vtyp", value);
     }
@@ -48,7 +46,7 @@ const Filter = () => {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="all">All Invoice</SelectItem>
+          {/* <SelectItem value="all">All Invoice</SelectItem> */}
           <SelectItem value="S1">S1</SelectItem>
           <SelectItem value="S2">S2</SelectItem>
           <SelectItem value="S3">S3</SelectItem>

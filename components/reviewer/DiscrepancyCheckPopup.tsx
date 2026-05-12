@@ -8,15 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -45,8 +36,6 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
   const [data, setData] = useState<BillItem[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [formData, setFormData] = useState<BillItem[] | null>(null);
-  const [deliveryBoys, setDeliveryBoys] = useState<DeliveryBoy[] | null>(null);
-  const [setSelectedDeliveryBoy] = useState("");
   const [discrepancy, setDiscrepancy] = useState(false);
   const router = useRouter()
 
@@ -59,12 +48,7 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
         setDiscrepancy(false)
         const res = await fetchInvoiceItems(VNo, Vtyp);
         const invRes = await fetchInvoiceByVNo(VNo, Vtyp);
-        const deliveryBoysRes = await fetchDeliveryBoy();
-        setDeliveryBoys(deliveryBoysRes.data);
-
-        if (deliveryBoysRes.data.length === 1) {
-          console.log(deliveryBoysRes.data[0].id.toString())
-        }
+        
         if (!res.success && !invRes.success) {
           alert("Failed to fetch data Try Again");
           setOpen(false);
@@ -80,8 +64,6 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
     }
     loadData();
   }, [open]);
-
-  const options = mapUsersToOptions(deliveryBoys || []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()

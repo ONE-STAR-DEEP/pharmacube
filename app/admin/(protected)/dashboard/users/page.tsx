@@ -40,7 +40,7 @@ const Dashboard = async ({ searchParams }: PageProps) => {
                         <SearchComponent placeholder='Search user' />
                     </div>
 
-                    <AddUser/>
+                    <AddUser mode='add'/>
                 </div>
                 <div className='bg-white  p-4'>
                     <DataTable data={Array.isArray(data.data) ? data.data : []} columns={userColumns} />

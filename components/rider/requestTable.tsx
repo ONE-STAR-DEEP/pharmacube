@@ -37,11 +37,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   //   size: 80,
   // },
   {
-    accessorKey: "Vno",
-    header: "Vno",
-    size: 60,
-  },
-  {
     accessorKey: "GSTVno",
     header: "GSTVno",
     size: 80,

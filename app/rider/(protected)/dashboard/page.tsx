@@ -9,7 +9,7 @@ import { fetchPendingInvoices } from '@/lib/actions/invoice';
 
 const Invoices = async () => {
 
-  const pendingInvoices = await fetchPendingInvoices();
+  const pendingInvoices = await fetchPendingInvoices({Vtyp: "S3"});
   const acceptedInvoices = await fetchPendingInvoicesByRiderID("accepted");
   const pickedInvoices = await fetchPendingInvoicesByRiderID("picked");
 

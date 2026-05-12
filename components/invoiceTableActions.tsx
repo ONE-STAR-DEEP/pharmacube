@@ -1,5 +1,6 @@
 "use client";
 
+import PaymentPopup from "./account/PaymentPopup";
 import ItemUpdatePopup from "./checker/ItemUpdatePopup";
 import DeliveryCheckPopup from "./delivery/DeliveryCheckPopup";
 import DiscrepancyCheckPopup from "./reviewer/DiscrepancyCheckPopup";
@@ -12,8 +13,8 @@ const InvoiceTableActions = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
     if (role === "warehouse") {
         return (
-        <ItemUpdatePopup VNo={VNo} Vtyp={Vtyp} />
-    )
+            <ItemUpdatePopup VNo={VNo} Vtyp={Vtyp} />
+        )
     } else if (role === "checker") {
         return (
             <ItemUpdatePopup VNo={VNo} Vtyp={Vtyp} />
@@ -25,7 +26,12 @@ const InvoiceTableActions = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
     }
     else if (role === "delivery") {
         return (
-            <DeliveryCheckPopup VNo={VNo} Vtyp={Vtyp}/>
+            <DeliveryCheckPopup VNo={VNo} Vtyp={Vtyp} />
+        )
+    }
+    else if (role === "account") {
+        return (
+            <PaymentPopup VNo={VNo} Vtyp={Vtyp} />
         )
     }
 }

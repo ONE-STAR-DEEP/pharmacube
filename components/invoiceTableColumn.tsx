@@ -9,15 +9,16 @@ import InvoiceTableActions from "./invoiceTableActions";
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
   1: "Sent to Checker",
-  2: "Check Passed",
-  3: "Assigned for Delivery",
-  4: "Accepted for Delivery",
+  2: "Sent to Reviewer",
+  3: "Reviewer Approved",
+  4: "Accepted by Rider",
   5: "Out for Delivery",
   6: "Delivered",
   7: "Delivery Verified",
   8: "Delivered with Discrepancy",
   9: "Discrepancy Raised",
   10: "Discrepancy Resolved",
+  200: "Payment Received"
 };
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
@@ -45,7 +46,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "GSTVno",
     header: "GSTVno",
-    size: 80,
+    size: 110,
   },
   {
     accessorKey: "partyName",
@@ -60,7 +61,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "InvAmt",
     header: "Amount",
-    size: 80,
+    size: 100,
     cell: ({ row }) => {
       const value = row.getValue("InvAmt") as string;
       return (
@@ -92,6 +93,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         9: "text-red-700",
         10: "text-emerald-600",
         11: "text-violet-600",
+        200: "text-emerald-600",
       };
       
       return (

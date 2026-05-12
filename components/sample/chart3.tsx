@@ -17,17 +17,17 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart"
+import { DashboardStats } from "@/utils/types/DataTypes"
 
 export const description = "A multiple bar chart"
 
-const chartData = [
-  { user: "Warehouse", total: 186, pending: 80, attended: 106 },
-  { user: "Checker", total: 305, pending: 200, attended: 105 },
-  { user: "Reviwer", total: 237, pending: 120, attended: 117 },
-  { user: "Rider", total: 73, pending: 190, attended: 83 },
-  { user: "Delivery", total: 209, pending: 130, attended: 79 },
-//   { user: "June", total: 214, pending: 140, attended: 74 },
-]
+// const chartData = [
+//   { user: "Warehouse", total: 186, pending: 80, attended: 106 },
+//   { user: "Checker", total: 305, pending: 200, attended: 105 },
+//   { user: "Reviwer", total: 237, pending: 120, attended: 117 },
+//   { user: "Rider", total: 73, pending: 190, attended: 83 },
+//   { user: "Delivery", total: 209, pending: 130, attended: 79 },
+// ]
 
 const chartConfig = {
   total: {
@@ -44,12 +44,20 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartBarMultiple() {
+export function ChartBarMultiple({ data }: { data: DashboardStats }) {
+
+  const chartData = Object.values(data).map((item) => ({
+    user: item.user.charAt(0).toUpperCase() + item.user.slice(1),
+    total: item.total,
+    pending: item.pending,
+    attended: item.attended,
+  }))
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Bar Chart - Multiple</CardTitle>
-        <CardDescription>March 2026</CardDescription>
+        <CardTitle>Department Performance</CardTitle>
+        <CardDescription>Today's processing activity and completion status</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -74,10 +82,10 @@ export function ChartBarMultiple() {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
-          Trending up by 5.2% this user <TrendingUp className="h-4 w-4" />
+          Department-wise invoice processing overview <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 users
+          Displays total, pending, and attended invoices handled across each department for today.
         </div>
       </CardFooter>
     </Card>

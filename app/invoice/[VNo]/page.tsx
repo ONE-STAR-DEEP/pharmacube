@@ -1,5 +1,4 @@
 import { fetchInvoiceByVNo, fetchInvoiceItems } from "@/lib/actions/invoice"
-import { BackButton } from "@/components/BackButton"
 import { PrintButton } from "@/components/PrintButton"
 import InvoiceLayout from "@/components/InvoiceLayout"
 
@@ -25,8 +24,7 @@ export default async function InvoicePage({ params }: Props) {
         <div className="w-full">
             <InvoiceLayout billData={billData.data} billItems={billItems.data} />
 
-            <div className="flex w-full justify-center items-center mb-4 gap-4 print:hidden">
-                <BackButton />
+            <div className="flex w-full justify-center items-center mt-4 print:hidden">
                 <PrintButton />
             </div>
         </div>

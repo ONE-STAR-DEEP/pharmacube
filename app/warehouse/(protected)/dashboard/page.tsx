@@ -31,7 +31,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
   const status = params?.status
   const Vtyp = params?.Vtyp
 
-  const pendingInvoices = await fetchPendingInvoices(page, limit, search, Vtyp);
+  const pendingInvoices = await fetchPendingInvoices({page, limit, search, Vtyp});
   const InvoicesToCheck = await fetchInvoicesToCheck(page, limit, search);
 
   const user = await getCurrentUserSafe();

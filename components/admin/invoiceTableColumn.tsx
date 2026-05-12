@@ -3,15 +3,15 @@ import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import InvoiceTableActions from "../invoiceTableActions";
 import { IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
+import { markAsUrgent } from "@/lib/actions/invoice";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
   1: "Sent to Checker",
-  2: "Check Passed",
-  3: "Assigned for Delivery",
+  2: "Sent to Reviewer",
+  3: "Reviewer Approved",
   4: "Accepted for Delivery",
   5: "Out for Delivery",
   6: "Delivered",
@@ -19,6 +19,7 @@ export const STATUS_LABEL: Record<number, string> = {
   8: "Delivered with Discrepancy",
   9: "Discrepancy Raised",
   10: "Discrepancy Resolved",
+  200: "Payment Received"
 };
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
@@ -56,18 +57,17 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "partyName",
     header: "Party Name",
-    size: 300
+    size: 280
   },
   {
     accessorKey: "NoOfItem",
     header: "Items",
-    size: 80
-
+    size: 50
   },
   {
     accessorKey: "InvAmt",
     header: "Amount",
-    size: 80,
+    size: 100,
     cell: ({ row }) => {
       const value = row.getValue("InvAmt") as string;
       return (
@@ -75,6 +75,20 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           <IndianRupee size={12} />
           <p>
             {value}</p>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "payment",
+    header: "Payment",
+    size: 70,
+    cell: ({ row }) => {
+      const value = Boolean(row.getValue("payment"));
+      return (
+        <div className="flex items-center" >
+          <p className={`${value ? "text-emerald-700" : "text-orange-600"} font-semibold`}>
+            {value ? "paid" : "pending"}</p>
         </div>
       )
     },
@@ -107,6 +121,10 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
       const value = row.getValue("status") as number;
 
+      if (value === 2) {
+
+      }
+
       const colorMap = {
         0: "text-red-600",
         1: "text-blue-600",
@@ -120,6 +138,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         9: "text-red-700",
         10: "text-emerald-600",
         11: "text-violet-600",
+        200: "text-emerald-600",
       };
 
       return (
@@ -137,16 +156,36 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 120,
     cell: ({ row }) => {
       const VNo = row.original.Vno;
+      const id = row.original.id
       const Vtyp = row.original.Vtyp;
-      const discrepancy = row.original.status;
       const router = useRouter();
+      const show = Boolean(row.original.urgent);
+      const handleClick = async () => {
+        
+        try {
+          const res = await markAsUrgent(id)
+          if(!res.success){
+            alert("Failed to update. Try again.")
+            return
+          }
+          router.refresh()
+        } catch (error) {
+          
+        }
+      }
+
       return (
-        <div className="flex items-center">
+        <div className="flex gap-2 items-center">
           <Button className="m-0 px-2" onClick={() => {
-            router.push(`/invoice/${Vtyp}-${VNo}`)
+            window.open(`/invoice/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer")
           }}>
             View
           </Button>
+          {
+            !show && <Button onClick={handleClick}>
+              Urgent
+            </Button>
+          }
         </div>
       )
     },

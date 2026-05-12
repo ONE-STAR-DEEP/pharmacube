@@ -4,6 +4,7 @@ import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import { fetchPendingInvoices } from '@/lib/actions/invoice';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
+import Filter from '@/components/Filter';
 
 type PageProps = {
   searchParams: Promise<{
@@ -11,6 +12,7 @@ type PageProps = {
     limit?: string;
     search?: string;
     status?: string;
+    Vtyp?: string;
   }>;
 };
 
@@ -24,12 +26,14 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const status = params?.status
 
-  const data = await fetchPendingInvoices(page, limit, search);
+  const Vtyp = params?.Vtyp
+
+  const data = await fetchPendingInvoices({page, limit, search, Vtyp});
 
   return (
     <div className='p-4 space-y-4'>
 
-      <DashboardHeader type='Reviewer'/>
+      <DashboardHeader type='Reviewer' />
 
       <header className='bg-white p-4'>
         <p className='font-semibold text-lg'>
@@ -39,8 +43,9 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
       <section className='space-y-2'>
         <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
-          <div className='max-w-60'>
+          <div className='max-w-100 flex gap-4'>
             <SearchComponent placeholder='Search invoice' />
+            <Filter />
           </div>
 
         </div>

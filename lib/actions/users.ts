@@ -2,7 +2,7 @@
 
 import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
-import { UserFormData } from "@/utils/types/DataTypes";
+import { UserData, UserFormData } from "@/utils/types/DataTypes";
 
 export const fetchUserData = async (
   page: number = 1,
@@ -14,7 +14,7 @@ export const fetchUserData = async (
   const userId = session?.id;
   const type = session?.type;
 
-  if (!userId || type !== "admin") {
+  if (!userId || (type !== "admin" && type !== "user")) {
     return { success: false, message: "Unauthorized" };
   }
 
@@ -72,7 +72,7 @@ export const fetchUserData = async (
 
     return {
       success: true,
-      data: rows,
+      data: rows as UserData,
       pagination: {
         total,
         totalPages,
@@ -154,6 +154,185 @@ export const insertUser = async (data: UserFormData) => {
     return {
       success: false,
       message: "Failed to insert user",
+    };
+  } finally {
+    conn.release();
+  }
+};
+
+export const updateUser = async (id: number, data: UserFormData) => {
+  const session = await getCurrentUserSafe();
+
+  const userId = session?.id;
+  const type = session?.type;
+
+  if (!userId || type !== "admin") {
+    return { success: false, message: "Unauthorized" };
+  }
+
+  const conn = await db.getConnection();
+
+  try {
+
+    const address = data.address || null;
+    const city = data.city || null;
+    const state = data.state || null;
+    const pincode = data.pincode || null;
+    const email = data.email || null;
+
+    const mobile = data.mobile.replace(/^0+/, "");
+
+    const [existing]: any = await conn.query(
+      "SELECT id FROM users WHERE id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      return {
+        success: false,
+        message: "User doesn't exists",
+      };
+    }
+
+    const [result]: any = await conn.query(
+      `UPDATE users SET 
+      name = ?,
+      email = ?, 
+      mobile = ?, 
+      type = ?, 
+      address = ?, 
+      city = ?, 
+      state = ?, 
+      pincode = ?, 
+      password = ?, 
+      plus = ?
+      WHERE id = ?
+      `,
+      [
+        data.name,
+        email,
+        mobile,
+        data.type,
+        address,
+        city,
+        state,
+        pincode,
+        data.password,
+        data.plus,
+        id
+      ]
+    );
+
+    return {
+      success: true,
+      message: "User updated successfully",
+      userId: result.insertId,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Failed to update user",
+    };
+  } finally {
+    conn.release();
+  }
+};
+
+export const deleteUser = async (id: number) => {
+  const session = await getCurrentUserSafe();
+
+  const userId = session?.id;
+  const type = session?.type;
+
+  if (!userId || type !== "admin") {
+    return { success: false, message: "Unauthorized" };
+  }
+
+  const conn = await db.getConnection();
+
+  try {
+
+    const [existing]: any = await conn.query(
+      "SELECT id FROM users WHERE id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      return {
+        success: false,
+        message: "User doesn't exists",
+      };
+    }
+
+    const [result]: any = await conn.query(
+      `DELETE FROM users WHERE id = ?`,
+      [
+        id
+      ]
+    );
+
+    return {
+      success: true,
+      message: "User Deleted successfully",
+      userId: result.insertId,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Failed to delete user",
+    };
+  } finally {
+    conn.release();
+  }
+};
+
+export const fetchUserByID = async (
+  id: number
+) => {
+  const session = await getCurrentUserSafe();
+
+  const userId = session?.id;
+  const type = session?.type;
+
+  if (!userId || (type !== "admin")) {
+    return { success: false, message: "Unauthorized" };
+  }
+
+  const conn = await db.getConnection();
+
+  try {
+    const [rows]: any = await conn.execute(
+      `
+        SELECT 
+        id,
+        name,
+        email,
+        mobile,
+        type,
+        address,
+        city,
+        state,
+        pincode,
+        password,
+        plus
+        FROM users
+        WHERE id = ?
+      `,
+      [id]
+    );
+
+    return {
+      success: true,
+      data: rows[0] as UserData,
+    };
+
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Failed to fetch data",
     };
   } finally {
     conn.release();

@@ -26,7 +26,6 @@ export default async function InvoicePage({ params }: Props) {
             <InvoiceLayout billData={billData.data} billItems={billItems.data} />
 
             <div className="flex w-full justify-center items-center mb-4 gap-4">
-                <BackButton />
                 <InvoiceControls VNo={Vno} Vtyp={Vtyp}/>
             </div>
         </div>

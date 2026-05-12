@@ -31,7 +31,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "GSTVno",
     header: "GSTVno",
-    size: 80,
+    size: 110,
   },
   {
     accessorKey: "partyName",
@@ -46,7 +46,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "InvAmt",
     header: "Amount",
-    size: 80,
+    size: 100,
     cell: ({ row }) => {
       const value = row.getValue("InvAmt") as string;
       return (

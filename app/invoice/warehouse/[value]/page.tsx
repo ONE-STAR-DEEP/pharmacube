@@ -1,23 +1,22 @@
 
-import { approveInvoice, fetchInvoiceByVNo, fetchInvoiceItems } from "@/lib/actions/invoice"
-import { BackButton } from "@/components/BackButton"
+import { approveInvoice, fetchEInvoice, fetchInvoiceByVNo, fetchInvoiceItems } from "@/lib/actions/invoice"
 import InvoiceLayout from "@/components/InvoiceLayout"
 
 type Props = {
     params: Promise<{
-        value : string
+        value: string
     }>
 }
 
 export default async function InvoicePage({ params }: Props) {
     const { value } = await params
 
-    console.log(value)
-
     const [Vtyp, VNo] = value.split('-');
 
     const billData = await fetchInvoiceByVNo(VNo, Vtyp);
     const billItems = await fetchInvoiceItems(VNo, Vtyp);
+    const einvoiceData = await fetchEInvoice(Vtyp, VNo)
+
     await approveInvoice(VNo, Vtyp)
 
     if (!(billData.data && billItems.data)) {
@@ -26,10 +25,9 @@ export default async function InvoicePage({ params }: Props) {
 
     return (
         <div className="w-full">
-            <InvoiceLayout billData={billData.data} billItems={billItems.data} />
+            <InvoiceLayout billData={billData.data} billItems={billItems.data} einvoice={einvoiceData.data} />
 
             <div className="flex w-full justify-center items-center mb-4 gap-4">
-                <BackButton />
             </div>
         </div>
     )

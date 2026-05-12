@@ -21,7 +21,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
-export function DataTable<TData extends { discrepancy?: number }, TValue>({
+export function DataTable<TData extends { discrepancy?: number, urgent?: boolean }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -60,9 +60,11 @@ export function DataTable<TData extends { discrepancy?: number }, TValue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 className={
-                  row.original.discrepancy && row.original.discrepancy >= 1
-                    ? "bg-primary/20"
-                    : ""
+                  row.original.urgent
+                    ? "bg-red-500/20"
+                    : row.original.discrepancy && row.original.discrepancy >= 1
+                      ? "bg-primary/20"
+                      : ""
                 }
               >
                 {row.getVisibleCells().map((cell) => (

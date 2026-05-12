@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUserSafe } from "@/lib/sessionCheck";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/sidebar";
+import { RoleProvider } from "@/components/UserContext";
 
 export default async function ProtectedLayout({
     children,
@@ -12,34 +13,37 @@ export default async function ProtectedLayout({
     const user = await getCurrentUserSafe();
 
     if (!user || user.type !== "admin" || user.iss !== "pharmacube") {
-        redirect("/admin");
+        redirect("/");
     }
 
     return (
         <div className="min-h-screen flex flex-col">
-            <SidebarProvider className="flex flex-1 flex-col">
+            <RoleProvider role={user?.type || ""}>
 
-                {/* Header */}
-                <header className="h-12 fixed z-50 w-full bg-primary backdrop-blur-md px-4 flex items-center justify-between border-b border-muted-foreground/20">
-                    <SidebarTrigger className="text-primary-foreground scale-150" />
-                </header>
+                <SidebarProvider className="flex flex-1 flex-col">
 
-                {/* Body */}
-                <div className="flex flex-1">
+                    {/* Header */}
+                    <header className="h-12 fixed z-50 w-full bg-primary backdrop-blur-md px-4 flex items-center justify-between border-b border-muted-foreground/20">
+                        <SidebarTrigger className="text-primary-foreground scale-150" />
+                    </header>
 
-                    {/* Sidebar */}
-                    <AppSidebar />
+                    {/* Body */}
+                    <div className="flex flex-1">
 
-                    {/* Content */}
-                    <main className="flex-1 mt-12 overflow-auto">
-                        <div className="mx-auto w-full max-w-7xl px-4 flex flex-col min-h-full">
-                            {children}
-                        </div>
-                    </main>
+                        {/* Sidebar */}
+                        <AppSidebar />
 
-                </div>
+                        {/* Content */}
+                        <main className="flex-1 mt-12 overflow-auto">
+                            <div className="mx-auto w-full max-w-7xl px-4 flex flex-col min-h-full">
+                                {children}
+                            </div>
+                        </main>
 
-            </SidebarProvider>
+                    </div>
+
+                </SidebarProvider>
+            </RoleProvider>
         </div>
     );
 }

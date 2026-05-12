@@ -21,7 +21,7 @@ import {
 
 import { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
-import { Plus } from 'lucide-react'
+import { Edit, Plus, Trash } from 'lucide-react'
 import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -29,7 +29,7 @@ import { UserFormData } from "@/utils/types/DataTypes";
 import Select from "react-select";
 import { City, Country, State } from "country-state-city";
 import { selectClassNames, selectStyles } from "@/utils/selectStyles";
-import { insertUser } from "@/lib/actions/users";
+import { fetchUserByID, insertUser, updateUser } from "@/lib/actions/users";
 import { useRouter } from "next/navigation";
 
 type Option = {
@@ -37,7 +37,10 @@ type Option = {
     value: string;
 };
 
-const AddUser = () => {
+const AddUser = ({ mode, id }: {
+    mode: "edit" | "add";
+    id?: number
+}) => {
 
     const [open, setOpen] = useState(false);
 
@@ -45,7 +48,7 @@ const AddUser = () => {
         name: "",
         email: null,
         mobile: "",
-        type: "admin",
+        type: "",
         address: "",
         city: "",
         state: "",
@@ -76,11 +79,13 @@ const AddUser = () => {
 
     const userTypeOptions: Option[] = [
         { label: "Admin", value: "admin" },
+        { label: "User (view only)", value: "user" },
         { label: "Warehouse", value: "warehouse" },
         { label: "Warehouse+", value: "warehouse+" },
         { label: "Checker", value: "checker" },
         { label: "Reviewer", value: "reviewer" },
         { label: "Rider", value: "rider" },
+        { label: "Account", value: "account" },
         { label: "Rider+", value: "rider+" },
         { label: "Delivery", value: "delivery" }
     ]
@@ -125,10 +130,53 @@ const AddUser = () => {
         setCity(null);
     }, [state, country]);
 
+    useEffect(() => {
+        if (!open || mode !== "edit" || !id) return;
+        const loadData = async () => {
+            const res = await fetchUserByID(id);
+            if (!res.success) {
+                alert("Failed to fetch")
+                return
+            }
+
+            const data = res.data;
+
+            setData({
+                name: data?.name || "",
+                email: data?.email || null,
+                mobile: data?.mobile || "",
+                type: data?.type || "",
+                address: data?.address || "",
+                city: data?.city || "",
+                state: data?.state || "",
+                pincode: data?.pincode || "",
+                password: data?.password || "",
+                plus: data?.plus || false
+            });
+            const matchedState = states.find(
+                (s) => s.label === data?.state
+            );
+
+            setState(matchedState || null);
+
+            const matchedCity = cities.find(
+                (s) => s.label === data?.city
+            );
+
+            setCity(matchedCity || null);
+
+            // setCity({ label: data?.city || "", value: data?.city || "" })
+        }
+        loadData()
+
+    }, [mode, id, open]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (loading) return;
-        setLoading(false);
+        setLoading(true);
+
+
 
         try {
             let newData: UserFormData = { ...data };
@@ -141,15 +189,25 @@ const AddUser = () => {
                 newData.plus = true;
             }
 
-            const res = await insertUser(newData);
-
-            if (!res.success) {
-                SetMsg(res.message)
-                setAlertBox(true);
-                return;
+            if (mode === "add") {
+                const res = await insertUser(newData);
+                if (!res.success) {
+                    SetMsg(res.message)
+                    setAlertBox(true);
+                    return;
+                }
+            }
+            else if (mode === "edit" && id) {
+                const res = await updateUser(id, newData);
+                if (!res.success) {
+                    SetMsg(res.message)
+                    setAlertBox(true);
+                    return;
+                }
             }
 
             setData(initialUserFormData);
+            router.refresh();
         } catch (error) {
             console.log(error)
         } finally {
@@ -161,7 +219,11 @@ const AddUser = () => {
 
     return (
         <div>
-            <Button onClick={() => { setOpen(true) }}><Plus /> Add User</Button>
+            {mode === "add" ?
+                <Button onClick={() => { setOpen(true) }}><Plus /> Add User</Button>
+                :
+                <Button onClick={() => { setOpen(true) }} className="flex items-center justify-start gap-2 w-full h-8 hover:bg-white/10!" variant={"ghost"}><Edit />Edit</Button>
+            }
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent
@@ -179,9 +241,9 @@ const AddUser = () => {
                 >
                     <form onSubmit={handleSubmit}>
                         <DialogHeader className="p-6 pb-2">
-                            <DialogTitle className="text-xl">Add User Details</DialogTitle>
+                            <DialogTitle className="text-xl">{mode === "add" ? "Add" : "Edit"} User Details</DialogTitle>
                             <DialogDescription>
-                                Enter the details below to register a new user in the system.
+                                {mode === "add" ? "Enter the details below to register a new user in the system." : "Edit the details below to update user data in the system."}
                             </DialogDescription>
                         </DialogHeader>
 
@@ -200,6 +262,7 @@ const AddUser = () => {
                                     </div>
                                     <Input id="name" name="name" placeholder="Name" required
                                         className="h-10"
+                                        value={data.name}
                                         onChange={(e) =>
                                             setData(prev => ({
                                                 ...prev,
@@ -216,6 +279,8 @@ const AddUser = () => {
                                     </div>
                                     <Input id="mobile" name="mobile" placeholder="999999XXXX" required
                                         className="h-10"
+                                        value={data.mobile}
+
                                         onChange={(e) =>
                                             setData(prev => ({
                                                 ...prev,
@@ -229,6 +294,8 @@ const AddUser = () => {
                                     <Label htmlFor="email">Email</Label>
                                     <Input id="email" name="email" placeholder="ex@example.com"
                                         className="h-10"
+                                        value={data.email || ""}
+
                                         onChange={(e) =>
                                             setData(prev => ({
                                                 ...prev,
@@ -262,6 +329,11 @@ const AddUser = () => {
                                     <Select<Option>
                                         required
                                         instanceId={"tax-id"}
+                                        value={
+                                            data.type
+                                                ? { label: data.type, value: data.type }
+                                                : null
+                                        }
                                         options={userTypeOptions}
                                         placeholder="Select User Account Type"
                                         onChange={(val) => {
@@ -285,6 +357,7 @@ const AddUser = () => {
                                 <Field>
                                     <Label htmlFor="address">Address</Label>
                                     <Input id="address" name="address" placeholder="Address"
+                                        value={data.address}
                                         className="h-10"
                                         onChange={(e) =>
                                             setData(prev => ({
@@ -353,6 +426,7 @@ const AddUser = () => {
                                     <Label htmlFor="pincode">Pincode</Label>
                                     <Input id="pincode" name="pincode" placeholder="000000"
                                         className="h-10"
+                                        value={data.pincode}
                                         onChange={(e) =>
                                             setData(prev => ({
                                                 ...prev,

@@ -34,8 +34,8 @@ export type BillItem = {
   "HSN CODE": string;
   "Batch No.": string;
   "Exp.": string;
-  "MRP.": string;   
-  Rate: string; 
+  "MRP.": string;
+  Rate: string;
   "DIS%": string;
   Tax: string;
   old_Qty?: number
@@ -59,7 +59,7 @@ export type UserFormData = {
   name: string;
   email: string | null;
   mobile: string;
-  type: "admin" | "warehouse" | "warehouse+" | "checker" | "reviewer" | "rider" | "rider+" | "delivery";
+  type: "admin" | "user" | "warehouse" | "warehouse+" | "checker" | "reviewer" | "rider" | "rider+" | "delivery" | "account" | "";
   address: string;
   city: string;
   state: string;
@@ -79,6 +79,7 @@ export type UserData = {
   state: string | null;
   pincode: string | null;
   password: string;
+  plus: boolean;
   created_at: string; // ISO date string
 };
 
@@ -101,6 +102,8 @@ export interface InvoiceData {
   inserted_at: string; // ISO date string
   status: number;
   discrepancy?: number;
+  payment: boolean;
+  urgent: boolean;
 }
 
 export type DeliveryBoy = {
@@ -108,6 +111,71 @@ export type DeliveryBoy = {
   name: string;
   email: string;
   mobile: string;
-  type: "rider"; 
-  created_at: string; 
+  type: "rider";
+  created_at: string;
+};
+
+export type PaymentData = {
+  amount: number | null;
+  remark: string;
+  mode: string;
+};
+
+export type DashboardStat = {
+  date: string;
+  total: number;
+  attended: number;
+};
+
+type StageStats = {
+  user: string
+  total: number
+  pending: number
+  attended: number
+}
+
+export type DashboardStats = {
+  warehouse: StageStats
+  checker: StageStats
+  reviewer: StageStats
+  rider: StageStats
+  delivery: StageStats
+  account: StageStats
+}
+
+export type EInvoiceType = {
+  Vtype: string;
+  Vno: number;
+  Vdt: string;
+  GSTVno: string;
+  Acno: number;
+  GSTNo: string;
+  Name: string;
+  Amt: string;
+  Amt01: string;
+  Taxamt: string;
+  CgstAmt: string;
+  SgstAmt: string;
+  IgstAmt: string;
+  CessAmt: string;
+  Status: string;
+  UploadMsg: string;
+  AckNo: string;
+  AckDt: string;
+  Irn: string;
+  SignedInvoice: string;
+  SignedQRCode: string;
+  EwbNo: string;
+  EwbDt: string;
+  EwbValidTill: string;
+  QrImage: string;
+  NOP: number;
+  VehicleNo: string;
+  TransName: string;
+  TransID: string;
+  MachineName: string;
+  TransDocNo: string | null;
+  Uid: string;
+  EWayReason: string | null;
+  EWayStatus: string | null;
 };

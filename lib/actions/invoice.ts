@@ -2,16 +2,17 @@
 
 import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
-import { BillItem, Invoice, InvoiceData } from "@/utils/types/DataTypes";
+import { BillItem, EInvoiceType, Invoice, InvoiceData } from "@/utils/types/DataTypes";
 
 
-type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery";;
+type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery" | "account";
 
 const transitions: Record<Role, { from: number; to: number }> = {
     warehouse: { from: 0, to: 1 },
     checker: { from: 1, to: 2 },
     reviewer: { from: 2, to: 3 },
     rider: { from: 3, to: 4 },
+    account: { from: 3, to: 4 },
     delivery: { from: 6, to: 7 },
 };
 
@@ -20,6 +21,7 @@ const discrepancyRule: Record<Role, { from: number; to: number }> = {
     checker: { from: 1, to: 2 },
     reviewer: { from: 10, to: 11 },
     rider: { from: 11, to: 12 },
+    account: { from: 11, to: 12 },
     delivery: { from: 12, to: 13 },
 };
 
@@ -28,6 +30,7 @@ const successMessages: Record<Role, string> = {
     checker: "Invoice fully approved",
     reviewer: "Invoice successfully reviewed",
     rider: "Accepted",
+    account: "Accepted",
     delivery: "Invoice delivered",
 };
 
@@ -43,7 +46,7 @@ export const fetchInvoices = async (
     const type = session?.type;
     const iss = session?.iss;
 
-    if (!userId || type !== "admin" || iss !== "pharmacube") {
+    if (!userId || (type !== "admin" && type !== "user") || iss !== "pharmacube") {
         return { success: false, message: "Unauthorized" };
     }
 
@@ -81,7 +84,7 @@ export const fetchInvoices = async (
             FROM Salepurchase1 sp
             LEFT JOIN Acm acm ON sp.Acno = acm.code
             ${where}
-            ORDER BY sp.inserted_at DESC
+            ORDER BY sp.urgent DESC, sp.inserted_at DESC
             LIMIT ${safeLimit} OFFSET ${safeOffset}
             `,
             params
@@ -189,6 +192,49 @@ export const fetchInvoiceByVNo = async (
     }
 };
 
+export const fetchEInvoice = async (
+    Vtyp: string,
+    VNo: string
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+    const iss = session?.iss;
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+        const [rows]: any = await conn.execute(
+            `
+            SELECT *
+            FROM EInvoice
+            WHERE Vtype = ?
+            AND VNO = ? 
+            LIMIT 1;
+            `, [Vtyp, VNo]
+        );
+
+        return {
+            success: true,
+            data: rows[0] as EInvoiceType ?? null,
+        };
+
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to fetch data",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
 export const fetchInvoiceItems = async (
     VNo: string,
     Vtyp: string
@@ -251,12 +297,17 @@ export const fetchInvoiceItems = async (
     }
 };
 
-export const fetchPendingInvoices = async (
-    page: number = 1,
-    limit: number = 20,
-    search?: string,
-    Vtyp?: string
-) => {
+export const fetchPendingInvoices = async ({
+    page = 1,
+    limit = 20,
+    search,
+    Vtyp,
+}: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    Vtyp?: string | string[];
+}) => {
     const session = await getCurrentUserSafe();
 
     const userId = session?.id;
@@ -281,7 +332,7 @@ export const fetchPendingInvoices = async (
         }
 
         const rule = transitions[type as Role];
-        
+
         const conditions = [`status = ?`];
         const params: any[] = [rule.from];
 
@@ -291,8 +342,15 @@ export const fetchPendingInvoices = async (
         }
 
         if (Vtyp) {
-            conditions.push(`Vtyp = ?`);
-            params.push(Vtyp);
+            if (Array.isArray(Vtyp)) {
+                conditions.push(
+                    `Vtyp IN (${Vtyp.map(() => "?").join(", ")})`
+                );
+                params.push(...Vtyp);
+            } else {
+                conditions.push(`Vtyp = ?`);
+                params.push(Vtyp);
+            }
         }
 
         const where = `WHERE ${conditions.join(" AND ")}`;
@@ -306,7 +364,7 @@ export const fetchPendingInvoices = async (
             FROM Salepurchase1 sp
             LEFT JOIN Acm acm ON sp.Acno = acm.code
             ${where}
-            ORDER BY sp.inserted_at DESC
+            ORDER BY sp.urgent DESC, sp.inserted_at DESC
             LIMIT ${safeLimit} OFFSET ${safeOffset}
         `,
             params
@@ -349,7 +407,7 @@ export const fetchInvoicesToCheck = async (
     page: number = 1,
     limit: number = 20,
     search?: string,
-    Vtyp?:string
+    Vtyp?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -399,7 +457,7 @@ export const fetchInvoicesToCheck = async (
             FROM Salepurchase1 sp
             LEFT JOIN Acm acm ON sp.Acno = acm.code
             ${where}
-            ORDER BY sp.inserted_at DESC
+            ORDER BY sp.urgent DESC, sp.inserted_at DESC
             LIMIT ${safeLimit} OFFSET ${safeOffset}
         `,
             params
@@ -556,15 +614,16 @@ export const fetchAllValidInvoices = async (
         const safeOffset = Math.max(0, Number(offset) || 0);
 
         const searchTerm = search ? `%${search}%` : `%`;
+        const Vtype = Vtyp ? `%${Vtyp}%` : `%`;
 
         const where = `
         WHERE (
         status >= ?
+        AND Vtyp LIKE ?
         AND
             (
             Vno LIKE ?
             OR GSTVno  LIKE ?
-            OR Vtyp LIKE ?
             )
         )
         `;
@@ -575,7 +634,7 @@ export const fetchAllValidInvoices = async (
 
         const rule = transitions[type as Role];
 
-        const params: any[] = [rule.to, searchTerm, searchTerm, searchTerm];
+        const params: any[] = [rule.to, Vtype, searchTerm, searchTerm];
 
         const [rows]: any = await conn.execute(
             `
@@ -1103,6 +1162,69 @@ export const fetchDiscrepancyItems = async (
         return {
             success: false,
             message: "Failed to fetch data",
+        };
+    } finally {
+        conn.release();
+    }
+};
+
+export const markAsUrgent = async (
+    id: number
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+
+    if (!userId || (type !== "user" && type !== "admin")) {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+
+        await conn.beginTransaction();
+
+        const [check]: any = await conn.execute(
+            `
+            SELECT status FROM Salepurchase1
+            Where id = ?
+            `,
+            [id]
+        );
+
+        if (!check[0]) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: "Invoice not found"
+            };
+        }
+
+        await conn.execute(
+            `
+                UPDATE Salepurchase1
+                SET
+                urgent = true
+                WHERE id = ?
+                `,
+            [id]
+        );
+
+        await conn.commit();
+
+        return {
+            success: true,
+            message: "Set to Urgent",
+        };
+    } catch (error) {
+        await conn.rollback();
+        console.error(error);
+
+        return {
+            success: false,
+            message: "Failed to perform action, Try Again",
         };
     } finally {
         conn.release();

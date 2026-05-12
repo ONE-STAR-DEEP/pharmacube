@@ -16,6 +16,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart"
+import { DashboardStat } from "@/utils/types/DataTypes"
 
 export const description = "An interactive bar chart"
 
@@ -127,14 +128,19 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartBarInteractive() {
+type Props = {
+  data: DashboardStat[]
+}
+
+export function ChartBarInteractive(data: Props) {
+
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("total")
 
   const total = React.useMemo(
     () => ({
-      total: chartData.reduce((acc, curr) => acc + curr.total, 0),
-      attended: chartData.reduce((acc, curr) => acc + curr.attended, 0),
+      total: data.data.reduce((acc, curr) => acc + curr.total, 0),
+      attended: data.data.reduce((acc, curr) => acc + curr.attended, 0),
     }),
     []
   )
@@ -143,9 +149,9 @@ export function ChartBarInteractive() {
     <Card className="py-0">
       <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
-          <CardTitle>Bar Chart - Interactive</CardTitle>
+          <CardTitle>Invoice Activity</CardTitle>
           <CardDescription>
-            Showing total Invoices for the last 3 months
+            Showing total Invoices up to last 90 days
           </CardDescription>
         </div>
         <div className="flex">
@@ -176,7 +182,7 @@ export function ChartBarInteractive() {
         >
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={data.data}
             margin={{
               left: 12,
               right: 12,
