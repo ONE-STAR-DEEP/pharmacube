@@ -116,14 +116,14 @@ const chartData = [
 
 const chartConfig = {
   views: {
-    label: "Page Views",
+    label: "Invoices",
   },
   total: {
-    label: "total",
+    label: "Total",
     color: "var(--chart-2)",
   },
   attended: {
-    label: "attended",
+    label: "Attended",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig

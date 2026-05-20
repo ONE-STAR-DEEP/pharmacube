@@ -103,7 +103,7 @@ export const userColumns: ColumnDef<UserData>[] = [
       const id = row.getValue("id") as number;
       const isActive = Boolean(row.original.active);
 
-      const [deleteOpen, setDeleteOpen] = useState(false)
+      const [disableOpen, setDisableOpen] = useState(false)
       const [loading, setLoading] = useState(false);
       const router = useRouter();
 
@@ -121,7 +121,7 @@ export const userColumns: ColumnDef<UserData>[] = [
         } catch (error) {
           console.log(error)
         } finally {
-          setDeleteOpen(false);
+          setDisableOpen(false);
           setLoading(false)
         }
       }
@@ -142,14 +142,14 @@ export const userColumns: ColumnDef<UserData>[] = [
                   <DropdownMenuItem asChild>
                     <AddUser mode="edit" id={id} />
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
+                  <DropdownMenuItem onClick={() => setDisableOpen(true)}>
                     {isActive ? <><Ban /> Disable</> : <><UserCheck /> Enable</>}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            <Dialog open={disableOpen} onOpenChange={setDisableOpen}>
               <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle>{isActive ? <>Disable User?</> : <>Enable User?</>}</DialogTitle>
