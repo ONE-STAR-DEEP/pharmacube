@@ -311,7 +311,6 @@ const AddUser = ({ mode, id }: {
                                     </div>
                                     <Input id="password" type="password" name="password" placeholder="Password" required
                                         className="h-10"
-                                        minLength={8}
                                         value={data.password}
                                         onChange={(e) =>
                                             setData(prev => ({

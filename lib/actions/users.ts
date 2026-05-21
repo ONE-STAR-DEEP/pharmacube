@@ -339,3 +339,84 @@ export const fetchUserByID = async (
     conn.release();
   }
 };
+
+export const changePassword = async (currentPassword: string, newPassword: string) => {
+
+  const session = await getCurrentUserSafe();
+
+  const userId = session?.id;
+  const type = session?.type;
+
+  if (!userId) {
+    return { success: false, message: "Unauthorized" };
+  }
+
+  const conn = await db.getConnection();
+
+  await conn.beginTransaction();
+
+  try {
+
+    const [check]: any = await conn.execute(
+      `
+        SELECT 
+        id,
+        password
+        FROM users
+        WHERE id = ?
+      `,
+      [userId]
+    );
+
+    if (check.length === 0) {
+      return {
+        success: false,
+        message: "Failed to Find user."
+      }
+    }
+
+    if (check[0].password !== currentPassword) {
+      return {
+        success: false,
+        message: "Current password does not match the stored password."
+      }
+    }
+
+    if (check[0].password === newPassword) {
+      return {
+        success: false,
+        message: "New password is same as current Password."
+      }
+    }
+
+    const [result]: any = await conn.query(
+      `UPDATE users SET 
+      password = ?
+      WHERE id = ?
+      `,
+      [
+        newPassword,
+        userId
+      ]
+    );
+
+    await conn.commit();
+
+    return {
+      success: true,
+      message: "Password changed successfully"
+    };
+
+  } catch (error) {
+    await conn.rollback()
+    console.log(error)
+    return {
+      success: false,
+      message: "Failed to Change Password."
+    }
+  } finally {
+    if (conn) {
+      conn.release()
+    }
+  }
+}

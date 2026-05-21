@@ -138,9 +138,16 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
 
     try {
 
+        if (!data.amount) {
+            return {
+                success: false,
+                message: "Provide payment amount!!!"
+            }
+        }
+
         await conn.beginTransaction()
         const [check]: any = await conn.query(`
-            SELECT * from Salepurchase1 where id = ?;
+            SELECT (Amt01 + Taxamt + Rndamt) AS InvAmt from Salepurchase1 where id = ?;
             `, [invoiceId]);
 
         if (!check.length) {
@@ -169,9 +176,21 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
             data.remark || null
         ])
 
+        let status;
+
+        if (check[0].InvAmt === data.amount) {
+            status = 200;
+        } else if (check[0].InvAmt > data.amount) {
+            status = 190;
+        } else if (check[0].InvAmt < data.amount) {
+            status = 210;
+        }
+
         const [update]: any = await conn.query(`
-            UPDATE Salepurchase1 set payment = 1, status = 200 where id = ?
-            `, [invoiceId]);
+            UPDATE Salepurchase1 set payment = 1, status = ?, account = ? where id = ?
+            `,
+            [status, userId, invoiceId]
+        );
 
         await conn.commit();
 
@@ -183,6 +202,7 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
         try {
             await conn.rollback();
         } catch { }
+        console.log(error)
         return {
             success: false,
             message: "Failed to Update"
@@ -190,5 +210,42 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
     } finally {
         if (conn) conn.release();
     }
+}
 
+export const tnxDetails = async (invoiceId: number) => {
+
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+    const iss = session?.iss;
+
+    if (!userId || type !== "account" || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    try {
+        const [rows]: any = await db.query(
+            `SELECT * FROM payments where invoice_id = ?`, [invoiceId]
+        )
+
+        if (rows.length === 0) {
+            return {
+                success: false,
+                message: "Tnx Not Found!!!"
+            }
+        }
+
+        return {
+            success: true,
+            data: rows[0]
+        }
+
+    } catch (error) {
+        console.log(error)
+        return {
+            success: false,
+            message: "Tnx Not Found!!!"
+        }
+    }
 }

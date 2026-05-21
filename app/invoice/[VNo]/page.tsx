@@ -1,4 +1,4 @@
-import { fetchInvoiceByVNo, fetchInvoiceItems } from "@/lib/actions/invoice"
+import { fetchEInvoice, fetchInvoiceByVNo, fetchInvoiceItems } from "@/lib/actions/invoice"
 import { PrintButton } from "@/components/PrintButton"
 import InvoiceLayout from "@/components/InvoiceLayout"
 
@@ -15,6 +15,7 @@ export default async function InvoicePage({ params }: Props) {
 
     const billData = await fetchInvoiceByVNo(Vno, Vtyp);
     const billItems = await fetchInvoiceItems(Vno, Vtyp);
+    const einvoiceData = await fetchEInvoice(Vtyp, VNo)
 
     if (!(billData.data && billItems.data)) {
         return;
@@ -22,7 +23,7 @@ export default async function InvoicePage({ params }: Props) {
 
     return (
         <div className="w-full">
-            <InvoiceLayout billData={billData.data} billItems={billItems.data} />
+            <InvoiceLayout billData={billData.data} billItems={billItems.data} einvoice={einvoiceData.data}/>
 
             <div className="flex w-full justify-center items-center mt-4 print:hidden">
                 <PrintButton />

@@ -79,10 +79,11 @@ export const updateDelivery = async (
                 SET 
                 status = 8,
                 discrepancy = 1,
+                delivery = ?,
                 recipt = ?
                 WHERE id = ?
                 `,
-                [reciptUrl, id]
+                [userId, reciptUrl, id]
             );
         } else {
             await conn.execute(

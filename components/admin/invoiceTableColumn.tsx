@@ -19,7 +19,9 @@ export const STATUS_LABEL: Record<number, string> = {
   8: "Delivered with Discrepancy",
   9: "Discrepancy Raised",
   10: "Discrepancy Resolved",
-  200: "Payment Received"
+  190: "Partial Payment Received",
+  200: "Payment Received",
+  210: "Excessive Payment Received"
 };
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
@@ -138,7 +140,9 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         9: "text-red-700",
         10: "text-emerald-600",
         11: "text-violet-600",
+        190: "text-red-600",
         200: "text-emerald-600",
+        210: "text-amber-600"
       };
 
       return (

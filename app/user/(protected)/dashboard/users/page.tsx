@@ -3,6 +3,7 @@ import { userColumns } from '@/components/admin/userTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
+import ChangePassword from '@/components/user/ChangePassword';
 import { fetchUserData } from '@/lib/actions/users'
 
 type PageProps = {
@@ -39,7 +40,7 @@ const Dashboard = async ({ searchParams }: PageProps) => {
                     <div className='max-w-60'>
                         <SearchComponent placeholder='Search user' />
                     </div>
-
+                    <ChangePassword />
                 </div>
                 <div className='bg-white  p-4'>
                     <DataTable data={Array.isArray(data.data) ? data.data : []} columns={userColumns} />

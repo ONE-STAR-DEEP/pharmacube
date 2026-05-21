@@ -741,10 +741,11 @@ export const approveInvoice = async (Vno: string, Vtyp: string) => {
         await conn.execute(
             `
             UPDATE Salepurchase1 
-            SET status = ?
+            SET status = ?,
+            warehouse = ?
             WHERE Vtyp = '${Vtyp}' AND Vno = ? AND status = ?
             `,
-            [rule.to, Vno, rule.from]
+            [rule.to, userId, Vno, rule.from]
         );
 
         return { success: true, message: successMessages[type as Role], };
@@ -812,10 +813,11 @@ export const updateInvoiceItems = async (
                 UPDATE Salepurchase1
                 SET 
                 status = 2,
+                checker = ?
                 discrepancy = 1
                 WHERE id = ?
                 `,
-                [invoiceId]
+                [userId, invoiceId]
             );
         } else {
             await conn.execute(
@@ -929,10 +931,10 @@ export const discrepancyAction = async (
         await conn.execute(
             `
         UPDATE Salepurchase1
-        SET discrepancy = 1, status = 9
+        SET discrepancy = 1, status = 9, reviewer = ?
         WHERE id = ?
         `,
-            [invoiceId]
+            [userId, invoiceId]
         );
 
         await conn.commit();

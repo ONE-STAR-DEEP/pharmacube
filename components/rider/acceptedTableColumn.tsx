@@ -3,9 +3,6 @@
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
-import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
-import AcceptInvoice from "./InvoiceActions";
 import InvoiceActions from "./InvoiceActions";
 
 export const acceptedInvoiceColumns: ColumnDef<InvoiceData>[] = [

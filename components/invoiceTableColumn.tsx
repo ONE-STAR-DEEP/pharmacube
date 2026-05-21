@@ -5,6 +5,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import { Button } from "./ui/button";
 import InvoiceTableActions from "./invoiceTableActions";
+import { useRole } from "./UserContext";
+import Tnx from "./account/Tnx";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -18,7 +20,9 @@ export const STATUS_LABEL: Record<number, string> = {
   8: "Delivered with Discrepancy",
   9: "Discrepancy Raised",
   10: "Discrepancy Resolved",
-  200: "Payment Received"
+  190: "Partial Payment Received",
+  200: "Payment Received",
+  210: "Excessive Payment Received"
 };
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
@@ -93,14 +97,16 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         9: "text-red-700",
         10: "text-emerald-600",
         11: "text-violet-600",
+        190: "text-red-600",
         200: "text-emerald-600",
+        210: "text-amber-600"
       };
-      
+
       return (
         <div className="flex items-center">
           <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
             {STATUS_LABEL[value]}
-            </p>
+          </p>
         </div>
       )
     },
@@ -113,6 +119,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;
       const discrepancy = row.original.status;
+      const { role } = useRole();
       return (
         <div className="flex items-center">
           <Button className="m-0 px-2" onClick={() => {
@@ -121,9 +128,13 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             View
           </Button>
           {
-            (discrepancy === 10  && 
-              <InvoiceTableActions VNo={VNo} Vtyp={Vtyp}/>
+            (discrepancy === 10 &&
+              <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
             )
+          }
+          {
+            role === "account" && 
+            <Tnx invoiceId={row.original.id}/>
           }
         </div>
       )

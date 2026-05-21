@@ -81,7 +81,7 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
       if (!invoice) {
         return;
       }
-      const res = await updatePayment(paymentData, invoice['GST No.'], invoice?.id);
+      const res = await updatePayment(paymentData, invoice['Bill No'], invoice?.id);
 
       if (!res.success) {
         alert(res.message);
@@ -98,7 +98,7 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
   return (
     <div>
-      <Button onClick={() => { setOpen(true) }}>Check</Button>
+      <Button onClick={() => { setOpen(true) }}>Payment</Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
@@ -165,8 +165,12 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                   </Field>
                 </div>
               ))}
+              <div className='flex items-center justify-between mx-2 font-bold'>
+                <span>Invoice Amount</span>
+                <span>₹{invoice?.['Inv Amt']}</span>
+              </div>
 
-              <div className='mt-8'>
+              <div className='mt-4'>
 
                 <h2 className='text-lg font-semibold mb-4'>Payment Details</h2>
                 <FieldGroup className='grid grid-cols-1 md:grid-cols-[30%_70%] '>
@@ -177,7 +181,7 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                     <Input
                       type="number"
                       min={0}
-                      placeholder="Enter amount"
+                      placeholder={String(invoice?.['Inv Amt'])}
                       value={paymentData.amount ?? ""}
                       className="h-8"
                       required

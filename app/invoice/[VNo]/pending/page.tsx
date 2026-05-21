@@ -1,4 +1,4 @@
-import { fetchInvoiceByVNo, fetchInvoiceItems } from "@/lib/actions/invoice"
+import { fetchEInvoice, fetchInvoiceByVNo, fetchInvoiceItems } from "@/lib/actions/invoice"
 import { BackButton } from "@/components/BackButton"
 import InvoiceLayout from "@/components/InvoiceLayout"
 import InvoiceControls from "@/components/InvoiceControls"
@@ -16,6 +16,7 @@ export default async function InvoicePage({ params }: Props) {
 
     const billData = await fetchInvoiceByVNo(Vno, Vtyp);
     const billItems = await fetchInvoiceItems(Vno, Vtyp);
+    const einvoiceData = await fetchEInvoice(Vtyp, VNo)
 
     if (!(billData.data && billItems.data)) {
         return;
@@ -23,7 +24,7 @@ export default async function InvoicePage({ params }: Props) {
 
     return (
         <div className="w-full">
-            <InvoiceLayout billData={billData.data} billItems={billItems.data} />
+            <InvoiceLayout billData={billData.data} billItems={billItems.data} einvoice={einvoiceData.data}/>
 
             <div className="flex w-full justify-center items-center mb-4 gap-4">
                 <InvoiceControls VNo={Vno} Vtyp={Vtyp}/>
