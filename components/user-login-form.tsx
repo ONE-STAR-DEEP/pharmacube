@@ -30,7 +30,7 @@ import Image from "next/image"
 import { FormEvent, useState } from "react"
 import { loginUser } from "@/lib/actions/auth"
 import { useRouter } from "next/navigation"
-import { Label } from "./ui/label"
+import { Eye, EyeOff } from "lucide-react"
 
 export function LoginForm({
   className,
@@ -42,6 +42,7 @@ export function LoginForm({
     password: "",
   })
   const [msg, setMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -107,16 +108,34 @@ export function LoginForm({
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                 </div>
-                <Input id="password"
-                  type="password"
-                  value={data.password}
-                  required
-                  onChange={(e) => {
-                    setData((prev) => ({
-                      ...prev,
-                      password: e.target.value
-                    }));
-                  }} />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={data.password}
+                    placeholder="Password"
+                    required
+                    onChange={(e) => {
+                      setData((prev) => ({
+                        ...prev,
+                        password: e.target.value
+                      }));
+                    }}
+                    className="pr-10"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </Field>
               <p className="text-red-600 font-semibold">{msg}</p>
               <Field>
