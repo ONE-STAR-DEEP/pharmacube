@@ -176,15 +176,16 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
             data.remark || null
         ])
 
-        console.log(Number(check[0].InvAmt), data.amount);
+        const InvAmt = Number(check[0].InvAmt); 
+        console.log(InvAmt, data.amount);
 
         let status;
 
-        if (check[0].InvAmt === data.amount) {
+        if (InvAmt === data.amount) {
             status = 200;
-        } else if (check[0].InvAmt > data.amount) {
+        } else if (InvAmt > data.amount) {
             status = 190;
-        } else if (check[0].InvAmt < data.amount) {
+        } else if (InvAmt < data.amount) {
             status = 210;
         }
 
