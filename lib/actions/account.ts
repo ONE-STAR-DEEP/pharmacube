@@ -176,7 +176,7 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
             data.remark || null
         ])
 
-        console.log(check[0].InvAmt);
+        console.log(check[0].InvAmt, data.amount);
 
         let status;
 
