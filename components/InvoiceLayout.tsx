@@ -70,7 +70,7 @@ export const mapBillItems = (items: any[]) => {
 const InvoiceLayout = ({ billData, billItems, einvoice }: {
     billData: Invoice;
     billItems: BillItem[];
-    einvoice?: EInvoiceType;
+    einvoice?: EInvoiceType | null;
 }) => {
 
     const mappedBillItems = mapBillItems(billItems);

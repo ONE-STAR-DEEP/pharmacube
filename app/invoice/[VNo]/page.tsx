@@ -15,7 +15,7 @@ export default async function InvoicePage({ params }: Props) {
 
     const billData = await fetchInvoiceByVNo(Vno, Vtyp);
     const billItems = await fetchInvoiceItems(Vno, Vtyp);
-    const einvoiceData = await fetchEInvoice(Vtyp, VNo)
+    const einvoiceData = await fetchEInvoice(Vtyp, Vno)
 
     if (!(billData.data && billItems.data)) {
         return;

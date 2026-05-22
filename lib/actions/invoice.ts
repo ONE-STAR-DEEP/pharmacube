@@ -196,6 +196,13 @@ export const fetchEInvoice = async (
     Vtyp: string,
     VNo: string
 ) => {
+
+    if (Vtyp === "S1") {
+        return {
+            success: true,
+            data: null,
+        };
+    }
     const session = await getCurrentUserSafe();
 
     const userId = session?.id;
@@ -813,7 +820,7 @@ export const updateInvoiceItems = async (
                 UPDATE Salepurchase1
                 SET 
                 status = 2,
-                checker = ?
+                checker = ?,
                 discrepancy = 1
                 WHERE id = ?
                 `,
@@ -879,6 +886,8 @@ export const discrepancyAction = async (
         }
 
         const invoiceId = invoiceRes[0].id;
+
+        console.log(invoiceId)
 
         const [existing]: any = await conn.execute(
             `SELECT id FROM discrepancy_table WHERE sp1_id = ?`,
