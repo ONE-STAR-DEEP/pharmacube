@@ -176,9 +176,7 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
             data.remark || null
         ])
 
-        const InvAmt = Number(check[0].InvAmt); 
-        console.log(InvAmt, data.amount);
-
+        const InvAmt = Number(check[0].InvAmt);
         let status;
 
         if (InvAmt === data.amount) {
@@ -188,9 +186,6 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
         } else if (InvAmt < data.amount) {
             status = 210;
         }
-
-        console.log(status);
-
 
         const [update]: any = await conn.query(`
             UPDATE Salepurchase1 set payment = 1, status = ?, account = ? where id = ?
