@@ -284,7 +284,7 @@ export const fetchInvoiceItems = async (
             INNER JOIN Item ON Item.code = Salepurchase2.Itemc
             WHERE Salepurchase2.Vtype = ?
             AND Salepurchase2.Vno = ?
-            ORDER BY Item.Compname ASC`,
+            ORDER BY Item.PARTICULARS ASC`,
             [Vtyp, VNo]
         );
 
