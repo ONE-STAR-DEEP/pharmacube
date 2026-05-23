@@ -1,4 +1,4 @@
-import AddUser from '@/components/admin/AddUser';
+
 import { userColumns } from '@/components/admin/userTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';

@@ -21,6 +21,7 @@ export async function uploadFile(file: File) {
     // Create folder path
     const uploadDir = path.join(
         process.cwd(),
+        "..",
         "uploads",
         "recipts",
         monthFolder
