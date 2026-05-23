@@ -110,6 +110,15 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
+                        <SidebarMenuItem>
+                            <Link
+                                href="/reviewer/dashboard/check"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <FileText size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
                         {/* Invoices */}
                         <SidebarMenuItem>
                             <Link

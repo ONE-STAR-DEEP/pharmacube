@@ -97,21 +97,21 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const Vtyp = row.original.Vtyp as string;
       const recipt = row.original.recipt;
       const id = row.original.id
-            const show = Boolean(row.original.urgent);    
-            const router = useRouter();
-            const handleClick = async () => {
-      
-              try {
-                const res = await markAsUrgent(id)
-                if (!res.success) {
-                  alert("Failed to update. Try again.")
-                  return
-                }
-                router.refresh()
-              } catch (error) {
-      
-              }
-            }
+      const show = Boolean(row.original.urgent);
+      const router = useRouter();
+      const handleClick = async () => {
+
+        try {
+          const res = await markAsUrgent(id)
+          if (!res.success) {
+            alert("Failed to update. Try again.")
+            return
+          }
+          router.refresh()
+        } catch (error) {
+
+        }
+      }
 
       return (
         <div className="flex items-center gap-1">

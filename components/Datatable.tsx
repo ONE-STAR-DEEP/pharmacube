@@ -33,7 +33,7 @@ export function DataTable<TData extends { discrepancy?: number, urgent?: boolean
   })
 
   return (
-    <div className="overflow-hidden rounded-none">
+    <div className="overflow-auto rounded-none">
       <Table className="table-fixed w-full">
         <TableHeader className="bg-primary/10">
           {table.getHeaderGroups().map((headerGroup) => (
