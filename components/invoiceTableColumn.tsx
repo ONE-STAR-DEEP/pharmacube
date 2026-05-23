@@ -119,6 +119,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;
       const discrepancy = row.original.status;
+      const recipt = row.original.recipt;
       const { role } = useRole();
       return (
         <div className="flex items-center">
@@ -128,13 +129,19 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             View
           </Button>
           {
+            recipt &&
+            <Button className="m-0 px-2" onClick={() => {
+              window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
+            }}>Recipt</Button>
+          }
+          {
             (discrepancy === 10 &&
               <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
             )
           }
           {
-            role === "account" && 
-            <Tnx invoiceId={row.original.id}/>
+            role === "account" &&
+            <Tnx invoiceId={row.original.id} />
           }
         </div>
       )

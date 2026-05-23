@@ -70,7 +70,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 80,
     cell: ({ row }) => {
       const value = row.getValue("discrepancy") as number;
-      
+
       const colorMap = {
         0: "text-green-600",
         1: "text-red-600",
@@ -94,6 +94,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;
+      const recipt = row.original.recipt;
 
       return (
         <div className="flex items-center justify-center gap-2 w-full">
@@ -105,7 +106,13 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           >
             Invoice
           </Button>
-          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp}/>
+          {
+            recipt &&
+            <Button className="m-0 px-2" onClick={() => {
+              window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
+            }}>Recipt</Button>
+          }
+          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
         </div>
       );
     },

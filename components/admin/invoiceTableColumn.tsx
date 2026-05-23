@@ -162,19 +162,20 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const VNo = row.original.Vno;
       const id = row.original.id
       const Vtyp = row.original.Vtyp;
+      const recipt = row.original.recipt;
       const router = useRouter();
       const show = Boolean(row.original.urgent);
       const handleClick = async () => {
-        
+
         try {
           const res = await markAsUrgent(id)
-          if(!res.success){
+          if (!res.success) {
             alert("Failed to update. Try again.")
             return
           }
           router.refresh()
         } catch (error) {
-          
+
         }
       }
 
@@ -185,6 +186,12 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }}>
             View
           </Button>
+          {
+            recipt &&
+            <Button className="m-0 px-2" onClick={() => {
+              window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
+            }}>Recipt</Button>
+          }
           {
             !show && <Button onClick={handleClick}>
               Urgent

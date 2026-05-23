@@ -105,6 +105,7 @@ export interface InvoiceData {
   discrepancy?: number;
   payment: boolean;
   urgent: boolean;
+  recipt: string;
 }
 
 export type DeliveryBoy = {
