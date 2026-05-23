@@ -19,7 +19,7 @@ const Dashboard = async ({ searchParams }: PageProps) => {
     const params = await searchParams;
 
     const page = Number(params?.page) || 1;
-    const limit = Number(params?.limit) || 10;
+    const limit = Number(params?.limit) || 20;
 
     const search = params?.search
 

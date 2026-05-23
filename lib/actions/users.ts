@@ -6,7 +6,7 @@ import { UserData, UserFormData } from "@/utils/types/DataTypes";
 
 export const fetchUserData = async (
   page: number = 1,
-  limit: number = 10,
+  limit: number = 20,
   search?: string
 ) => {
   const session = await getCurrentUserSafe();
