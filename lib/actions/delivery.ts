@@ -11,9 +11,27 @@ export async function uploadFile(file: File) {
 
     const ext = path.extname(file.name)
 
+    const now = new Date()
+
+    // Example: 2026-05
+    const monthFolder = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+    ).padStart(2, "0")}`
+
+    // Create folder path
+    const uploadDir = path.join(
+        process.cwd(),
+        "uploads",
+        "recipts",
+        monthFolder
+    )
+
+    // Create folder if it doesn't exist
+    fs.mkdirSync(uploadDir, { recursive: true })
+
     const filename = `IMG-recipt-${Date.now()}${ext}`
 
-    const uploadPath = path.join("/var/www/pc_recipts", filename)
+    const uploadPath = path.join(uploadDir, filename)
 
     const stream = Readable.fromWeb(file.stream() as any)
 
@@ -22,10 +40,12 @@ export async function uploadFile(file: File) {
     await new Promise<void>((resolve, reject) => {
         stream.pipe(writeStream)
         stream.on("error", reject)
+        writeStream.on("error", reject)
         writeStream.on("finish", resolve)
     })
 
-    return `/${filename}`
+    // Return relative URL
+    return `/uploads/recipts/${monthFolder}/${filename}`
 }
 
 export const updateDelivery = async (
