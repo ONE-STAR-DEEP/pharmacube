@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Ban, Edit, EllipsisVertical, Trash, UserCheck } from "lucide-react";
+import { Ban, EllipsisVertical, UserCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddUser from "./AddUser";
@@ -41,6 +41,7 @@ export const userColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "email",
     header: "Email",
+    size: 250
   },
   {
     accessorKey: "mobile",
@@ -51,6 +52,8 @@ export const userColumns: ColumnDef<UserData>[] = [
     header: "Role",
     cell: ({ row }) => {
       const type = row.getValue("type") as string;
+      const isPlus = Boolean(row.original.plus);
+      console.log(row.original.plus)
 
       const colorMap = {
         admin: "text-red-600",
@@ -63,7 +66,7 @@ export const userColumns: ColumnDef<UserData>[] = [
 
       return (
         <span className={`capitalize font-medium ${colorMap[type as keyof typeof colorMap]}`}>
-          {type}
+          {type}{isPlus ? "+" : ""}
         </span>
       );
     },

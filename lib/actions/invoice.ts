@@ -1186,7 +1186,7 @@ export const markAsUrgent = async (
     const userId = session?.id;
     const type = session?.type;
 
-    if (!userId || (type !== "user" && type !== "admin")) {
+    if (!userId) {
         return { success: false, message: "Unauthorized" };
     }
 

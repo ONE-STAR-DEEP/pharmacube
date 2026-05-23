@@ -50,6 +50,7 @@ export const fetchUserData = async (
         state,
         active,
         pincode,
+        plus,
         created_at
       FROM users
       ${where}

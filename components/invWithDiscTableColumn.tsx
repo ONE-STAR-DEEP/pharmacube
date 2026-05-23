@@ -5,6 +5,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import { Button } from "./ui/button";
 import InvoiceTableActions from "./invoiceTableActions";
+import { useRouter } from "next/navigation";
+import { markAsUrgent } from "@/lib/actions/invoice";
 
 export const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -88,16 +90,31 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: () => (
-      <div className="text-center font-bold w-full">Actions</div>
+      <div className="font-bold">Actions</div>
     ),
-    size: 150,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;
       const recipt = row.original.recipt;
+      const id = row.original.id
+            const show = Boolean(row.original.urgent);    
+            const router = useRouter();
+            const handleClick = async () => {
+      
+              try {
+                const res = await markAsUrgent(id)
+                if (!res.success) {
+                  alert("Failed to update. Try again.")
+                  return
+                }
+                router.refresh()
+              } catch (error) {
+      
+              }
+            }
 
       return (
-        <div className="flex items-center justify-center gap-2 w-full">
+        <div className="flex items-center gap-1">
           <Button
             className="m-0 px-2"
             onClick={() => {
@@ -113,6 +130,11 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             }}>Recipt</Button>
           }
           <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
+          {
+            !show && <Button onClick={handleClick}>
+              Urgent
+            </Button>
+          }
         </div>
       );
     },

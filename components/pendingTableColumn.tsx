@@ -5,6 +5,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import { Button } from "./ui/button";
 import InvoiceTableActions from "./invoiceTableActions";
+import { markAsUrgent } from "@/lib/actions/invoice";
+import { useRouter } from "next/navigation";
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
@@ -61,10 +63,25 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
-    size: 150,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp;
+      const id = row.original.id
+      const show = Boolean(row.original.urgent);    
+      const router = useRouter();
+      const handleClick = async () => {
+
+        try {
+          const res = await markAsUrgent(id)
+          if (!res.success) {
+            alert("Failed to update. Try again.")
+            return
+          }
+          router.refresh()
+        } catch (error) {
+
+        }
+      }
 
       return (
         <div className="flex items-center gap-2">
@@ -73,7 +90,12 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }}>
             View
           </Button>
-          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp}/>
+          {
+            !show && <Button onClick={handleClick}>
+              Urgent
+            </Button>
+          }
+          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
         </div>
       )
     },
