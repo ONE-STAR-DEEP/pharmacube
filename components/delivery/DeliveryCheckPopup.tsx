@@ -11,7 +11,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import { Field, FieldGroup } from "@/components/ui/field"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { fetchInvoiceByVNo, fetchInvoiceItems } from '@/lib/actions/invoice'
@@ -21,6 +23,7 @@ import { useRouter } from 'next/navigation'
 import { Camera, Check } from 'lucide-react'
 import { updateDelivery } from '@/lib/actions/delivery'
 import imageCompression from "browser-image-compression";
+import { Textarea } from '../ui/textarea'
 
 const MAX_SIZE_MB = 1.5;
 
@@ -44,12 +47,20 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<BillItem[] | null>(null);
   const [invoice, setInvoice] = useState<Invoice | null>(null);
-  const [formData, setFormData] = useState<BillItem[] | null>(null);
-  const [originalData, setOriginalData] = useState<BillItem[]>([]);
-  const [isDiscrepancy, setIsDiscrepancy] = useState(false);
+  const [remark, setRemark] = useState("");
   const [loading, setLoading] = useState(false)
   const [imgLoading, setImgLoading] = useState(false)
   const router = useRouter()
+
+  const [isDiscrepancy, setIsDiscrepancy] = useState(
+    Number(invoice?.discrepancy) === 1 ? true : false
+  );
+
+  useEffect(() => {
+    setIsDiscrepancy(
+      Number(invoice?.discrepancy) === 1 ? true : false
+    );
+  }, [invoice]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [image, setImage] = useState<File | null>(null);
@@ -81,7 +92,6 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
     const loadData = async () => {
       if (!open) return;
       try {
-        setIsDiscrepancy(false)
         const res = await fetchInvoiceItems(VNo, Vtyp);
         const invRes = await fetchInvoiceByVNo(VNo, Vtyp);
         if (!res.success && !invRes.success) {
@@ -91,29 +101,13 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
         }
         setData(res.data || [])
         setInvoice(invRes.data || null);
-        setOriginalData(res.data || []);
-        setFormData(res.data || [])
+
       } catch (error) {
         console.log(error);
       }
     }
     loadData();
   }, [open]);
-
-  useEffect(() => {
-    if (!formData || !originalData) return;
-
-    const isDifferent = formData.some((item, i) => {
-      const original = originalData[i];
-      return (
-        item.Qty !== original.Qty ||
-        item["Batch No."] !== original["Batch No."] ||
-        item['Exp.'] !== original['Exp.']
-      );
-    });
-
-    setIsDiscrepancy(isDifferent);
-  }, [formData]);
 
   const currentStatus = Number(invoice?.status)
 
@@ -122,20 +116,6 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
     if (loading) return;
     setLoading(true);
-
-    const cleanedData = (formData || []).map((item, i) => {
-      const original = originalData[i];
-
-      return {
-        ...item,
-        "Batch No.":
-          item['Batch No.'] === "" ? original['Batch No.'] : item['Batch No.'],
-        "Exp.":
-          item['Exp.'] === "" ? original['Exp.'] : item['Exp.'],
-        Qty:
-          item.Qty === "" ? original.Qty : item.Qty
-      };
-    });
 
     try {
       const imageData = new FormData();
@@ -146,12 +126,14 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
       if (!invoice) {
         return;
       }
-      const res = await updateDelivery(cleanedData || [], invoice?.id, isDiscrepancy, image);
+
+      const res = await updateDelivery(remark, invoice?.id, isDiscrepancy, image, data!);
 
       if (!res.success) {
         alert("Failed to update delivery details. Try Again");
         return;
       }
+
       setOpen(false)
       router.refresh();
     } catch (error) {
@@ -228,66 +210,32 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
             </DialogHeader>
 
             <FieldGroup className='overflow-y-auto'>
-              <div className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
+
+              <div className="grid grid-cols-[40px_150px_1fr_100px_150px] gap-4 mb-0">
                 <Label>SNo</Label>
                 <Label>Batch No.</Label>
                 <Label className='min-w-60'>Particular</Label>
-                <Label>Current Qty</Label>
-                <Label>Changed to</Label>
+                <Label>Quantity</Label>
                 <Label>Expiry</Label>
               </div>
 
               {data?.map((item, index) => {
-                const current = formData?.[index];
-                const original = originalData[index];
+
                 return (
 
-                  <div key={item.id} className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
+                  <div key={item.id} className="grid grid-cols-[40px_150px_1fr_100px_150px] gap-4 mb-0">
 
                     <Input
                       name="sno"
                       defaultValue={index + 1}
                       disabled
                     />
+
                     <Field>
                       <Input
                         name="batch"
-                        value={current?.['Batch No.'] || ""}
-
-                        onBlur={() => {
-                          setFormData((prev) => {
-                            if (!prev) return prev;
-
-                            return prev.map((billItem, i) => {
-                              if (i !== index) return billItem;
-
-                              return {
-                                ...billItem,
-                                "Batch No.":
-                                  billItem["Batch No."] === ""
-                                    ? original["Batch No."]
-                                    : billItem["Batch No."]
-                              };
-                            });
-                          });
-                        }}
-
-                        onChange={(e) => {
-                          const value = e.target.value;
-
-                          setFormData((prev) => {
-                            if (!prev) return prev;
-
-                            return prev.map((billItem, i) => {
-                              if (i !== index) return billItem;
-
-                              return {
-                                ...billItem,
-                                "Batch No.": value
-                              };
-                            });
-                          });
-                        }}
+                        value={item?.['Batch No.'] || ""}
+                        disabled
                       />
                     </Field>
 
@@ -309,94 +257,44 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
                     <Field>
                       <Input
-                        name="changed"
-                        placeholder={String(item.Qty)}
-                        value={current?.Qty ?? ""}
-
-                        onBlur={() => {
-                          setFormData((prev) => {
-                            if (!prev) return prev;
-
-                            return prev.map((billItem, i) => {
-                              if (i !== index) return billItem;
-
-                              return {
-                                ...billItem,
-                                Qty:
-                                  billItem["Qty"] === ""
-                                    ? original["Qty"]
-                                    : billItem["Qty"]
-                              };
-                            });
-                          });
-                        }}
-
-                        onChange={(e) => {
-                          const value = e.target.value;
-
-                          setFormData((prev) => {
-                            if (!prev) return prev;
-
-                            return prev.map((billItem, i) => {
-                              if (i !== index) return billItem;
-
-                              return {
-                                ...billItem,
-                                Qty: Number(value)
-                              };
-                            });
-                          });
-                        }}
-                      />
-                    </Field>
-
-                    <Field>
-                      <Input
                         name="expiry"
-                        value={current?.['Exp.'] || ""}
-
-                        onBlur={() => {
-                          setFormData((prev) => {
-                            if (!prev) return prev;
-
-                            return prev.map((billItem, i) => {
-                              if (i !== index) return billItem;
-
-                              return {
-                                ...billItem,
-                                "Exp.":
-                                  billItem["Exp."] === ""
-                                    ? original["Exp."]
-                                    : billItem["Exp."]
-                              };
-                            });
-                          });
-                        }}
-
-                        onChange={(e) => {
-                          const value = e.target.value;
-
-                          setFormData((prev) => {
-                            if (!prev) return prev;
-
-                            return prev.map((billItem, i) => {
-                              if (i !== index) return billItem;
-
-                              return {
-                                ...billItem,
-                                "Exp.": value
-                              };
-                            });
-                          });
-                        }}
+                        value={item?.['Exp.'] || ""}
+                        disabled
                       />
                     </Field>
                   </div>
                 )
-              })
-              }
+              })}
+
+
             </FieldGroup>
 
+            <div className='space-y-4'>
+              <Field>
+                <FieldLabel>Remark</FieldLabel>
+                <Textarea onChange={(e) => setRemark(e.target.value)} placeholder='Any Issue?' disabled={!!invoice?.remark} value={invoice?.remark || remark}></Textarea>
+              </Field>
+
+              <Field>
+                <FieldLabel>Discrepancy</FieldLabel>
+                <RadioGroup
+                  value={isDiscrepancy ? "yes" : "no"}
+                  onValueChange={(value) => { setIsDiscrepancy(value === "yes") }}
+                  className="w-fit"
+                  disabled={invoice?.discrepancy !== null && invoice?.discrepancy !== undefined}
+                >
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="no" id="r1" />
+                    <Label htmlFor="r1">No</Label>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="yes" id="r2" />
+                    <Label htmlFor="r2">Yes</Label>
+                  </div>
+                </RadioGroup>
+              </Field>
+            </div>
 
             <DialogFooter className=''>
               <DialogClose asChild>

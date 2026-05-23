@@ -146,7 +146,7 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                     <Field>
                       <Input
                         name="batch"
-                        value={current?.['Batch No.'] || ""}
+                        placeholder={current?.['Batch No.'] || "Batch No"}
 
                         onBlur={() => {
                           setFormData((prev) => {
@@ -204,8 +204,7 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                     <Field>
                       <Input
                         name="changed"
-                        placeholder={String(item.Qty)}
-                        value={current?.Qty ?? ""}
+                        type='number'
 
                         onBlur={() => {
                           setFormData((prev) => {
@@ -247,7 +246,7 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                     <Field>
                       <Input
                         name="expiry"
-                        value={current?.['Exp.'] || ""}
+                        placeholder={current?.["Exp."] || ""}
 
                         onBlur={() => {
                           setFormData((prev) => {
@@ -268,7 +267,35 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                         }}
 
                         onChange={(e) => {
-                          const value = e.target.value;
+                          let value = e.target.value;
+
+                          // Remove non-digits
+                          value = value.replace(/\D/g, "");
+
+                          // Max 4 digits
+                          value = value.slice(0, 4);
+
+                          if (value.length >= 2) {
+                            let month = Number(value.slice(0, 2));
+
+                            // Prevent month > 12
+                            if (month > 12) {
+                              value = "12" + value.slice(2);
+                            }
+
+                            // Prevent 00 month
+                            if (month === 0) {
+                              value = "01" + value.slice(2);
+                            }
+                          }
+
+                          // Format MM/YY
+                          if (value.length >= 3) {
+                            value = `${value.slice(0, 2)}/${value.slice(2)}`;
+                          }
+
+                          // Update visible input manually
+                          e.target.value = value;
 
                           setFormData((prev) => {
                             if (!prev) return prev;
@@ -282,7 +309,8 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                               };
                             });
                           });
-                        }}
+                        }
+                        }
                       />
                     </Field>
                   </div>

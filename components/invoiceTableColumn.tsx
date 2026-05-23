@@ -135,11 +135,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             }}>Recipt</Button>
           }
           {
-            (discrepancy === 10 &&
-              <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
-            )
-          }
-          {
             role === "account" &&
             <Tnx invoiceId={row.original.id} />
           }

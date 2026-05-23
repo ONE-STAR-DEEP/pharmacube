@@ -166,7 +166,8 @@ export const fetchInvoiceByVNo = async (
                 (Salepurchase1.Amt01 + Salepurchase1.Taxamt) AS 'Net Amount',
                 (Salepurchase1.Amt01 + Salepurchase1.Taxamt + Salepurchase1.Rndamt) AS 'Inv Amt',
                 Salepurchase1.status,
-                Salepurchase1.recipt
+                Salepurchase1.recipt,
+                Salepurchase1.remark
                 FROM Salepurchase1
                 INNER JOIN Acm ON Acm.code = Salepurchase1.Acno
                 WHERE Salepurchase1.Vtyp = ?
@@ -887,8 +888,6 @@ export const discrepancyAction = async (
 
         const invoiceId = invoiceRes[0].id;
 
-        console.log(invoiceId)
-
         const [existing]: any = await conn.execute(
             `SELECT id FROM discrepancy_table WHERE sp1_id = ?`,
             [invoiceId]
@@ -904,7 +903,7 @@ export const discrepancyAction = async (
             Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id
             )
             SELECT
-            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, 9, discrepancy, Rndamt, id
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, 0, 0, 0, 10, discrepancy, Rndamt, id
             FROM Salepurchase1
             WHERE id = ?
             `,
@@ -914,20 +913,20 @@ export const discrepancyAction = async (
         for (const item of billItems) {
             await conn.execute(
                 `
-        INSERT INTO discrepancy_items (
-          Vno, Vtype, Vdt, Itemc,
-          Qty, HSNCode, Batch, expiry,
-          Mrp, Ftrate, Dis, CGST, SGST, IGST,
-          invoice_id, old_Qty, old_batch_no, old_expiry
-        )
-        SELECT
-          Vno, Vtype, Vdt, Itemc,
-          ?, ?, Batch, expiry,
-          Mrp, Ftrate, Dis, CGST, SGST, IGST,
-          invoice_id, old_qty, old_batch_no, old_expiry
-        FROM Salepurchase2
-        WHERE id = ?
-        `,
+                INSERT INTO discrepancy_items (
+                Vno, Vtype, Vdt, Itemc,
+                Qty, HSNCode, Batch, expiry,
+                Mrp, Ftrate, Dis, CGST, SGST, IGST,
+                invoice_id, old_Qty, old_batch_no, old_expiry
+                )
+                SELECT
+                Vno, Vtype, Vdt, Itemc,
+                ?, ?, Batch, expiry,
+                Mrp, Ftrate, Dis, CGST, SGST, IGST,
+                invoice_id, old_qty, old_batch_no, old_expiry
+                FROM Salepurchase2
+                WHERE id = ?
+            `,
                 [
                     item.Qty,
                     item["HSN CODE"],
@@ -939,18 +938,18 @@ export const discrepancyAction = async (
 
         await conn.execute(
             `
-        UPDATE Salepurchase1
-        SET discrepancy = 1, status = 9, reviewer = ?
-        WHERE id = ?
+            DELETE FROM Salepurchase1
+            WHERE id = ? and
+            discrepancy = 1
         `,
-            [userId, invoiceId]
+            [invoiceId]
         );
 
         await conn.commit();
 
         return {
             success: true,
-            message: "Discrepancy recorded successfully",
+            message: "Discrepancy resolved successfully",
         };
     } catch (error) {
         await conn.rollback();

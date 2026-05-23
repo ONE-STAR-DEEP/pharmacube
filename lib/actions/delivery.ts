@@ -2,10 +2,10 @@
 
 import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
-import { BillItem } from "@/utils/types/DataTypes";
 import fs from "fs"
 import path from "path"
 import { Readable } from "stream"
+import { BillItem } from "@/utils/types/DataTypes";
 
 export async function uploadFile(file: File) {
 
@@ -50,10 +50,11 @@ export async function uploadFile(file: File) {
 }
 
 export const updateDelivery = async (
-    billItems: BillItem[],
+    remark: string | null,
     id: string,
     discrepancy: boolean,
-    recipt: File | null
+    recipt: File | null,
+    billItems: BillItem[] 
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -71,28 +72,6 @@ export const updateDelivery = async (
     try {
         await conn.beginTransaction();
 
-        for (const item of billItems) {
-            await conn.execute(
-                `
-                UPDATE Salepurchase2
-                SET 
-                old_Qty = IF(old_Qty IS NULL, Qty, old_Qty),
-                old_batch_no  = IF(old_batch_no  IS NULL, Batch, old_batch_no ),
-                old_expiry = IF(old_expiry IS NULL, expiry, old_expiry),
-                Qty = ?,
-                Batch = ?,
-                expiry = ?
-                WHERE id = ?
-                `,
-                [
-                    item.Qty,
-                    item["Batch No."],
-                    item["Exp."],
-                    item.id,
-                ]
-            );
-        }
-
         if (discrepancy) {
             await conn.execute(
                 `
@@ -101,10 +80,11 @@ export const updateDelivery = async (
                 status = 8,
                 discrepancy = 1,
                 delivery = ?,
-                recipt = ?
+                recipt = ?,
+                remark = ?
                 WHERE id = ?
                 `,
-                [userId, reciptUrl, id]
+                [userId, reciptUrl, remark, id]
             );
         } else {
             await conn.execute(
@@ -112,10 +92,48 @@ export const updateDelivery = async (
                 UPDATE Salepurchase1
                 SET 
                 status = 7,
-                recipt = ?
+                delivery = ?,
+                recipt = ?,
+                remark = ?
                 WHERE id = ? 
                 `,
-                [reciptUrl, id]
+                [userId, reciptUrl, remark, id]
+            );
+        }
+
+        await conn.execute(
+            `
+            INSERT INTO discrepancy_table (
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id
+            )
+            SELECT
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, 0, 0, 0, 10, discrepancy, Rndamt, id
+            FROM Salepurchase1
+            WHERE id = ?
+            `,
+            [id]
+        );
+
+        for (const item of billItems) {
+            await conn.execute(
+                `
+                INSERT INTO discrepancy_items (
+                Vno, Vtype, Vdt, Itemc,
+                Qty, HSNCode, Batch, expiry,
+                Mrp, Ftrate, Dis, CGST, SGST, IGST,
+                invoice_id, old_Qty, old_batch_no, old_expiry
+                )
+                SELECT
+                Vno, Vtype, Vdt, Itemc,
+                Qty, HSNCode, Batch, expiry,
+                Mrp, Ftrate, Dis, CGST, SGST, IGST,
+                invoice_id, old_qty, old_batch_no, old_expiry
+                FROM Salepurchase2
+                WHERE id = ?
+            `,
+                [
+                    item.id
+                ]
             );
         }
 

@@ -206,7 +206,7 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
 
               {Number(invoice?.discrepancy) === 1 ? (
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Processing..." : "Request New Invoice"}
+                  {loading ? "Processing..." : "Resolved"}
                 </Button>
               ) :
                 <Button type="submit" disabled={loading}>

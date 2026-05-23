@@ -23,6 +23,7 @@ export interface Invoice {
   discrepancy: number;
   status: number;
   recipt: string;
+  remark: string;
 }
 
 export type BillItem = {
