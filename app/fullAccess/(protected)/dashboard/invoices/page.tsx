@@ -4,6 +4,7 @@ import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import { fetchAllValidInvoices } from '@/lib/actions/invoice';
 import Filter from '@/components/Filter';
+import { fetchAttendedInvoices } from '@/lib/actions/reviewer-checker';
 
 type PageProps = {
     searchParams: Promise<{
@@ -27,7 +28,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
     const Vtyp = params?.Vtyp
 
-    const data = await fetchAllValidInvoices(page, limit, search, Vtyp);
+    const data = await fetchAttendedInvoices(page, limit, search, Vtyp);
 
     return (
         <div className='p-4 space-y-8'>

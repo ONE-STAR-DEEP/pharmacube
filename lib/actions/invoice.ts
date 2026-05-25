@@ -5,12 +5,13 @@ import { getCurrentUserSafe } from "../sessionCheck";
 import { BillItem, EInvoiceType, Invoice, InvoiceData } from "@/utils/types/DataTypes";
 
 
-type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery" | "account";
+type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery" | "account" | "fullAccess";
 
 const transitions: Record<Role, { from: number; to: number }> = {
     warehouse: { from: 0, to: 1 },
     checker: { from: 1, to: 2 },
     reviewer: { from: 2, to: 3 },
+    fullAccess: { from: 2, to: 3 },
     rider: { from: 3, to: 4 },
     account: { from: 3, to: 4 },
     delivery: { from: 6, to: 7 },
@@ -20,6 +21,7 @@ const discrepancyRule: Record<Role, { from: number; to: number }> = {
     warehouse: { from: 0, to: 1 },
     checker: { from: 1, to: 2 },
     reviewer: { from: 10, to: 11 },
+    fullAccess: { from: 10, to: 11 },
     rider: { from: 11, to: 12 },
     account: { from: 11, to: 12 },
     delivery: { from: 12, to: 13 },
@@ -29,6 +31,7 @@ const successMessages: Record<Role, string> = {
     warehouse: "Invoice approved and sent for checking",
     checker: "Invoice fully approved",
     reviewer: "Invoice successfully reviewed",
+    fullAccess: "Invoice successfully reviewed",
     rider: "Accepted",
     account: "Accepted",
     delivery: "Invoice delivered",

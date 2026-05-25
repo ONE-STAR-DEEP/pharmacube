@@ -3,12 +3,9 @@ import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
-import { fetchInvoicesToCheck, fetchPendingInvoices } from '@/lib/actions/invoice';
 import { RefreshOnFocus } from '@/components/warehouse/pendingRefresh';
-import { invoiceColumns } from '@/components/pendingTableColumn';
-import { getCurrentUserSafe } from '@/lib/sessionCheck';
-import { redirect } from 'next/navigation';
 import Filter from '@/components/Filter';
+import { fetchWarehouseInvoices } from '@/lib/actions/reviewer-checker';
 
 type PageProps = {
   searchParams: Promise<{
@@ -31,8 +28,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
   const status = params?.status
   const Vtyp = params?.Vtyp
 
-  const pendingInvoices = await fetchPendingInvoices({page, limit, search, Vtyp});
-  const InvoicesToCheck = await fetchInvoicesToCheck(page, limit, search);
+  const pendingInvoices = await fetchWarehouseInvoices({page, limit, search, Vtyp});
 
   return (
     <div className='p-4 space-y-4'>

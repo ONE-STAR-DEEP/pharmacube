@@ -28,7 +28,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
     header: "S.No",
-    size: 30,
+    size: 40,
     cell: ({ row }) => row.index + 1,
   },
   {
