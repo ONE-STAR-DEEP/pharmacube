@@ -32,6 +32,11 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => row.index + 1,
   },
   {
+    accessorKey: "GSTVno",
+    header: "GSTVno",
+    size: 120
+  },
+  {
     accessorKey: "Vdt",
     header: "Date",
     cell: ({ row }) => {
@@ -49,12 +54,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     accessorKey: "mTime",
     header: "Time",
     size: 80
-  },
-  {
-    accessorKey: "GSTVno",
-    header: "GSTVno",
-    size: 100
-
   },
   {
     accessorKey: "partyName",

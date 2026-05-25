@@ -15,6 +15,11 @@ export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => row.index + 1,
   },
   {
+    accessorKey: "GSTVno",
+    header: "GSTVno",
+    size: 120
+  },
+  {
     accessorKey: "Vdt",
     header: "Date",
     size: 80,
@@ -27,11 +32,6 @@ export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "mTime",
     header: "Time",
-    size: 80,
-  },
-  {
-    accessorKey: "GSTVno",
-    header: "GSTVno",
     size: 80,
   },
   {

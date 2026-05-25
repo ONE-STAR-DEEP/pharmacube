@@ -21,25 +21,10 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 40,
     cell: ({ row }) => row.index + 1,
   },
-  // {
-  //   accessorKey: "Vdt",
-  //   header: "Date",
-  //   size: 80,
-  //   cell: ({ row }) => {
-  //     const value = row.getValue("Vdt") as string;
-  //     const date = new Date(value);
-  //     return date.toLocaleDateString("en-GB");
-  //   },
-  // },
-  // {
-  //   accessorKey: "mTime",
-  //   header: "Time",
-  //   size: 80,
-  // },
   {
     accessorKey: "GSTVno",
     header: "GSTVno",
-    size: 80,
+    size: 120
   },
   {
     accessorKey: "partyName",
