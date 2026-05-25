@@ -81,12 +81,9 @@ const AddUser = ({ mode, id }: {
         { label: "Admin", value: "admin" },
         { label: "User (view only)", value: "user" },
         { label: "Warehouse", value: "warehouse" },
-        // { label: "Warehouse+", value: "warehouse+" },
-        // { label: "Checker", value: "checker" },
+        { label: "Full Access", value: "fullAccess" },
         { label: "Reviewer", value: "reviewer" },
-        // { label: "Rider", value: "rider" },
         { label: "Account", value: "account" },
-        // { label: "Rider+", value: "rider+" },
         { label: "Delivery", value: "delivery" }
     ]
 
@@ -164,8 +161,6 @@ const AddUser = ({ mode, id }: {
             );
 
             setCity(matchedCity || null);
-
-            // setCity({ label: data?.city || "", value: data?.city || "" })
         }
         loadData()
 
@@ -175,8 +170,6 @@ const AddUser = ({ mode, id }: {
         e.preventDefault()
         if (loading) return;
         setLoading(true);
-
-
 
         try {
             let newData: UserFormData = { ...data };

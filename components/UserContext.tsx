@@ -16,15 +16,13 @@ const RoleContext = createContext<RoleContextType>({
 
 export const RoleProvider = ({
   role,
-  isPlusUser,
   children,
 }: {
   role: Role;
-  isPlusUser?: boolean;
   children: React.ReactNode;
 }) => {
   return (
-    <RoleContext.Provider value={{ role, isPlusUser }}>
+    <RoleContext.Provider value={{ role }}>
       {children}
     </RoleContext.Provider>
   );

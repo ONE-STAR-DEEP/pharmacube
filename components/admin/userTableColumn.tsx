@@ -53,7 +53,6 @@ export const userColumns: ColumnDef<UserData>[] = [
     cell: ({ row }) => {
       const type = row.getValue("type") as string;
       const isPlus = Boolean(row.original.plus);
-      console.log(row.original.plus)
 
       const colorMap = {
         admin: "text-red-600",

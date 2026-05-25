@@ -2,7 +2,6 @@ import { invoiceColumns } from '@/components/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
-import { fetchAllValidInvoices } from '@/lib/actions/invoice';
 import Filter from '@/components/Filter';
 import { fetchAttendedInvoices } from '@/lib/actions/reviewer-checker';
 

@@ -27,7 +27,6 @@ const Invoices = async () => {
         <section className='space-y-0'>
           <div className='bg-white  p-4'>
             <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={assignedInvoiceColumns} />
-            {/* <Pagination totalPages={pendingInvoices.pagination?.totalPages || 1} /> */}
           </div>
         </section>
       </div>
@@ -43,7 +42,6 @@ const Invoices = async () => {
         <section className='space-y-0'>
           <div className='bg-white  p-4'>
             <DataTable data={Array.isArray(acceptedInvoices.data) ? acceptedInvoices.data : []} columns={acceptedInvoiceColumns} />
-            {/* <Pagination totalPages={acceptedInvoices.pagination?.totalPages || 1} /> */}
           </div>
         </section>
       </div>
@@ -59,7 +57,6 @@ const Invoices = async () => {
         <section className='space-y-0'>
           <div className='bg-white  p-4'>
             <DataTable data={Array.isArray(pickedInvoices.data) ? pickedInvoices.data : []} columns={pickedInvoiceColumns} />
-            {/* <Pagination totalPages={pickedInvoices.pagination?.totalPages || 1} /> */}
           </div>
         </section>
       </div>
