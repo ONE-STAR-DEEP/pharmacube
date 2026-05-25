@@ -1097,7 +1097,7 @@ export const fetchDiscrepancyeByVNo = async (
                 discrepancy_table.recipt
                 FROM discrepancy_table
                 INNER JOIN Acm ON Acm.code = discrepancy_table.Acno
-                WHERE discrepancy_table.Vtyp = 'S1'
+                WHERE discrepancy_table.Vtyp = "${Vtyp}"
                 AND discrepancy_table.Vno = ?
                 LIMIT 1
                 `,
@@ -1158,7 +1158,7 @@ export const fetchDiscrepancyItems = async (
             END AS 'Tax'
             FROM discrepancy_items
             INNER JOIN Item ON Item.code = discrepancy_items.Itemc
-            WHERE discrepancy_items.Vtype = 'S1'
+            WHERE discrepancy_items.Vtype = "${Vtyp}"
             AND discrepancy_items.Vno = ?
             ORDER BY Item.Compname ASC`,
             [VNo]

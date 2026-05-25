@@ -25,7 +25,7 @@ import { updateDelivery } from '@/lib/actions/delivery'
 import imageCompression from "browser-image-compression";
 import { Textarea } from '../ui/textarea'
 
-const MAX_SIZE_MB = 1.5;
+const MAX_SIZE_MB = 1;
 
 const processImage = async (file: File) => {
   // If already small, send as-is
@@ -118,11 +118,6 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
     setLoading(true);
 
     try {
-      const imageData = new FormData();
-
-      if (image) {
-        imageData.append("receipt", image);
-      }
       if (!invoice) {
         return;
       }

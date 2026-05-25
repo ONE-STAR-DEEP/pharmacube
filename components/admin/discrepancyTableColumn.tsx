@@ -3,7 +3,6 @@ import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
-import InvoiceTableActions from "../invoiceTableActions";
 import { IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
 
@@ -98,7 +97,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         1: "text-red-600",
         2: "text-blue-600",
       };
-
       return (
         <div className="flex items-center">
           <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
@@ -150,7 +148,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       return (
         <div className="flex items-center">
           <Button className="m-0 px-2" onClick={() => {
-            router.push(`/invoice/${Vtyp}-${VNo}/discrepancy`)
+            window.open(`/invoice/${Vtyp}-${VNo}/discrepancy`, "_blank", "noopener,noreferrer")
           }}>
             View
           </Button>
