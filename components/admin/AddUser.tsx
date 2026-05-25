@@ -84,7 +84,7 @@ const AddUser = ({ mode, id }: {
         { label: "Full Access", value: "fullAccess" },
         { label: "Reviewer", value: "reviewer" },
         { label: "Account", value: "account" },
-        { label: "Delivery", value: "delivery" }
+        { label: "Rider", value: "rider" }
     ]
 
     useEffect(() => {
