@@ -4,13 +4,22 @@ import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import InvoiceActions from "./InvoiceActions";
+import { useSearchParams } from "next/navigation";
 
 export const assignedInvoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
     header: "S.No",
     size: 40,
-    cell: ({ row }) => row.index + 1,
+    cell: ({ row }) => {
+
+      const searchParams = useSearchParams();
+
+      const page = Number(searchParams.get("page"));
+      const limit = Number(searchParams.get("limit"));
+
+      return (((page - 1) * limit) + (row.index + 1))
+    }
   },
   {
     accessorKey: "GSTVno",
@@ -65,8 +74,8 @@ export const assignedInvoiceColumns: ColumnDef<InvoiceData>[] = [
       const id = row.original.id;
       return (
         <div className="flex items-center gap-2">
-          
-          <InvoiceActions id={id} action="accepted"/>
+
+          <InvoiceActions id={id} action="accepted" />
         </div>
       )
     },

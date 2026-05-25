@@ -1,7 +1,7 @@
 "use client";
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import InvoiceTableActions from "../invoiceTableActions";
 import { IndianRupee } from "lucide-react";
@@ -25,8 +25,21 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
     header: "S.No",
-    size: 30,
-    cell: ({ row }) => row.index + 1,
+    size: 40,
+    cell: ({ row }) => {
+
+      const searchParams = useSearchParams();
+
+      const page = Number(searchParams.get("page"));
+      const limit = Number(searchParams.get("limit"));
+
+      return (((page - 1) * limit) + (row.index + 1))
+    }
+  },
+  {
+    accessorKey: "GSTVno",
+    header: "GSTVno",
+    size: 100
   },
   {
     accessorKey: "Vdt",
@@ -46,12 +59,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     accessorKey: "mTime",
     header: "Time",
     size: 80
-  },
-  {
-    accessorKey: "GSTVno",
-    header: "GSTVno",
-    size: 100
-
   },
   {
     accessorKey: "partyName",

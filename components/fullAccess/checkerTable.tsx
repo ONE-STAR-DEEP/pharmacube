@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import ItemUpdatePopup from "../checker/ItemUpdatePopup";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { markAsUrgent } from "@/lib/actions/invoice";
 
 export const STATUS_LABEL: Record<number, string> = {
@@ -30,7 +30,15 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         id: "sno",
         header: "S.No",
         size: 40,
-        cell: ({ row }) => row.index + 1,
+        cell: ({ row }) => {
+
+            const searchParams = useSearchParams();
+
+            const page = Number(searchParams.get("page"));
+            const limit = Number(searchParams.get("limit"));
+
+            return (((page - 1) * limit) + (row.index + 1))
+        }
     },
     {
         accessorKey: "GSTVno",

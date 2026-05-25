@@ -32,7 +32,7 @@ export default async function ProtectedLayout({
 
                         {/* Content */}
                         <main className="flex-1 mt-12 overflow-auto">
-                            <div className="mx-auto w-full max-w-7xl px-0 flex flex-col min-h-full">
+                            <div className="mx-auto w-full max-w-7xl px-4 flex flex-col min-h-full">
                                 {children}
                             </div>
                         </main>

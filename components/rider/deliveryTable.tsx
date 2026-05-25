@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import DeliveryCheckPopup from "../delivery/DeliveryCheckPopup";
 import { Button } from "../ui/button";
+import { useSearchParams } from "next/navigation";
 
 export const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -17,7 +18,15 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     id: "sno",
     header: "S.No",
     size: 40,
-    cell: ({ row }) => row.index + 1,
+    cell: ({ row }) => {
+
+      const searchParams = useSearchParams();
+
+      const page = Number(searchParams.get("page"));
+      const limit = Number(searchParams.get("limit"));
+
+      return (((page - 1) * limit) + (row.index + 1))
+    }
   },
   {
     accessorKey: "GSTVno",
@@ -70,7 +79,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 80,
     cell: ({ row }) => {
       const value = row.getValue("discrepancy") as number;
-      
+
       const colorMap = {
         0: "text-green-600",
         1: "text-red-600",
@@ -105,7 +114,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           >
             Invoice
           </Button>
-          <DeliveryCheckPopup VNo={VNo} Vtyp={Vtyp}/>
+          <DeliveryCheckPopup VNo={VNo} Vtyp={Vtyp} />
         </div>
       );
     },

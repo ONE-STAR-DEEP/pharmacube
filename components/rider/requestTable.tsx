@@ -4,6 +4,7 @@ import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import InvoiceTableActions from "../invoiceTableActions";
+import { useSearchParams } from "next/navigation";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -19,7 +20,15 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     id: "sno",
     header: "S.No",
     size: 40,
-    cell: ({ row }) => row.index + 1,
+    cell: ({ row }) => {
+
+      const searchParams = useSearchParams();
+
+      const page = Number(searchParams.get("page"));
+      const limit = Number(searchParams.get("limit"));
+
+      return (((page - 1) * limit) + (row.index + 1))
+    }
   },
   {
     accessorKey: "GSTVno",

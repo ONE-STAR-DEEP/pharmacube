@@ -1,7 +1,7 @@
 "use client";
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
@@ -29,7 +29,15 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     id: "sno",
     header: "S.No",
     size: 40,
-    cell: ({ row }) => row.index + 1,
+    cell: ({ row }) => {
+
+      const searchParams = useSearchParams();
+
+      const page = Number(searchParams.get("page"));
+      const limit = Number(searchParams.get("limit"));
+
+      return (((page - 1) * limit) + (row.index + 1))
+    }
   },
   {
     accessorKey: "GSTVno",

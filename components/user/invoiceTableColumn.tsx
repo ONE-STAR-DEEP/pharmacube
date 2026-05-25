@@ -1,7 +1,7 @@
 "use client";
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
@@ -25,8 +25,16 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
     header: "S.No",
-    size: 30,
-    cell: ({ row }) => row.index + 1,
+    size: 40,
+    cell: ({ row }) => {
+
+      const searchParams = useSearchParams();
+
+      const page = Number(searchParams.get("page"));
+      const limit = Number(searchParams.get("limit"));
+
+      return (((page - 1) * limit) + (row.index + 1))
+    }
   },
   {
     accessorKey: "GSTVno",
@@ -85,7 +93,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const value = Boolean(row.getValue("payment"));
       return (
         <div className="flex items-center" >
-          <p className={`${value ? "text-emerald-700": "text-orange-600"} font-semibold`}>
+          <p className={`${value ? "text-emerald-700" : "text-orange-600"} font-semibold`}>
             {value ? "paid" : "pending"}</p>
         </div>
       )
@@ -119,7 +127,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
       const value = row.getValue("status") as number;
 
-      if(value === 2) {
+      if (value === 2) {
 
       }
 
