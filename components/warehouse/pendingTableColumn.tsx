@@ -4,6 +4,8 @@ import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { IndianRupee } from "lucide-react";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
+import { markAsUrgent } from "@/lib/actions/invoice";
 
 export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
   {
@@ -64,6 +66,22 @@ export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;
+      const id = row.original.id
+      const show = Boolean(row.original.urgent);
+      const router = useRouter();
+      const handleClick = async () => {
+
+        try {
+          const res = await markAsUrgent(id)
+          if (!res.success) {
+            alert("Failed to update. Try again.")
+            return
+          }
+          router.refresh()
+        } catch (error) {
+
+        }
+      }
       return (
         <div className="flex items-center">
           <Button className="m-0 px-2" onClick={() => {
@@ -71,6 +89,11 @@ export const pendingInvoiceColumns: ColumnDef<InvoiceData>[] = [
           }}>
             View
           </Button>
+          {
+            !show && <Button onClick={handleClick}>
+              Urgent
+            </Button>
+          }
         </div>
       )
     },

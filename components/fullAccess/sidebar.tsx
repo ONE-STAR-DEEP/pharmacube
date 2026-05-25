@@ -35,7 +35,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key } from "lucide-react";
+import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key, FileCheck, FileUp, FileClock } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
@@ -102,38 +102,59 @@ export function AppSidebar() {
 
                         <SidebarMenuItem>
                             <Link
-                                href="/reviewer/dashboard"
+                                href="/fullAccess/dashboard"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
                                 <LayoutDashboard size={18} />
-                                <span>Dashboard</span>
+                                <span>Review Invoices</span>
                             </Link>
                         </SidebarMenuItem>
 
                         <SidebarMenuItem>
                             <Link
-                                href="/reviewer/dashboard/check"
+                                href="/fullAccess/dashboard/check"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <FileCheck size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+
+                        <SidebarMenuItem>
+                            <Link
+                                href="/fullAccess/dashboard/warehouse"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <FileClock size={18} />
+                                <span>Warehouse</span>
+                            </Link>
+                        </SidebarMenuItem>
+
+                        <SidebarMenuItem>
+                            <Link
+                                href="/fullAccess/dashboard/allInvoices"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
                                 <FileText size={18} />
-                                <span>Check Invoices</span>
+                                <span>All Invoices</span>
                             </Link>
                         </SidebarMenuItem>
 
                         {/* Invoices */}
                         <SidebarMenuItem>
                             <Link
-                                href="/reviewer/dashboard/invoices"
+                                href="/fullAccess/dashboard/invoices"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
-                                <FileText size={18} />
+                                <FileUp size={18} />
                                 <span>Attended Invoices</span>
                             </Link>
                         </SidebarMenuItem>
 
+
                         <SidebarMenuItem>
                             <Link
-                                href="/reviewer/dashboard/discrepancies"
+                                href="/fullAccess/dashboard/discrepancies"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
                                 <FileX size={18} />

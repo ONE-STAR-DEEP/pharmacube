@@ -7,6 +7,8 @@ import { Button } from "./ui/button";
 import InvoiceTableActions from "./invoiceTableActions";
 import { useRole } from "./UserContext";
 import Tnx from "./account/Tnx";
+import { useRouter } from "next/navigation";
+import { markAsUrgent } from "@/lib/actions/invoice";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -114,13 +116,27 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
-    size: 120,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;
-      const discrepancy = row.original.status;
       const recipt = row.original.recipt;
       const { role } = useRole();
+      const id = row.original.id
+      const show = Boolean(row.original.urgent);
+      const router = useRouter();
+      const handleClick = async () => {
+
+        try {
+          const res = await markAsUrgent(id)
+          if (!res.success) {
+            alert("Failed to update. Try again.")
+            return
+          }
+          router.refresh()
+        } catch (error) {
+
+        }
+      }
       return (
         <div className="flex items-center">
           <Button className="m-0 px-2" onClick={() => {
@@ -133,6 +149,11 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             <Button className="m-0 px-2" onClick={() => {
               window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
             }}>Recipt</Button>
+          }
+          {
+            (!show && role !== "account") && <Button onClick={handleClick}>
+              Urgent
+            </Button>
           }
           {
             role === "account" &&

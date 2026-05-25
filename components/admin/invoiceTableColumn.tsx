@@ -157,7 +157,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
-    size: 120,
     cell: ({ row }) => {
       const VNo = row.original.Vno;
       const id = row.original.id

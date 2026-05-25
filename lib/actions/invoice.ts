@@ -46,7 +46,7 @@ export const fetchInvoices = async (
     const type = session?.type;
     const iss = session?.iss;
 
-    if (!userId || (type !== "admin" && type !== "user") || iss !== "pharmacube") {
+    if (!userId || iss !== "pharmacube") {
         return { success: false, message: "Unauthorized" };
     }
 
@@ -934,7 +934,6 @@ export const discrepancyAction = async (
                 ]
             );
         }
-
 
         await conn.execute(
             `

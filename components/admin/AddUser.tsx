@@ -81,12 +81,12 @@ const AddUser = ({ mode, id }: {
         { label: "Admin", value: "admin" },
         { label: "User (view only)", value: "user" },
         { label: "Warehouse", value: "warehouse" },
-        { label: "Warehouse+", value: "warehouse+" },
-        { label: "Checker", value: "checker" },
+        // { label: "Warehouse+", value: "warehouse+" },
+        // { label: "Checker", value: "checker" },
         { label: "Reviewer", value: "reviewer" },
-        { label: "Rider", value: "rider" },
+        // { label: "Rider", value: "rider" },
         { label: "Account", value: "account" },
-        { label: "Rider+", value: "rider+" },
+        // { label: "Rider+", value: "rider+" },
         { label: "Delivery", value: "delivery" }
     ]
 

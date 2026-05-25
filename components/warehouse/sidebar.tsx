@@ -35,7 +35,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { FileText, LogOut, LayoutDashboard, Key } from "lucide-react";
+import { FileText, LogOut, LayoutDashboard, Key, FileCheck } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
@@ -110,6 +110,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
                         {/* Invoices */}
+                        <SidebarMenuItem>
+                            <Link
+                                href="/warehouse/dashboard/check"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <FileCheck size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+
                         <SidebarMenuItem>
                             <Link
                                 href="/warehouse/dashboard/invoices"
