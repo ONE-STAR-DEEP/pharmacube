@@ -97,6 +97,6 @@ export const loginUser = async (data: User) => {
         }
     }
     finally {
-        conn.release();
+        if (conn) conn.release();
     }
 }

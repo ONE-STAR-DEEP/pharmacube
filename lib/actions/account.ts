@@ -49,8 +49,6 @@ export const fetchAllValidInvoices = async (
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
 
-        const rule = transitions[type as Role];
-
         const conditions = [`status > 3`];
         const params: any[] = [];
 
@@ -118,7 +116,7 @@ export const fetchAllValidInvoices = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 

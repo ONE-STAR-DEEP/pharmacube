@@ -54,7 +54,7 @@ export const updateDelivery = async (
     id: string,
     discrepancy: boolean,
     recipt: File | null,
-    billItems: BillItem[] 
+    billItems: BillItem[]
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -152,6 +152,6 @@ export const updateDelivery = async (
             message: "Failed to update invoice items",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };

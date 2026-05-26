@@ -98,7 +98,7 @@ export const fetchPendingInvoices = async ({
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -198,7 +198,7 @@ export const fetchWarehouseInvoices = async ({
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -288,6 +288,6 @@ export const fetchAttendedInvoices = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };

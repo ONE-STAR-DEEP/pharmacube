@@ -50,7 +50,7 @@ export const fetchDeliveryBoy = async () => {
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -125,7 +125,7 @@ export const approveForDelivery = async (
             message: "Failed to approve!!!",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -215,7 +215,7 @@ export const riderAction = async (
             message: "Failed to perform action, Try Again",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -303,7 +303,7 @@ export const riderAllAction = async (
             message: "Failed to perform action, Try Again",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -381,7 +381,7 @@ export const fetchPendingInvoicesByRiderID = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -469,7 +469,7 @@ export const fetchAllInvoicesByRiderID = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -559,7 +559,7 @@ export const fetchAcceptedInvoicesByRiderID = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -649,7 +649,7 @@ export const fetchDeliveredInvoicesByRiderID = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -738,6 +738,6 @@ export const fetchPendingDeliveryByRiderID = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };

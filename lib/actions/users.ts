@@ -90,7 +90,7 @@ export const fetchUserData = async (
       message: "Failed to fetch data",
     };
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 };
 
@@ -158,7 +158,7 @@ export const insertUser = async (data: UserFormData) => {
       message: "Failed to insert user",
     };
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 };
 
@@ -237,7 +237,7 @@ export const updateUser = async (id: number, data: UserFormData) => {
       message: "Failed to update user",
     };
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 };
 
@@ -286,7 +286,7 @@ export const toggleUserState = async (id: number, state: boolean) => {
       message: "Failed to update user",
     };
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 };
 
@@ -337,7 +337,7 @@ export const fetchUserByID = async (
       message: "Failed to fetch data",
     };
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 };
 

@@ -123,7 +123,7 @@ export const fetchInvoices = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -192,7 +192,7 @@ export const fetchInvoiceByVNo = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -242,7 +242,7 @@ export const fetchEInvoice = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -304,7 +304,7 @@ export const fetchInvoiceItems = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -410,7 +410,7 @@ export const fetchPendingInvoices = async ({
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -503,7 +503,7 @@ export const fetchInvoicesToCheck = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -596,7 +596,7 @@ export const fetchDiscrepancyInvoices = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -692,7 +692,7 @@ export const fetchAllValidInvoices = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -769,7 +769,7 @@ export const approveInvoice = async (Vno: string, Vtyp: string) => {
         }
     }
     finally {
-        conn.release();
+        if (conn) conn.release();
     }
 }
 
@@ -857,7 +857,7 @@ export const updateInvoiceItems = async (
             message: "Failed to update invoice items",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -962,7 +962,7 @@ export const discrepancyAction = async (
             message: "Failed to record discrepancy",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -1048,7 +1048,7 @@ export const fetchDiscrepancies = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -1116,7 +1116,7 @@ export const fetchDiscrepancyeByVNo = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -1176,7 +1176,7 @@ export const fetchDiscrepancyItems = async (
             message: "Failed to fetch data",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
 
@@ -1239,6 +1239,6 @@ export const markAsUrgent = async (
             message: "Failed to perform action, Try Again",
         };
     } finally {
-        conn.release();
+        if (conn) conn.release();
     }
 };
