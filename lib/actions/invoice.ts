@@ -794,8 +794,6 @@ export const updateInvoiceItems = async (
     try {
         await conn.beginTransaction();
 
-        console.log(discrepancy)
-
         for (const item of billItems) {
             await conn.execute(
                 `
@@ -940,9 +938,10 @@ export const discrepancyAction = async (
 
         await conn.execute(
             `
-            DELETE FROM Salepurchase1
-            WHERE id = ? and
-            discrepancy = 1
+            UPDATE Salepurchase1
+            SET discrepancy = 2,
+            status = 3
+            WHERE id = ?
         `,
             [invoiceId]
         );
