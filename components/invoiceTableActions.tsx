@@ -18,7 +18,7 @@ const InvoiceTableActions = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
         return (
             <ItemUpdatePopup VNo={VNo} Vtyp={Vtyp} />
         )
-    } else if (role === "reviewer") {
+    } else if (role === "reviewer" || role === "fullAccess") {
         return (
             <DiscrepancyCheckPopup VNo={VNo} Vtyp={Vtyp} />
         )

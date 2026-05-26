@@ -22,6 +22,19 @@ export const acceptedInvoiceColumns: ColumnDef<InvoiceData>[] = [
     }
   },
   {
+    id: "action",
+    header: "Action",
+    size: 80,
+    cell: ({ row }) => {
+      const id = row.original.id;
+      return (
+        <div className="flex items-center gap-2">
+          <InvoiceActions id={id} action="picked" />
+        </div>
+      )
+    },
+  },
+  {
     accessorKey: "GSTVno",
     header: "GSTVno",
     size: 120
@@ -62,20 +75,6 @@ export const acceptedInvoiceColumns: ColumnDef<InvoiceData>[] = [
           <IndianRupee size={12} />
           <p>
             {value}</p>
-        </div>
-      )
-    },
-  },
-  {
-    id: "action",
-    header: "Action",
-    size: 150,
-    cell: ({ row }) => {
-      const id = row.original.id;
-      return (
-        <div className="flex items-center gap-2">
-
-          <InvoiceActions id={id} action="picked" />
         </div>
       )
     },

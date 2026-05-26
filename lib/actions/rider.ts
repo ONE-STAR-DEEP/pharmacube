@@ -308,7 +308,8 @@ export const riderAllAction = async (
 };
 
 export const fetchPendingInvoicesByRiderID = async (
-    invoiceType: string
+    invoiceType: string,
+    search?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -334,13 +335,24 @@ export const fetchPendingInvoicesByRiderID = async (
 
     try {
 
-        const where = `
-        WHERE 
-        status = ?
-        AND rider = ?
-        `;
+        // const where = `
+        // WHERE 
+        // status = ?
+        // AND rider = ?
+        // AND (Vno LIKE ? OR GSTVno LIKE ?)
+        // `;
 
+        // const params: any[] = [status, userId, `%${search}%`, `%${search}%`];
+
+        const conditions = [`status = ? AND rider = ?`];
         const params: any[] = [status, userId];
+
+        if (search) {
+            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ?)`);
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        const where = `WHERE ${conditions.join(" AND ")}`;
 
         const [rows]: any = await conn.execute(
             `

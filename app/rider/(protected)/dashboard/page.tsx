@@ -6,19 +6,38 @@ import { assignedInvoiceColumns } from '@/components/rider/assignedTableColumn';
 import { pickedInvoiceColumns } from '@/components/rider/pickedTableColumn';
 import AllActions from '@/components/rider/AllAction';
 import { fetchPendingInvoices } from '@/lib/actions/invoice';
+import SearchComponent from '@/components/SearchComponent';
 
-const Invoices = async () => {
 
-  const pendingInvoices = await fetchPendingInvoices({Vtyp: "S3"});
-  const acceptedInvoices = await fetchPendingInvoicesByRiderID("accepted");
-  const pickedInvoices = await fetchPendingInvoicesByRiderID("picked");
+type PageProps = {
+  searchParams: Promise<{
+    page?: string;
+    limit?: string;
+    search?: string;
+  }>;
+};
+
+const Invoices = async ({ searchParams }: PageProps) => {
+
+  const params = await searchParams;
+
+  const search = params?.search
+
+  const pendingInvoices = await fetchPendingInvoices({ Vtyp: "S3", search: search });
+  const acceptedInvoices = await fetchPendingInvoicesByRiderID("accepted", search);
+  const pickedInvoices = await fetchPendingInvoicesByRiderID("picked", search);
 
   return (
     <div className='p-4 space-y-4'>
       <DashboardHeader type='Rider' />
 
       <div>
-        <header className='flex justify-between items-center bg-white px-4 pt-4'>
+        <header className='flex flex-col justify-between items-start gap-2 bg-white px-4 py-4'>
+          <div className='max-w-60'>
+            <SearchComponent placeholder='Search invoice' />
+          </div>
+        </header>
+        <header className='flex flex-col justify-between items-start gap-2 bg-white px-4 pt-4 mt-4'>
           <p className='font-semibold text-lg'>
             Available Delivery - {pendingInvoices?.pagination?.total}
           </p>
