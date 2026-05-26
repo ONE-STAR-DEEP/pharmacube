@@ -112,7 +112,8 @@ export const dashboardStats2 = async () => {
             ) AS account
 
             FROM Salepurchase1
-            WHERE DATE(Vdt) =  '2026-02-11';
+                WHERE Vdt >= CURDATE()
+                AND Vdt < CURDATE() + INTERVAL 1 DAY;
             `)
 
         return {
