@@ -107,7 +107,7 @@ export const updateDelivery = async (
             Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id
             )
             SELECT
-            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, 0, 0, 0, 10, discrepancy, Rndamt, id
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, 10, 1, Rndamt, id
             FROM Salepurchase1
             WHERE id = ?
             `,
