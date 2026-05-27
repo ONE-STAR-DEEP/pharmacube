@@ -35,7 +35,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key } from "lucide-react";
+import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key, FileUser } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
@@ -128,6 +128,16 @@ export function AppSidebar() {
                             >
                                 <FileText size={18} />
                                 <span>Attended Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+
+                        <SidebarMenuItem>
+                            <Link
+                                href="/reviewer/dashboard/clientDelivery"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <FileUser size={18} />
+                                <span>CDC</span>
                             </Link>
                         </SidebarMenuItem>
 

@@ -3,7 +3,7 @@ import { DataTable } from '@/components/Datatable';
 import Filter from '@/components/Filter';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
-import { fetchInvoices } from '@/lib/actions/invoice';
+import { fetchInvoices } from '@/lib/actions/admin';
 
 type PageProps = {
     searchParams: Promise<{

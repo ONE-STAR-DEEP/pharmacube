@@ -172,6 +172,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const recipt = row.original.recipt;
       const router = useRouter();
       const show = Boolean(row.original.urgent);
+      const status = Number(row.original.status);
       const handleClick = async () => {
 
         try {
@@ -199,8 +200,9 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
               window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
             }}>Recipt</Button>
           }
+
           {
-            !show && <Button onClick={handleClick}>
+            (!show && status !== 7 ) && <Button onClick={handleClick}>
               Urgent
             </Button>
           }

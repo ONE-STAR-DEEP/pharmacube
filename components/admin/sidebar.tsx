@@ -136,7 +136,18 @@ export function AppSidebar() {
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
                                 <FileUser size={18} />
-                                <span>Client Delivery Confirmed</span>
+                                <span>CDC</span>
+                            </Link>
+                        </SidebarMenuItem>
+
+                        {/* Invoices */}
+                        <SidebarMenuItem>
+                            <Link
+                                href="/admin/dashboard/discrepancy"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                            >
+                                <FileX size={18} />
+                                <span>Discrepancy</span>
                             </Link>
                         </SidebarMenuItem>
 
@@ -149,17 +160,6 @@ export function AppSidebar() {
                                 <Key size={18} />
                                 <span>Change Password</span>
                             </button>
-                        </SidebarMenuItem>
-
-                        {/* Invoices */}
-                        <SidebarMenuItem>
-                            <Link
-                                href="/admin/dashboard/discrepancy"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
-                            >
-                                <FileX size={18} />
-                                <span>Discrepancy</span>
-                            </Link>
                         </SidebarMenuItem>
 
                         {/* Logout */}
