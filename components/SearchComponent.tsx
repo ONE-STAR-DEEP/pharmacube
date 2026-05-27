@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
 const SearchComponent = (
-    { placeholder } : { placeholder: string }
+    { placeholder }: { placeholder: string }
 ) => {
 
     const router = useRouter()
@@ -28,6 +28,7 @@ const SearchComponent = (
 
         if (debouncedValue) {
             params.set("search", debouncedValue)
+            params.set("page", "1");
         } else {
             params.delete("search")
         }
