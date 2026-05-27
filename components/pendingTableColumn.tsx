@@ -71,7 +71,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
-    size: 200,
+    size: 220,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp;
@@ -93,7 +93,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       }
 
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Button className="m-0 px-2" onClick={() => {
             window.open(`/invoice/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer")
           }}>
