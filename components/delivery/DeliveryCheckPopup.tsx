@@ -28,18 +28,31 @@ import { Textarea } from '../ui/textarea'
 const MAX_SIZE_MB = 1;
 
 const processImage = async (file: File) => {
-  // If already small, send as-is
   if (file.size / (1024 * 1024) <= MAX_SIZE_MB) {
-    return file;
+    return new File(
+      [file],
+      file.name.replace(/\.[^/.]+$/, "") + ".webp",
+      {
+        type: "image/webp",
+      }
+    );
   }
 
   const compressedFile = await imageCompression(file, {
     maxSizeMB: MAX_SIZE_MB,
-    maxWidthOrHeight: 1920, // optional safety resize
+    maxWidthOrHeight: 1920,
     useWebWorker: true,
+    fileType: "image/webp",
   });
 
-  return compressedFile;
+  return new File(
+    [compressedFile],
+    file.name.replace(/\.[^/.]+$/, "") + ".webp",
+    {
+      type: "image/webp",
+      lastModified: Date.now(),
+    }
+  );
 };
 
 const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
@@ -276,7 +289,7 @@ const DeliveryCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                   value={isDiscrepancy ? "yes" : "no"}
                   onValueChange={(value) => { setIsDiscrepancy(value === "yes") }}
                   className="w-fit"
-                  disabled={invoice?.discrepancy !== null && invoice?.discrepancy !== undefined}
+                  disabled={Number(invoice?.status) !== 6}
                 >
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value="no" id="r1" />

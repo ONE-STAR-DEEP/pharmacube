@@ -100,6 +100,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: () => (
       <div className="font-bold">Actions</div>
     ),
+    size: 200,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;

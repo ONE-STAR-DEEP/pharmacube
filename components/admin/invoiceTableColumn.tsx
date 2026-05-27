@@ -15,7 +15,7 @@ export const STATUS_LABEL: Record<number, string> = {
   4: "Accepted for Delivery",
   5: "Out for Delivery",
   6: "Delivered",
-  7: "Delivery Verified",
+  7: "Client Delivery Confirmed",
   8: "Delivered with Discrepancy",
   9: "Discrepancy Raised",
   10: "Discrepancy Resolved",

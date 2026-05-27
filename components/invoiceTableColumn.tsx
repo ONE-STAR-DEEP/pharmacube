@@ -17,7 +17,7 @@ export const STATUS_LABEL: Record<number, string> = {
   4: "Accepted by Rider",
   5: "Out for Delivery",
   6: "Delivered",
-  7: "Delivery Verified",
+  7: "Client Delivery Confirmed",
   8: "Delivered with Discrepancy",
   9: "Discrepancy Raised",
   10: "Discrepancy Resolved",
@@ -25,7 +25,6 @@ export const STATUS_LABEL: Record<number, string> = {
   200: "Payment Received",
   210: "Excessive Payment Received"
 };
-
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
