@@ -202,7 +202,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }
 
           {
-            (!show && status !== 7 ) && <Button onClick={handleClick}>
+            (!show && status < 6 ) && <Button onClick={handleClick}>
               Urgent
             </Button>
           }
