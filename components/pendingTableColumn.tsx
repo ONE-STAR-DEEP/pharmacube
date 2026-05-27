@@ -71,6 +71,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
+    size: 200,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp;
