@@ -13,8 +13,12 @@ import Link from "next/link";
 import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, FileUser } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar() {
+
+    const pathname = usePathname();
+
     return (
         <Sidebar
             variant="sidebar"
@@ -45,7 +49,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/user/dashboard"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <LayoutDashboard size={18} />
                                 <span>Dashboard</span>
@@ -55,7 +59,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/user/dashboard/users"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/users" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <Users size={18} />
                                 <span>Users</span>
@@ -66,7 +70,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/user/dashboard/invoices"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileText size={18} />
                                 <span>Invoices</span>
@@ -76,7 +80,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/user/dashboard/clientDelivery"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileUser size={18} />
                                 <span>CDC</span>
@@ -87,7 +91,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/user/dashboard/discrepancy"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/discrepancy" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileX size={18} />
                                 <span>Discrepancy</span>
@@ -98,7 +102,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <button
                                 onClick={logout}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md transition text-left hover:bg-red-300 hover:cursor-pointer"
                             >
                                 <LogOut size={18} />
                                 <span>Logout</span>

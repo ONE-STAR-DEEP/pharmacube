@@ -38,16 +38,19 @@ import Link from "next/link";
 import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key, FileUser } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
+import { usePathname } from "next/navigation"
 
 export function AppSidebar() {
 
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
+    const pathname = usePathname();
+
+    const [currentPassword, setCurrentPassword] = useState("hover:bg-primary/50 hover:text-white");
+    const [newPassword, setNewPassword] = useState("hover:bg-primary/50 hover:text-white");
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [msg, setMsg] = useState("")
+    const [msg, setMsg] = useState("hover:bg-primary/50 hover:text-white")
     const [alertBox, setAlertBox] = useState(false)
-    const [alertTitle, setAlertTitle] = useState("")
+    const [alertTitle, setAlertTitle] = useState("hover:bg-primary/50 hover:text-white")
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
@@ -102,7 +105,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/admin/dashboard"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <LayoutDashboard size={18} />
                                 <span>Dashboard</span>
@@ -112,7 +115,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/admin/dashboard/users"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/users" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <Users size={18} />
                                 <span>Users</span>
@@ -123,7 +126,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/admin/dashboard/invoices"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileText size={18} />
                                 <span>Invoices</span>
@@ -133,7 +136,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/admin/dashboard/clientDelivery"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileUser size={18} />
                                 <span>CDC</span>
@@ -144,7 +147,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/admin/dashboard/discrepancy"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/admin/dashboard/discrepancy" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileX size={18} />
                                 <span>Discrepancy</span>
@@ -155,7 +158,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <button
                                 onClick={() => { setOpen(true) }}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-primary/50 hover:text-white transition text-left hover:cursor-pointer"
                             >
                                 <Key size={18} />
                                 <span>Change Password</span>
@@ -166,7 +169,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <button
                                 onClick={logout}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md transition text-left hover:bg-red-300 hover:cursor-pointer"
                             >
                                 <LogOut size={18} />
                                 <span>Logout</span>
@@ -184,14 +187,14 @@ export function AppSidebar() {
                             "
                         >
                             <form onSubmit={handleSubmit}>
-                                <DialogHeader className="">
+                                <DialogHeader className="hover:bg-primary/50 hover:text-white">
                                     <DialogTitle className="text-xl">Change Password</DialogTitle>
                                     <DialogDescription>
                                         Fill both of the Fields to change Password.
                                     </DialogDescription>
                                 </DialogHeader>
 
-                                <div className="">
+                                <div className="hover:bg-primary/50 hover:text-white">
 
                                     <FieldLabel className="text-lg mt-2 text-primary">
 
@@ -200,7 +203,7 @@ export function AppSidebar() {
 
                                         <Field className="gap-0">
                                             <div className="flex ">
-                                                <Label htmlFor="currentPassword" className="">Current Password</Label>
+                                                <Label htmlFor="currentPassword" className="hover:bg-primary/50 hover:text-white">Current Password</Label>
                                                 <span className="text-red-500 ">*</span>
                                             </div>
                                             <Input id="currentPassword" name="currentPassword" placeholder="Current Password" required
@@ -211,7 +214,7 @@ export function AppSidebar() {
 
                                         <Field className="gap-0">
                                             <div className="flex ">
-                                                <Label htmlFor="newPassword" className="">New Password</Label>
+                                                <Label htmlFor="newPassword" className="hover:bg-primary/50 hover:text-white">New Password</Label>
                                                 <span className="text-red-500 ">*</span>
                                             </div>
                                             <Input id="newPassword" name="newPassword" placeholder="New Password" required

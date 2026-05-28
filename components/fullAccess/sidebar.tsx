@@ -35,11 +35,14 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key, FileCheck, FileUp, FileClock, FileUser } from "lucide-react";
+import { FileText, LogOut, LayoutDashboard, FileX, Key, FileCheck, FileUp, FileClock, FileUser } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
+import { usePathname } from "next/navigation"
 
 export function AppSidebar() {
+
+    const pathname = usePathname();
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -103,7 +106,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/fullAccess/dashboard"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/fullAccess/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <LayoutDashboard size={18} />
                                 <span>Review Invoices</span>
@@ -113,7 +116,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/fullAccess/dashboard/check"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/fullAccess/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileCheck size={18} />
                                 <span>Check Invoices</span>
@@ -123,7 +126,8 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/fullAccess/dashboard/warehouse"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/fullAccess/dashboard/warehouse" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
                             >
                                 <FileClock size={18} />
                                 <span>Warehouse</span>
@@ -133,7 +137,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/fullAccess/dashboard/allInvoices"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/fullAccess/dashboard/allInvoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileText size={18} />
                                 <span>All Invoices</span>
@@ -144,7 +148,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/fullAccess/dashboard/invoices"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/fullAccess/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileUp size={18} />
                                 <span>Attended Invoices</span>
@@ -154,7 +158,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/fullAccess/dashboard/clientDelivery"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/fullAccess/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileUser size={18} />
                                 <span>CDC</span>
@@ -164,7 +168,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/fullAccess/dashboard/discrepancies"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/fullAccess/dashboard/discrepancies" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileX size={18} />
                                 <span>Discrepancies</span>
@@ -175,7 +179,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <button
                                 onClick={() => { setOpen(true) }}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md transition text-left hover:bg-primary/50 hover:text-white hover:cursor-pointer"
                             >
                                 <Key size={18} />
                                 <span>Change Password</span>
@@ -186,7 +190,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <button
                                 onClick={logout}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md transition text-left hover:bg-red-300 hover:cursor-pointer"
                             >
                                 <LogOut size={18} />
                                 <span>Logout</span>
