@@ -851,10 +851,11 @@ export const discrepancyAction = async (
             `
             UPDATE Salepurchase1
             SET discrepancy = 2,
+            reviewer = ?,
             status = 3
             WHERE id = ?
         `,
-            [invoiceId]
+            [userId, invoiceId]
         );
 
         await conn.commit();
