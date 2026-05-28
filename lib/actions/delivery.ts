@@ -86,23 +86,9 @@ export const updateDelivery = async (
                 `,
                 [userId, reciptUrl, remark, id]
             );
-        } else {
+
             await conn.execute(
                 `
-                UPDATE Salepurchase1
-                SET 
-                status = 7,
-                delivery = ?,
-                recipt = ?,
-                remark = ?
-                WHERE id = ? 
-                `,
-                [userId, reciptUrl, remark, id]
-            );
-        }
-
-        await conn.execute(
-            `
             INSERT INTO discrepancy_table (
             Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id
             )
@@ -111,12 +97,12 @@ export const updateDelivery = async (
             FROM Salepurchase1
             WHERE id = ?
             `,
-            [id]
-        );
+                [id]
+            );
 
-        for (const item of billItems) {
-            await conn.execute(
-                `
+            for (const item of billItems) {
+                await conn.execute(
+                    `
                 INSERT INTO discrepancy_items (
                 Vno, Vtype, Vdt, Itemc,
                 Qty, HSNCode, Batch, expiry,
@@ -131,9 +117,23 @@ export const updateDelivery = async (
                 FROM Salepurchase2
                 WHERE id = ?
             `,
-                [
-                    item.id
-                ]
+                    [
+                        item.id
+                    ]
+                );
+            }
+        } else {
+            await conn.execute(
+                `
+                UPDATE Salepurchase1
+                SET 
+                status = 7,
+                delivery = ?,
+                recipt = ?,
+                remark = ?
+                WHERE id = ? 
+                `,
+                [userId, reciptUrl, remark, id]
             );
         }
 
