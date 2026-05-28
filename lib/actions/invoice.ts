@@ -747,7 +747,7 @@ export const updateInvoiceItems = async (
                 checker = ?
                 WHERE id = ? 
                 `,
-                [invoiceId]
+                [userId, invoiceId]
             );
         }
 
