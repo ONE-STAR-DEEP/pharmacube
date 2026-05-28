@@ -743,7 +743,8 @@ export const updateInvoiceItems = async (
                 `
                 UPDATE Salepurchase1
                 SET 
-                status = 2
+                status = 2,
+                checker = ?
                 WHERE id = ? 
                 `,
                 [invoiceId]

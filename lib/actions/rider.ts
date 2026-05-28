@@ -103,11 +103,12 @@ export const approveForDelivery = async (
             `
                 UPDATE Salepurchase1
                 SET
-                status = 3
+                status = 3,
+                reviewer = ?
                 WHERE Vno = ?
                 AND Vtyp = '${Vtyp}'
                 `,
-            [VNo]
+            [userId, VNo]
         );
 
         await conn.commit();
