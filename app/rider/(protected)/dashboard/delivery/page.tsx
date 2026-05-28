@@ -48,8 +48,8 @@ const Invoices = async ({ searchParams }: PageProps) => {
         </div>
         {/* <div className='bg-white  p-4'>
           <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
-          <Pagination totalPages={data.pagination?.totalPages || 1} />
-        </div> */}
+          </div> */}
+        <Pagination totalPages={data.pagination?.totalPages || 1} />
       </section>
 
     </div>
