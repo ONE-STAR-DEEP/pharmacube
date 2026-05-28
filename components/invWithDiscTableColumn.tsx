@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import InvoiceTableActions from "./invoiceTableActions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { markAsUrgent } from "@/lib/actions/invoice";
+import { useRole } from "./UserContext";
 
 export const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -106,7 +107,9 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const Vtyp = row.original.Vtyp as string;
       const recipt = row.original.recipt;
       const id = row.original.id
-      const show = Boolean(row.original.urgent);
+      const { role } = useRole();
+      const isUrgent = Boolean(row.original.urgent);
+      const show = !isUrgent && (role !== "account" && role !== "rider")
       const router = useRouter();
       const handleClick = async () => {
 
@@ -140,7 +143,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }
           <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
           {
-            !show && <Button onClick={handleClick}>
+            show && <Button onClick={handleClick}>
               Urgent
             </Button>
           }

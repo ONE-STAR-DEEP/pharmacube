@@ -13,7 +13,7 @@ const transitions: Record<Role, { from: number; to: number }> = {
     reviewer: { from: 2, to: 3 },
     fullAccess: { from: 2, to: 3 },
     rider: { from: 3, to: 4 },
-    account: { from: 3, to: 4 },
+    account: { from: 1, to: 4 },
     delivery: { from: 6, to: 7 },
 };
 

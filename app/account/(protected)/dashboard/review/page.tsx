@@ -1,10 +1,10 @@
-import { invoiceColumns } from '@/components/pendingTableColumn';
+import { invoiceColumns } from '@/components/invWithDiscTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
+import { fetchPendingInvoices } from '@/lib/actions/invoice';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
-import Filter from '@/components/account/Filter';
-import { fetchAccountInvoices } from '@/lib/actions/account';
+import Filter from '@/components/Filter';
 
 type PageProps = {
   searchParams: Promise<{
@@ -28,12 +28,12 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const Vtyp = params?.Vtyp
 
-  const data = await fetchAccountInvoices({ page, limit, search, Vtyp: (Vtyp ? Vtyp : ["S1", "S2"]) });
+  const data = await fetchPendingInvoices({page, limit, search, Vtyp});
 
   return (
     <div className='p-4 space-y-4'>
 
-      <DashboardHeader type='Account' />
+      <DashboardHeader type='Reviewer' />
 
       <header className='bg-white p-4'>
         <p className='font-semibold text-lg'>
@@ -49,11 +49,12 @@ const Invoices = async ({ searchParams }: PageProps) => {
           </div>
 
         </div>
-        <div className='bg-white p-4'>
+        <div className='bg-white  p-4'>
           <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
           <Pagination totalPages={data.pagination?.totalPages || 1} />
         </div>
       </section>
+
     </div>
   )
 }

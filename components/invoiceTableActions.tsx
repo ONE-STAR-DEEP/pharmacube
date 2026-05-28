@@ -8,7 +8,7 @@ import { useRole } from "./UserContext";
 
 const InvoiceTableActions = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
-    const { role, isPlusUser } = useRole();
+    const { role } = useRole();
 
     if (role === "warehouse") {
         return (

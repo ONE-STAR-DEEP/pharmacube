@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import InvoiceTableActions from "./invoiceTableActions";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useRole } from "./UserContext";
 
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
@@ -76,7 +77,9 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp;
       const id = row.original.id
-      const show = Boolean(row.original.urgent);
+      const { role } = useRole();
+      const isUrgent = Boolean(row.original.urgent);
+      const show = !isUrgent && (role !== "account" && role !== "rider")
       const router = useRouter();
       const handleClick = async () => {
 
@@ -100,7 +103,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             View
           </Button>
           {
-            !show && <Button onClick={handleClick}>
+            show && <Button onClick={handleClick}>
               Urgent
             </Button>
           }

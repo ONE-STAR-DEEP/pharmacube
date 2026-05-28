@@ -127,8 +127,9 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const Vtyp = row.original.Vtyp as string;
       const recipt = row.original.recipt;
       const { role } = useRole();
-      const id = row.original.id
-      const show = Boolean(row.original.urgent);
+      const id = row.original.id;
+      const isUrgent = Boolean(row.original.urgent);
+      const show = !isUrgent && (role !== "account" && role !== "rider")
       const router = useRouter();
       const handleClick = async () => {
 
@@ -157,7 +158,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             }}>Recipt</Button>
           }
           {
-            (!show && role !== "account") && <Button onClick={handleClick}>
+            show && <Button onClick={handleClick}>
               Urgent
             </Button>
           }

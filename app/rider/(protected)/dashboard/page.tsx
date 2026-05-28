@@ -7,6 +7,7 @@ import { pickedInvoiceColumns } from '@/components/rider/pickedTableColumn';
 import AllActions from '@/components/rider/AllAction';
 import { fetchPendingInvoices } from '@/lib/actions/invoice';
 import SearchComponent from '@/components/SearchComponent';
+import RequestCard from '@/components/rider/RequestCard';
 
 
 type PageProps = {
@@ -42,6 +43,13 @@ const Invoices = async ({ searchParams }: PageProps) => {
             Available Delivery - {pendingInvoices?.pagination?.total}
           </p>
         </header>
+{/* 
+        <div className='space-y-2 p-2'>
+          <RequestCard />
+          <RequestCard />
+          <RequestCard />
+          <RequestCard />
+        </div> */}
 
         <section className='space-y-0'>
           <div className='bg-white  p-4'>

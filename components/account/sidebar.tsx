@@ -38,8 +38,11 @@ import Link from "next/link";
 import { FileText, LogOut, LayoutDashboard, Key } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
+import { usePathname } from "next/navigation"
 
 export function AppSidebar() {
+
+    const pathname = usePathname();
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -50,6 +53,7 @@ export function AppSidebar() {
     const [alertTitle, setAlertTitle] = useState("")
 
     const handleSubmit = async (e: FormEvent) => {
+
         e.preventDefault()
         if (loading) return;
         setLoading(true);
@@ -103,17 +107,30 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <Link
                                 href="/account/dashboard"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/account/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <LayoutDashboard size={18} />
                                 <span>Dashboard</span>
                             </Link>
                         </SidebarMenuItem>
                         {/* Invoices */}
+
+                        <SidebarMenuItem>
+                            <Link
+                                href="/account/dashboard/check"
+                                className={`${pathname === "/account/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
+                            >
+                                <FileText size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+
                         <SidebarMenuItem>
                             <Link
                                 href="/account/dashboard/invoices"
-                                className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
+                                className={`${pathname === "/account/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
                             >
                                 <FileText size={18} />
                                 <span>Invoices</span>

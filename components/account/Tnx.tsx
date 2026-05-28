@@ -70,6 +70,9 @@ const Tnx = ({ invoiceId }: { invoiceId: number }) => {
                             })}
                         </span>
 
+                        <span>Remark</span>
+                        <span>: {data?.remark}</span>
+
                     </div>
 
                     <div className="p-2 pt-4 flex justify-end gap-3">
