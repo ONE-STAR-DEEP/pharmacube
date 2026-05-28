@@ -1,3 +1,5 @@
+"use client"
+
 import { riderAction } from '@/lib/actions/rider';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react'

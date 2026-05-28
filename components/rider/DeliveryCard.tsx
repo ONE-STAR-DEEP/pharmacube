@@ -1,13 +1,15 @@
+"use client"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import InvoiceActions from "./InvoiceActions"
 import { InvoiceData } from "@/utils/types/DataTypes"
+import { Button } from "../ui/button";
+import DeliveryCheckPopup from "../delivery/DeliveryCheckPopup";
 
-const RequestCard = ({ data, action }: { data: InvoiceData[]; action: string }) => {
+const DeliveryCard = ({ data }: { data: InvoiceData[] }) => {
   return (
     <>
       {data.map((invoice) => (
@@ -16,7 +18,6 @@ const RequestCard = ({ data, action }: { data: InvoiceData[]; action: string }) 
           type="single"
           collapsible
           className={`${Boolean(invoice.urgent) && "bg-red-100"}`}
-
         >
           <AccordionItem value={`item-${invoice.id}`}>
             <AccordionTrigger>
@@ -35,13 +36,19 @@ const RequestCard = ({ data, action }: { data: InvoiceData[]; action: string }) 
 
                 <span>Amount</span>
                 <span>: {invoice["InvAmt"]}</span>
+
               </div>
 
-              <div className="flex items-center justify-end">
-                <InvoiceActions
-                  id={invoice.id}
-                  action={action}
-                />
+              <div className="flex gap-1 items-center justify-end">
+                <Button
+                  className="m-0 px-2"
+                  onClick={() => {
+                    window.open(`/invoice/${invoice.Vtyp}-${invoice.Vno}`, "_blank", "noopener,noreferrer");
+                  }}
+                >
+                  Invoice
+                </Button>
+                <DeliveryCheckPopup VNo={invoice.Vno} Vtyp={invoice.Vtyp} />
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -51,4 +58,4 @@ const RequestCard = ({ data, action }: { data: InvoiceData[]; action: string }) 
   );
 };
 
-export default RequestCard;
+export default DeliveryCard;

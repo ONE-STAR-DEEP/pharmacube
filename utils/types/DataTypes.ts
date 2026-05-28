@@ -107,6 +107,7 @@ export interface InvoiceData {
   payment: boolean;
   urgent: boolean;
   recipt: string;
+  InvAmt: string;
 }
 
 export type DeliveryBoy = {

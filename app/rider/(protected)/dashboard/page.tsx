@@ -43,19 +43,16 @@ const Invoices = async ({ searchParams }: PageProps) => {
             Available Delivery - {pendingInvoices?.pagination?.total}
           </p>
         </header>
-{/* 
-        <div className='space-y-2 p-2'>
-          <RequestCard />
-          <RequestCard />
-          <RequestCard />
-          <RequestCard />
-        </div> */}
 
-        <section className='space-y-0'>
+        <div className='space-y-2 p-2 bg-white'>
+          <RequestCard data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} action='accepted' />
+        </div>
+
+        {/* <section className='space-y-0'>
           <div className='bg-white  p-4'>
             <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={assignedInvoiceColumns} />
           </div>
-        </section>
+        </section> */}
       </div>
 
       <div>
@@ -66,14 +63,12 @@ const Invoices = async ({ searchParams }: PageProps) => {
           <AllActions action="picked" />
         </header>
 
-        <section className='space-y-0'>
-          <div className='bg-white  p-4'>
-            <DataTable data={Array.isArray(acceptedInvoices.data) ? acceptedInvoices.data : []} columns={acceptedInvoiceColumns} />
-          </div>
-        </section>
+        <div className='space-y-2 p-2 bg-white'>
+          <RequestCard data={Array.isArray(acceptedInvoices.data) ? acceptedInvoices.data : []} action='picked' />
+        </div>
       </div>
 
-      <div>
+      <div className='mb-20'>
         <header className='flex justify-between bg-white px-4 pt-4'>
           <p className='font-semibold text-lg'>
             Picked for Delivery - {pickedInvoices.total}
@@ -81,11 +76,15 @@ const Invoices = async ({ searchParams }: PageProps) => {
           <AllActions action="delivered" />
         </header>
 
-        <section className='space-y-0'>
+        <div className='space-y-2 p-2 bg-white'>
+          <RequestCard data={Array.isArray(pickedInvoices.data) ? pickedInvoices.data : []} action='delivered' />
+        </div>
+
+        {/* <section className='space-y-0'>
           <div className='bg-white  p-4'>
             <DataTable data={Array.isArray(pickedInvoices.data) ? pickedInvoices.data : []} columns={pickedInvoiceColumns} />
           </div>
-        </section>
+        </section> */}
       </div>
 
     </div>

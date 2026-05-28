@@ -4,6 +4,7 @@ import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import { fetchPendingDeliveryByRiderID } from '@/lib/actions/rider';
+import DeliveryCard from '@/components/rider/DeliveryCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -27,7 +28,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
   return (
     <div className='p-4 space-y-4'>
 
-      <DashboardHeader type='Delivery'/>
+      <DashboardHeader type='Delivery' />
 
       <header className='bg-white p-4'>
         <p className='font-semibold text-lg'>
@@ -35,17 +36,20 @@ const Invoices = async ({ searchParams }: PageProps) => {
         </p>
       </header>
 
-      <section className='space-y-2'>
+      <section className='space-y-2 mb-20'>
         <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
           <div className='max-w-60'>
             <SearchComponent placeholder='Search invoice' />
           </div>
-
         </div>
-        <div className='bg-white  p-4'>
+
+        <div className='space-y-2 p-2 bg-white'>
+          <DeliveryCard data={Array.isArray(data.data) ? data.data : []} />
+        </div>
+        {/* <div className='bg-white  p-4'>
           <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
           <Pagination totalPages={data.pagination?.totalPages || 1} />
-        </div>
+        </div> */}
       </section>
 
     </div>

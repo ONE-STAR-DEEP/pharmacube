@@ -4,6 +4,7 @@ import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import { fetchPendingInvoices } from '@/lib/actions/invoice';
+import DeliveryCard from '@/components/rider/DeliveryCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -22,12 +23,12 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const search = params?.search
 
-  const data = await fetchPendingInvoices({page, limit, search, Vtyp: "S3"});
+  const data = await fetchPendingInvoices({ page, limit, search, Vtyp: "S3" });
 
   return (
     <div className='p-4 space-y-4'>
 
-      <DashboardHeader type='Delivery'/>
+      <DashboardHeader type='Delivery' />
 
       <header className='bg-white p-4'>
         <p className='font-semibold text-lg'>
@@ -42,10 +43,16 @@ const Invoices = async ({ searchParams }: PageProps) => {
           </div>
 
         </div>
-        <div className='bg-white  p-4'>
+
+        <div className='space-y-2 p-2 bg-white mb-20'>
+          <DeliveryCard data={Array.isArray(data.data) ? data.data : []} />
+        </div>
+
+        {/* <div className='bg-white  p-4'>
           <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
           <Pagination totalPages={data.pagination?.totalPages || 1} />
-        </div>
+        </div> */}
+
       </section>
 
     </div>

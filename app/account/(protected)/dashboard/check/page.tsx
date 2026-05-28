@@ -29,7 +29,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const Vtyp = params?.Vtyp
 
-  const data = await fetchCheckerInvoices({page, limit, search, Vtyp});
+  const data = await fetchCheckerInvoices({ page, limit, search, Vtyp: (Vtyp ? Vtyp : ["S1", "S2"]) });
 
   return (
     <div className='p-4 space-y-4'>

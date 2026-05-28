@@ -109,7 +109,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const id = row.original.id
       const { role } = useRole();
       const isUrgent = Boolean(row.original.urgent);
-      const show = !isUrgent && (role !== "account" && role !== "rider")
+      const show = !isUrgent && (role !== "account" && role !== "rider" && role !== "delivery")
       const router = useRouter();
       const handleClick = async () => {
 
@@ -135,13 +135,13 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           >
             Invoice
           </Button>
+          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
           {
             recipt &&
             <Button className="m-0 px-2" onClick={() => {
               window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
             }}>Recipt</Button>
           }
-          <InvoiceTableActions VNo={VNo} Vtyp={Vtyp} />
           {
             show && <Button onClick={handleClick}>
               Urgent

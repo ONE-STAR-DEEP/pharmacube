@@ -42,7 +42,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import Link from "next/link";
-import { FileText, LogOut, LayoutDashboard, Key } from "lucide-react";
+import { FileText, LogOut, LayoutDashboard, Key, PackageCheck } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
@@ -125,7 +125,7 @@ export function AppSidebar({ plus }: { plus: boolean }) {
                                 href="/rider/dashboard/delivery"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"
                             >
-                                <LayoutDashboard size={18} />
+                                <PackageCheck size={18} />
                                 <span className="text-base font-medium">Delivery</span>
                             </Link>
                         </SidebarMenuItem>
