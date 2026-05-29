@@ -216,7 +216,7 @@ const AddUser = ({ mode, id }: {
             {mode === "add" ?
                 <Button onClick={() => { setOpen(true) }}><Plus /> Add User</Button>
                 :
-                <Button onClick={() => { setOpen(true) }} className="flex items-center justify-start gap-2 w-full h-8 hover:bg-white/10!" variant={"ghost"}><Edit />Edit</Button>
+                <Button onClick={() => { setOpen(true) }} className="flex items-center justify-start gap-2 w-full md:h-8 hover:bg-white/10!" variant={"ghost"}><Edit />Edit</Button>
             }
 
             <Dialog open={open} onOpenChange={setOpen}>

@@ -133,7 +133,6 @@ export const userColumns: ColumnDef<UserData>[] = [
       if (role === "admin")
         return (
           <div>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="no-print p-2"><EllipsisVertical /></Button>

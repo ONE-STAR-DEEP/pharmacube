@@ -1,4 +1,5 @@
 import AddUser from '@/components/admin/AddUser';
+import UserCard from '@/components/admin/UserCard';
 import { userColumns } from '@/components/admin/userTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
@@ -40,10 +41,18 @@ const Dashboard = async ({ searchParams }: PageProps) => {
                         <SearchComponent placeholder='Search user' />
                     </div>
 
-                    <AddUser mode='add'/>
+                    <AddUser mode='add' />
                 </div>
                 <div className='bg-white  p-4'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={userColumns} />
+
+                    <div className='hidden md:flex'>
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={userColumns} />
+                    </div>
+
+                    <div className='space-y-2 md:hidden'>
+                        <UserCard data={Array.isArray(data.data) ? data.data : []}/>
+                    </div>
+
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
             </section>
