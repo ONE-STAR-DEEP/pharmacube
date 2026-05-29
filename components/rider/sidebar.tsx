@@ -46,7 +46,7 @@ import { FileText, LogOut, LayoutDashboard, Key, PackageCheck } from "lucide-rea
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 
-export function AppSidebar({ plus }: { plus: boolean }) {
+export function AppSidebar() {
 
     const { toggleSidebar } = useSidebar();
     const [currentPassword, setCurrentPassword] = useState("");

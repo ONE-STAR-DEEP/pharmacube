@@ -1,4 +1,6 @@
+import DiscrepancyCard from '@/components/admin/discrepancyCard';
 import { invoiceColumns } from '@/components/admin/discrepancyTableColumn';
+import InvoiceCard from '@/components/admin/InvoiceCard';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
@@ -41,7 +43,16 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
                 </div>
                 <div className='bg-white  p-4'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+
+                    <div className='hidden md:flex'>
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                    </div>
+
+                    <div className='md:hidden space-y-2'>
+                        <DiscrepancyCard data={Array.isArray(data.data) ? data.data : []} />
+                    </div>
+
+                    {/* <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} /> */}
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
             </section>

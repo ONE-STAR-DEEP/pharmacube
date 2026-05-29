@@ -100,7 +100,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       return (
         <div className="flex items-center">
           <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
-            {Discrepancy_LABEL[value]}</p>
+            {Discrepancy_LABEL[value]}
+          </p>
         </div>
       )
     },

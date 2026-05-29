@@ -29,7 +29,7 @@ export default async function ProtectedLayout({
                     <div className="flex flex-1">
 
                         {/* Sidebar */}
-                        <AppSidebar plus={user.plus} />
+                        <AppSidebar/>
 
                         {/* Content */}
                         <main className="flex-1 mt-12 overflow-auto">
