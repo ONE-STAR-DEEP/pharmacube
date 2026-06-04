@@ -95,14 +95,8 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                 <span>No. of Items</span>
                 <span>: {invoice.NoOfItem}</span>
 
-                <span>Discrepancy</span>
-                <span className={`capitalize font-medium ${discColorMap[Number(invoice.discrepancy) as keyof typeof discColorMap]}`}>: {Discrepancy_LABEL[Number(invoice.discrepancy)]}</span>
-
                 <span>Status</span>
                 <span className={`capitalize font-medium ${colorMap[Number(invoice.status) as keyof typeof colorMap]}`}>: {STATUS_LABEL[Number(invoice.status)]}</span>
-
-                <span>Payment</span>
-                <span>: {Boolean(invoice.payment) ? "Yes" : "No"}</span>
 
                 <span>Amount</span>
                 <span>: {invoice["InvAmt"]}</span>
@@ -110,16 +104,10 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
 
               <div className="flex items-center justify-end gap-1">
                 <Button className="m-0 px-2" onClick={() => {
-                  window.open(`/invoice/${invoice.Vtyp}-${invoice.Vno}`, "_blank", "noopener,noreferrer")
+                  window.open(`/invoice/warehouse/${invoice.Vtyp}-${invoice.Vno}`, "_blank", "noopener,noreferrer")
                 }}>
                   View
                 </Button>
-                {
-                  invoice.recipt &&
-                  <Button className="m-0 px-2" onClick={() => {
-                    window.open(`https://opp.pharmacube.in${invoice.recipt}`, "_blank", "noopener,noreferrer")
-                  }}>Recipt</Button>
-                }
                 {
                   (!Boolean(invoice.urgent) && invoice.status < 6) && <Button onClick={() => handleClick(invoice.id)}>
                     Urgent

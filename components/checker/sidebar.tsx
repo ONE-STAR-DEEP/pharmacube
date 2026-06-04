@@ -102,7 +102,7 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/checker/dashboard"
                                 className={`${pathname === "/checker/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -113,7 +113,7 @@ export function AppSidebar() {
                         </SidebarMenuItem>
 
                         {/* Invoices */}
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/checker/dashboard/invoices"
                                 className={`${pathname === "/checker/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -124,7 +124,7 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/checker/dashboard/clientDelivery"
                                 className={`${pathname === "/checker/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}

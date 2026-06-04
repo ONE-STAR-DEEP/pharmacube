@@ -61,9 +61,9 @@ export function DataTable<TData extends { discrepancy?: number, urgent?: boolean
                 data-state={row.getIsSelected() && "selected"}
                 className={
                   row.original.urgent
-                    ? "bg-red-500/20"
+                    ? "bg-red-500/20 hover:bg-red-500 hover:text-white!"
                     : row.original.discrepancy && row.original.discrepancy >= 1
-                      ? "bg-primary/20"
+                      ? "bg-primary/20  hover:bg-primary/70 hover:text-white"
                       : ""
                 }
               >

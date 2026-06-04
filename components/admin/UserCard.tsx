@@ -60,7 +60,6 @@ const UserCard = ({ data }: { data: UserData[] }) => {
 
   const { role } = useRole();
 
-
   return (
     <>
       {data.map((user) => (
@@ -95,15 +94,17 @@ const UserCard = ({ data }: { data: UserData[] }) => {
                 <span>: {new Date(user.created_at).toLocaleDateString()}</span>
               </div>
 
-              <div className="flex gap-2 items-center justify-end mt-2">
+              {role === "admin" &&
+                <div className="flex gap-2 items-center justify-end mt-2">
 
-                <Button className="h-8" onClick={() => handelToggleActive(user.id, Boolean(user.active))}>{Boolean(user.active) ? <><Ban /> Disable</> : <><UserCheck /> Enable</>}</Button>
+                  <Button className="h-8" onClick={() => handelToggleActive(user.id, Boolean(user.active))}>{Boolean(user.active) ? <><Ban /> Disable</> : <><UserCheck /> Enable</>}</Button>
 
-                <div className="border border-primary rounded-sm px-2">
-                  <AddUser mode="edit" id={user.id} />
+                  <div className="border border-primary rounded-sm px-2">
+                    <AddUser mode="edit" id={user.id} />
+                  </div>
                 </div>
+              }
 
-              </div>
             </AccordionContent>
           </AccordionItem>
 

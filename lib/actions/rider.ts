@@ -220,6 +220,86 @@ export const riderAction = async (
     }
 };
 
+export const cancelRequest = async (
+    id: number
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+
+    if (!userId || type !== "rider") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+
+        await conn.beginTransaction();
+
+        const [check]: any = await conn.execute(
+            `
+            SELECT status FROM Salepurchase1
+            Where id = ?
+            `,
+            [id]
+        );
+
+        if (!check[0]) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: "Invoice not found"
+            };
+        }
+
+        if (Number(check[0].status) === 6) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: "Already delivered"
+            };
+        }
+
+        await conn.execute(
+            `
+                UPDATE Salepurchase1
+                SET
+                status = 3,
+                rider = NULL
+                WHERE id = ?
+                `,
+            [id]
+        );
+
+        await conn.execute(
+            `
+            DELETE FROM rider_locations
+            WHERE invoice_id = ? and action = "accepted";
+            `,
+            [id]
+        );
+
+        await conn.commit();
+
+        return {
+            success: true,
+            message: "Successfully Cancelled the status",
+        };
+    } catch (error) {
+        await conn.rollback();
+        console.error(error);
+
+        return {
+            success: false,
+            message: "Failed to perform action, Try Again",
+        };
+    } finally {
+        if (conn) conn.release();
+    }
+};
+
 export const riderAllAction = async (
     data: {
         lat: number;

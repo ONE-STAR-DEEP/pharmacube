@@ -33,6 +33,7 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
 import { FileText, LogOut, LayoutDashboard, Key, FileCheck, FileUser } from "lucide-react";
@@ -51,9 +52,12 @@ export function AppSidebar() {
     const [msg, setMsg] = useState("")
     const [alertBox, setAlertBox] = useState(false)
     const [alertTitle, setAlertTitle] = useState("")
+    const { toggleSidebar } = useSidebar();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
+
+
         if (loading) return;
         setLoading(true);
         try {
@@ -103,7 +107,16 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
+                            <Link
+                                href="/warehouse/dashboard"
+                                className={`${pathname === "/warehouse/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <LayoutDashboard size={18} />
+                                <span>Dashboard</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={() => { toggleSidebar() }}>
                             <Link
                                 href="/warehouse/dashboard"
                                 className={`${pathname === "/warehouse/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -113,7 +126,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
                         {/* Invoices */}
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
+                            <Link
+                                href="/warehouse/dashboard/check"
+                                className={`${pathname === "/warehouse/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileCheck size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={() => { toggleSidebar() }}>
                             <Link
                                 href="/warehouse/dashboard/check"
                                 className={`${pathname === "/warehouse/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -123,7 +145,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
+                            <Link
+                                href="/warehouse/dashboard/invoices"
+                                className={`${pathname === "/warehouse/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileText size={18} />
+                                <span>Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={() => { toggleSidebar() }}>
                             <Link
                                 href="/warehouse/dashboard/invoices"
                                 className={`${pathname === "/warehouse/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -133,7 +164,18 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
+                            <Link
+                                href="/warehouse/dashboard/clientDelivery"
+                                className={`${pathname === "/warehouse/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
+                            >
+                                <FileUser size={18} />
+                                <span>CDC</span>
+                            </Link>
+                        </SidebarMenuItem>
+
+                        <SidebarMenuItem className="md:hidden" onClick={() => { toggleSidebar() }}>
                             <Link
                                 href="/warehouse/dashboard/clientDelivery"
                                 className={`${pathname === "/warehouse/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}

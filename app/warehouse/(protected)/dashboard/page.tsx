@@ -9,6 +9,7 @@ import { invoiceColumns } from '@/components/pendingTableColumn';
 import { getCurrentUserSafe } from '@/lib/sessionCheck';
 import { redirect } from 'next/navigation';
 import Filter from '@/components/Filter';
+import InvoiceCard from '@/components/warehouse/InvoiceCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -31,7 +32,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
   const status = params?.status
   const Vtyp = params?.Vtyp
 
-  const pendingInvoices = await fetchPendingInvoices({page, limit, search, Vtyp});
+  const pendingInvoices = await fetchPendingInvoices({ page, limit, search, Vtyp });
   const InvoicesToCheck = await fetchInvoicesToCheck(page, limit, search);
 
   const user = await getCurrentUserSafe();
@@ -59,7 +60,14 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
         </div>
         <div className='bg-white  p-4'>
-          <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={pendingInvoiceColumns} />
+
+          <div className='space-y-2 md:hidden'>
+            <InvoiceCard data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} />
+          </div>
+
+          <div className='space-y-2 hidden md:flex'>
+            <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={pendingInvoiceColumns} />
+          </div>
           <Pagination totalPages={pendingInvoices.pagination?.totalPages || 1} />
         </div>
       </section>

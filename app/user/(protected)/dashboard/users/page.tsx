@@ -1,4 +1,5 @@
 
+import UserCard from '@/components/admin/UserCard';
 import { userColumns } from '@/components/admin/userTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
@@ -23,8 +24,6 @@ const Dashboard = async ({ searchParams }: PageProps) => {
 
     const search = params?.search
 
-    const status = params?.status
-
     const data = await fetchUserData(page, limit, search);
 
     return (
@@ -43,7 +42,15 @@ const Dashboard = async ({ searchParams }: PageProps) => {
                     <ChangePassword />
                 </div>
                 <div className='bg-white  p-4'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={userColumns} />
+
+                    <div className='hidden md:flex'>
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={userColumns} />
+                    </div>
+
+                    <div className='space-y-2 md:hidden'>
+                        <UserCard data={Array.isArray(data.data) ? data.data : []} />
+                    </div>
+
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
             </section>

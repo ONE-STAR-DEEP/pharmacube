@@ -8,6 +8,7 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
 import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, FileUser } from "lucide-react";
@@ -17,6 +18,7 @@ import { usePathname } from "next/navigation";
 
 export function AppSidebar() {
 
+    const { toggleSidebar } = useSidebar()
     const pathname = usePathname();
 
     return (
@@ -46,20 +48,44 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/user/dashboard"
-                                className={`${pathname === "/admin/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                                className={`${pathname === "/user/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <LayoutDashboard size={18} />
                                 <span>Dashboard</span>
                             </Link>
                         </SidebarMenuItem>
+
+                        <SidebarMenuItem className="md:hidden"
+                            onClick={() => { toggleSidebar() }}
+                        >
+                            <Link
+                                href="/user/dashboard"
+                                className={`${pathname === "/user/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <LayoutDashboard size={18} />
+                                <span>Dashboard</span>
+                            </Link>
+                        </SidebarMenuItem>
+
                         {/* Users */}
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/user/dashboard/users"
-                                className={`${pathname === "/admin/dashboard/users" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                                className={`${pathname === "/user/dashboard/users" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <Users size={18} />
+                                <span>Users</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden"
+                            onClick={() => { toggleSidebar() }}
+                        >
+                            <Link
+                                href="/user/dashboard/users"
+                                className={`${pathname === "/user/dashboard/users" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <Users size={18} />
                                 <span>Users</span>
@@ -67,20 +93,42 @@ export function AppSidebar() {
                         </SidebarMenuItem>
 
                         {/* Invoices */}
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/user/dashboard/invoices"
-                                className={`${pathname === "/admin/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                                className={`${pathname === "/user/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileText size={18} />
+                                <span>Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden"
+                            onClick={() => { toggleSidebar() }}
+                        >
+                            <Link
+                                href="/user/dashboard/invoices"
+                                className={`${pathname === "/user/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileText size={18} />
                                 <span>Invoices</span>
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/user/dashboard/clientDelivery"
-                                className={`${pathname === "/admin/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                                className={`${pathname === "/user/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileUser size={18} />
+                                <span>CDC</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden"
+                            onClick={() => { toggleSidebar() }}
+                        >
+                            <Link
+                                href="/user/dashboard/clientDelivery"
+                                className={`${pathname === "/user/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileUser size={18} />
                                 <span>CDC</span>
@@ -88,10 +136,21 @@ export function AppSidebar() {
                         </SidebarMenuItem>
 
                         {/* Invoices */}
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/user/dashboard/discrepancy"
-                                className={`${pathname === "/admin/dashboard/discrepancy" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                                className={`${pathname === "/user/dashboard/discrepancy" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileX size={18} />
+                                <span>Discrepancy</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden"
+                            onClick={() => { toggleSidebar() }}
+                        >
+                            <Link
+                                href="/user/dashboard/discrepancy"
+                                className={`${pathname === "/user/dashboard/discrepancy" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
                             >
                                 <FileX size={18} />
                                 <span>Discrepancy</span>

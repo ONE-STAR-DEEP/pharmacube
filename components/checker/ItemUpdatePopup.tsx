@@ -121,7 +121,7 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
               <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
             </DialogHeader>
 
-            <FieldGroup className='overflow-y-auto'>
+            <FieldGroup className='overflow-y-auto hidden md:flex'>
               <div className="grid grid-cols-[40px_150px_1fr_100px_100px_150px] gap-4 mb-0">
                 <Label>SNo</Label>
                 <Label>Batch No.</Label>
@@ -318,6 +318,200 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
               })
               }
             </FieldGroup>
+
+
+            <FieldGroup className='overflow-y-auto md:hidden'>
+
+              {data?.map((item, index) => {
+                const current = formData?.[index];
+                const original = originalData[index];
+                return (
+                  <div key={item.id}>
+                    <span className='ml-2 font-bold'>Item {index + 1}</span>
+                    <div className="grid grid-cols-[20%_80%] space-y-2 border rounded-lg p-2">
+
+                      <span>Batch No </span>
+                      <Field>
+                        <Input
+                          name="batch"
+                          placeholder={current?.['Batch No.'] || "Batch No"}
+
+                          onBlur={() => {
+                            setFormData((prev) => {
+                              if (!prev) return prev;
+
+                              return prev.map((billItem, i) => {
+                                if (i !== index) return billItem;
+
+                                return {
+                                  ...billItem,
+                                  "Batch No.":
+                                    billItem["Batch No."] === ""
+                                      ? original["Batch No."]
+                                      : billItem["Batch No."]
+                                };
+                              });
+                            });
+                          }}
+
+                          onChange={(e) => {
+                            const value = e.target.value;
+
+                            setFormData((prev) => {
+                              if (!prev) return prev;
+
+                              return prev.map((billItem, i) => {
+                                if (i !== index) return billItem;
+
+                                return {
+                                  ...billItem,
+                                  "Batch No.": value
+                                };
+                              });
+                            });
+                          }}
+                        />
+                      </Field>
+
+                      <span>Particular </span>
+                      <Field className='min-w-60'>
+                        <Input
+                          name="particular"
+                          defaultValue={item.PARTICULARS}
+                          disabled
+                        />
+                      </Field>
+
+                      <span>Current Qty </span>
+                      <Field>
+                        <Input
+                          name="qty"
+                          defaultValue={item.Qty}
+                          disabled
+                        />
+                      </Field>
+
+                      <span>Changed to </span>
+                      <Field>
+                        <Input
+                          name="changed"
+                          type='number'
+
+                          onBlur={() => {
+                            setFormData((prev) => {
+                              if (!prev) return prev;
+
+                              return prev.map((billItem, i) => {
+                                if (i !== index) return billItem;
+
+                                return {
+                                  ...billItem,
+                                  Qty:
+                                    billItem["Qty"] === ""
+                                      ? original["Qty"]
+                                      : billItem["Qty"]
+                                };
+                              });
+                            });
+                          }}
+
+                          onChange={(e) => {
+                            const value = e.target.value;
+
+                            setFormData((prev) => {
+                              if (!prev) return prev;
+
+                              return prev.map((billItem, i) => {
+                                if (i !== index) return billItem;
+
+                                return {
+                                  ...billItem,
+                                  Qty: Number(value)
+                                };
+                              });
+                            });
+                          }}
+                        />
+                      </Field>
+
+                      <span>Expiry </span>
+                      <Field>
+                        <Input
+                          name="expiry"
+                          placeholder={current?.["Exp."] || ""}
+
+                          onBlur={() => {
+                            setFormData((prev) => {
+                              if (!prev) return prev;
+
+                              return prev.map((billItem, i) => {
+                                if (i !== index) return billItem;
+
+                                return {
+                                  ...billItem,
+                                  "Exp.":
+                                    billItem["Exp."] === ""
+                                      ? original["Exp."]
+                                      : billItem["Exp."]
+                                };
+                              });
+                            });
+                          }}
+
+                          onChange={(e) => {
+                            let value = e.target.value;
+
+                            // Remove non-digits
+                            value = value.replace(/\D/g, "");
+
+                            // Max 4 digits
+                            value = value.slice(0, 4);
+
+                            if (value.length >= 2) {
+                              let month = Number(value.slice(0, 2));
+
+                              // Prevent month > 12
+                              if (month > 12) {
+                                value = "12" + value.slice(2);
+                              }
+
+                              // Prevent 00 month
+                              if (month === 0) {
+                                value = "01" + value.slice(2);
+                              }
+                            }
+
+                            // Format MM/YY
+                            if (value.length >= 3) {
+                              value = `${value.slice(0, 2)}/${value.slice(2)}`;
+                            }
+
+                            // Update visible input manually
+                            e.target.value = value;
+
+                            setFormData((prev) => {
+                              if (!prev) return prev;
+
+                              return prev.map((billItem, i) => {
+                                if (i !== index) return billItem;
+
+                                return {
+                                  ...billItem,
+                                  "Exp.": value
+                                };
+                              });
+                            });
+                          }
+                          }
+                        />
+                      </Field>
+                    </div>
+                  </div>
+                )
+              })
+              }
+            </FieldGroup>
+
 
             <DialogFooter className='mt-10'>
               <DialogClose asChild>

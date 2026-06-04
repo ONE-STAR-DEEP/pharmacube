@@ -5,6 +5,7 @@ import SearchComponent from '@/components/SearchComponent';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import Filter from '@/components/Filter';
 import { fetchPendingInvoices } from '@/lib/actions/reviewer-checker';
+import InvoiceCard from '@/components/warehouse/CheckerCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -28,7 +29,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const Vtyp = params?.Vtyp
 
-  const data = await fetchPendingInvoices({page, limit, search, Vtyp});
+  const data = await fetchPendingInvoices({ page, limit, search, Vtyp });
 
   return (
     <div className='p-4 space-y-4'>
@@ -47,10 +48,16 @@ const Invoices = async ({ searchParams }: PageProps) => {
             <SearchComponent placeholder='Search invoice' />
             <Filter />
           </div>
-
         </div>
-        <div className='bg-white  p-4'>
-          <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+
+        <div className='bg-white p-4'>
+          <div className='space-y-2 md:hidden'>
+            <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
+          </div>
+
+          <div className='space-y-2 hidden md:flex'>
+            <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+          </div>
           <Pagination totalPages={data.pagination?.totalPages || 1} />
         </div>
       </section>

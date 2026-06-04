@@ -10,6 +10,7 @@ import { InvoiceData } from "@/utils/types/DataTypes"
 import { Button } from "../ui/button";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
+import ItemUpdatePopup from "../checker/ItemUpdatePopup";
 
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -108,23 +109,18 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                 <span>: {invoice["InvAmt"]}</span>
               </div>
 
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex items-center justify-end gap-1 mt-2">
                 <Button className="m-0 px-2" onClick={() => {
                   window.open(`/invoice/${invoice.Vtyp}-${invoice.Vno}`, "_blank", "noopener,noreferrer")
                 }}>
                   View
                 </Button>
                 {
-                  invoice.recipt &&
-                  <Button className="m-0 px-2" onClick={() => {
-                    window.open(`https://opp.pharmacube.in${invoice.recipt}`, "_blank", "noopener,noreferrer")
-                  }}>Recipt</Button>
-                }
-                {
                   (!Boolean(invoice.urgent) && invoice.status < 6) && <Button onClick={() => handleClick(invoice.id)}>
                     Urgent
                   </Button>
                 }
+                <ItemUpdatePopup VNo={invoice.Vno} Vtyp={invoice.Vtyp} />
 
               </div>
             </AccordionContent>
