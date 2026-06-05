@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useState } from "react";
 
-export default function InvoiceControls({ VNo, Vtyp }: { VNo: string, Vtyp: string }) {
+export default function InvoiceControls({ VNo, Vtyp }: { VNo: number, Vtyp: string }) {
 
     const router = useRouter();
     const [loading, setLoading] = useState(false);
