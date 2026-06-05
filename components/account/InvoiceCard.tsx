@@ -10,6 +10,7 @@ import { InvoiceData } from "@/utils/types/DataTypes"
 import { Button } from "../ui/button";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
+import PaymentPopup from "./PaymentPopup";
 
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -69,7 +70,7 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
       }
       router.refresh()
     } catch (error) {
-
+      console.log(error)
     }
   }
 
@@ -114,17 +115,7 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                 }}>
                   View
                 </Button>
-                {
-                  invoice.recipt &&
-                  <Button className="m-0 px-2" onClick={() => {
-                    window.open(`https://opp.pharmacube.in${invoice.recipt}`, "_blank", "noopener,noreferrer")
-                  }}>Recipt</Button>
-                }
-                {
-                  (!Boolean(invoice.urgent) && invoice.status < 6) && <Button onClick={() => handleClick(invoice.id)}>
-                    Urgent
-                  </Button>
-                }
+                <PaymentPopup VNo={invoice.Vno} Vtyp={invoice.Vtyp} />
               </div>
             </AccordionContent>
           </AccordionItem>

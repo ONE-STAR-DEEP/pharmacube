@@ -35,9 +35,9 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const searchParams = useSearchParams();
 
       const page = Number(searchParams.get("page"));
-      const limit =  Number(searchParams.get("limit"));
+      const limit = Number(searchParams.get("limit"));
 
-      return (((page-1)*limit)+(row.index + 1))
+      return (((page - 1) * limit) + (row.index + 1))
     }
   },
   {
@@ -122,6 +122,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
+    size: 200,
     cell: ({ row }) => {
       const VNo = row.original.Vno as string;
       const Vtyp = row.original.Vtyp as string;
@@ -145,7 +146,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         }
       }
       return (
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           <Button className="m-0 px-2" onClick={() => {
             window.open(`/invoice/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer")
           }}>

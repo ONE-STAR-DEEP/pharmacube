@@ -5,6 +5,7 @@ import SearchComponent from '@/components/SearchComponent';
 import { fetchPendingInvoices } from '@/lib/actions/invoice';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import Filter from '@/components/Filter';
+import InvoiceReviewCard from '@/components/fullAccess/InvoiceReviewCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -28,7 +29,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
   const Vtyp = params?.Vtyp
 
-  const data = await fetchPendingInvoices({page, limit, search, Vtyp});
+  const data = await fetchPendingInvoices({ page, limit, search, Vtyp });
 
   return (
     <div className='p-4 space-y-4'>
@@ -49,10 +50,23 @@ const Invoices = async ({ searchParams }: PageProps) => {
           </div>
 
         </div>
+
         <div className='bg-white  p-4'>
-          <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+
+          <div className='space-y-2 md:hidden'>
+            {data.data?.length ?
+              <InvoiceReviewCard data={Array.isArray(data.data) ? data.data : []} />
+              : <div className='w-full text-center py-4'>No Results.</div>
+            }
+          </div>
+
+          <div className='hidden md:flex'>
+            <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+          </div>
+
           <Pagination totalPages={data.pagination?.totalPages || 1} />
         </div>
+
       </section>
 
     </div>

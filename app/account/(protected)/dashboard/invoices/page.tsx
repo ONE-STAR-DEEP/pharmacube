@@ -4,6 +4,7 @@ import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import Filter from '@/components/account/Filter';
 import { fetchAllValidInvoices } from '@/lib/actions/account';
+import InvoiceCard from '@/components/admin/InvoiceCard';
 
 type PageProps = {
     searchParams: Promise<{
@@ -27,7 +28,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
     const Vtyp = params?.Vtyp
 
-    const data = await fetchAllValidInvoices({page, limit, search, Vtyp: Vtyp ? Vtyp : ["S1", "S2"]});
+    const data = await fetchAllValidInvoices({ page, limit, search, Vtyp: Vtyp ? Vtyp : ["S1", "S2"] });
 
     return (
         <div className='p-4 space-y-8'>
@@ -45,10 +46,18 @@ const Invoices = async ({ searchParams }: PageProps) => {
                     </div>
 
                 </div>
+
                 <div className='bg-white  p-4'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                    <div className='md:hidden space-y-2'>
+                        <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
+                    </div>
+
+                    <div className='hidden md:flex'>
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                    </div>
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
+
             </section>
         </div>
     )

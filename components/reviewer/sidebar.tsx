@@ -33,9 +33,10 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key, FileUser } from "lucide-react";
+import { FileText, LogOut, LayoutDashboard, FileX, Key, FileUser } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 import { usePathname } from "next/navigation"
@@ -43,6 +44,7 @@ import { usePathname } from "next/navigation"
 export function AppSidebar() {
 
     const pathname = usePathname();
+    const { toggleSidebar } = useSidebar();
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -103,7 +105,16 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/reviewer/dashboard"
+                                className={`${pathname === "/reviewer/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <LayoutDashboard size={18} />
+                                <span>Dashboard</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/reviewer/dashboard"
                                 className={`${pathname === "/reviewer/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -113,7 +124,17 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/reviewer/dashboard/check"
+                                className={`${pathname === "/reviewer/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
+                            >
+                                <FileText size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/reviewer/dashboard/check"
                                 className={`${pathname === "/reviewer/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -125,7 +146,17 @@ export function AppSidebar() {
                         </SidebarMenuItem>
 
                         {/* Invoices */}
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/reviewer/dashboard/invoices"
+                                className={`${pathname === "/reviewer/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
+                            >
+                                <FileText size={18} />
+                                <span>Attended Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/reviewer/dashboard/invoices"
                                 className={`${pathname === "/reviewer/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -136,7 +167,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/reviewer/dashboard/clientDelivery"
+                                className={`${pathname === "/reviewer/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileUser size={18} />
+                                <span>CDC</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/reviewer/dashboard/clientDelivery"
                                 className={`${pathname === "/reviewer/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -146,7 +186,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/reviewer/dashboard/discrepancies"
+                                className={`${pathname === "/reviewer/dashboard/discrepancies" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileX size={18} />
+                                <span>Discrepancies</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/reviewer/dashboard/discrepancies"
                                 className={`${pathname === "/reviewer/dashboard/discrepancies" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}

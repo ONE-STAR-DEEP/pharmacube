@@ -6,6 +6,7 @@ import Filter from '@/components/account/Filter';
 import { fetchPendingInvoices } from '@/lib/actions/reviewer-checker';
 import { invoiceColumns } from '@/components/reviewer/checkerTable';
 import { fetchCheckerInvoices } from '@/lib/actions/account';
+import InvoiceCard from '@/components/warehouse/CheckerCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -51,7 +52,14 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
         </div>
         <div className='bg-white  p-4 overflow-x-auto'>
-          <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+
+          <div className='md:hidden space-y-2'>
+            <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
+          </div>
+
+          <div className='hidden md:flex'>
+            <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+          </div>
           <Pagination totalPages={data.pagination?.totalPages || 1} />
         </div>
       </section>

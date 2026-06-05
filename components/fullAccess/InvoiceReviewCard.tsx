@@ -10,52 +10,10 @@ import { InvoiceData } from "@/utils/types/DataTypes"
 import { Button } from "../ui/button";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
+import ItemUpdatePopup from "../checker/ItemUpdatePopup";
+import DiscrepancyCheckPopup from "../reviewer/DiscrepancyCheckPopup";
 
-const Discrepancy_LABEL: Record<number, string> = {
-  0: "No",
-  1: "Yes",
-  2: "Resolved",
-};
-
-const colorMap = {
-  0: "text-red-600",
-  1: "text-blue-600",
-  2: "text-green-600",
-  3: "text-amber-600",
-  4: "text-purple-500",
-  5: "text-teal-600",
-  6: "text-green-700",
-  7: "text-blue-700",
-  8: "text-yellow-700",
-  9: "text-red-700",
-  10: "text-emerald-600",
-  11: "text-violet-600",
-};
-
-const discColorMap = {
-  0: "text-green-600",
-  1: "text-red-600",
-  2: "text-blue-600",
-};
-
-const STATUS_LABEL: Record<number, string> = {
-  0: "Pending",
-  1: "Sent to Checker",
-  2: "Sent to Reviewer",
-  3: "Reviewer Approved",
-  4: "Accepted by Rider",
-  5: "Out for Delivery",
-  6: "Delivered",
-  7: "Client Delivery Confirmed",
-  8: "Delivered with Discrepancy",
-  9: "Discrepancy Raised",
-  10: "Discrepancy Resolved",
-  190: "Partial Payment Received",
-  200: "Payment Received",
-  210: "Excessive Payment Received"
-};
-
-const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
+const InvoiceReviewCard = ({ data }: { data: InvoiceData[] }) => {
 
   const router = useRouter();
 
@@ -81,7 +39,6 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
           type="single"
           collapsible
           className={`${Boolean(invoice.urgent) && "bg-red-100"}`}
-
         >
           <AccordionItem value={`item-${invoice.id}`}>
             <AccordionTrigger>
@@ -95,31 +52,17 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                 <span>No. of Items</span>
                 <span>: {invoice.NoOfItem}</span>
 
-                <span>Discrepancy</span>
-                <span className={`capitalize font-medium ${discColorMap[Number(invoice.discrepancy) as keyof typeof discColorMap]}`}>: {Discrepancy_LABEL[Number(invoice.discrepancy)]}</span>
-
-                <span>Status</span>
-                <span className={`capitalize font-medium ${colorMap[Number(invoice.status) as keyof typeof colorMap]}`}>: {STATUS_LABEL[Number(invoice.status)]}</span>
-
-                <span>Payment</span>
-                <span>: {Boolean(invoice.payment) ? "Yes" : "No"}</span>
-
                 <span>Amount</span>
                 <span>: {invoice["InvAmt"]}</span>
               </div>
 
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex items-center justify-end gap-1 mt-2">
                 <Button className="m-0 px-2" onClick={() => {
                   window.open(`/invoice/${invoice.Vtyp}-${invoice.Vno}`, "_blank", "noopener,noreferrer")
                 }}>
                   View
                 </Button>
-                {
-                  invoice.recipt &&
-                  <Button className="m-0 px-2" onClick={() => {
-                    window.open(`https://opp.pharmacube.in${invoice.recipt}`, "_blank", "noopener,noreferrer")
-                  }}>Recipt</Button>
-                }
+                <DiscrepancyCheckPopup VNo={invoice.Vno} Vtyp={invoice.Vtyp} />
                 {
                   (!Boolean(invoice.urgent) && invoice.status < 6) && <Button onClick={() => handleClick(invoice.id)}>
                     Urgent
@@ -134,4 +77,4 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
   );
 };
 
-export default InvoiceCard;
+export default InvoiceReviewCard;

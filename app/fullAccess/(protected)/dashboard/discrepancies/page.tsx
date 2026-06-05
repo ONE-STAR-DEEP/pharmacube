@@ -3,6 +3,7 @@ import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import { fetchDiscrepancies } from '@/lib/actions/invoice';
+import DiscrepancyCard from '@/components/admin/discrepancyCard';
 
 type PageProps = {
     searchParams: Promise<{
@@ -24,7 +25,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const status = params?.status
 
     const data = await fetchDiscrepancies(page, limit, search);
-    
+
     return (
         <div className='p-4 space-y-8'>
             <header className='bg-white p-4'>
@@ -41,7 +42,13 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
                 </div>
                 <div className='bg-white  p-4'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                    <div className='md:hidden space-y-2'>
+                        <DiscrepancyCard data={Array.isArray(data.data) ? data.data : []} />
+                    </div>
+
+                    <div className='hidden md:flex'>
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                    </div>
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
             </section>

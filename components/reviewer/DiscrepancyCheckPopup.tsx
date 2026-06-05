@@ -48,7 +48,7 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
         setDiscrepancy(false)
         const res = await fetchInvoiceItems(VNo, Vtyp);
         const invRes = await fetchInvoiceByVNo(VNo, Vtyp);
-        
+
         if (!res.success && !invRes.success) {
           alert("Failed to fetch data Try Again");
           setOpen(false);
@@ -123,8 +123,8 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
               <h1 className='text-lg font-semibold mt-2'>Invoice No: <span className='text-orange-600'>{invoice?.['Bill No']}</span></h1>
             </DialogHeader>
 
-            <FieldGroup >
-              <div className={`grid ${invoice?.discrepancy===1 ? "grid-cols-[40px_150px_1fr_100px_100px_150px]" : "grid-cols-[40px_150px_1fr_100px_150px]"}  gap-4 mb-0`}>
+            <FieldGroup className='hidden md:flex' >
+              <div className={`grid ${invoice?.discrepancy === 1 ? "grid-cols-[40px_150px_1fr_100px_100px_150px]" : "grid-cols-[40px_150px_1fr_100px_150px]"}  gap-4 mb-0`}>
                 <Label>SNo</Label>
                 <Label>Batch No.</Label>
                 <Label className='min-w-60'>Particular</Label>
@@ -135,7 +135,8 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
               </div>
 
               {data?.map((item, index) => (
-                <div key={item.id} className={`grid ${invoice?.discrepancy===1 ? "grid-cols-[40px_150px_1fr_100px_100px_150px]" : "grid-cols-[40px_150px_1fr_100px_150px]"}  gap-4 mb-0`}>
+
+                <div key={item.id} className={`grid ${invoice?.discrepancy === 1 ? "grid-cols-[40px_150px_1fr_100px_100px_150px]" : "grid-cols-[40px_150px_1fr_100px_150px]"}  gap-4 mb-0`}>
 
                   <Input
                     name="Sno"
@@ -188,6 +189,7 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
                     />
                   </Field>
                 </div>
+
               ))}
 
               <Field className='flex mt-4'>
@@ -199,6 +201,82 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
               </Field>
 
             </FieldGroup>
+
+
+            <FieldGroup className='md:hidden' >
+
+              {data?.map((item, index) => (
+
+                <div key={item.id}>
+                  <span>Item {index + 1}</span>
+                  <div className={`grid grid-cols-[20%_80%] space-y-2 mb-0 border rounded-lg p-2`}>
+
+                    <Label>Batch No.</Label>
+                    <Field>
+                      <Input
+                        name="batch"
+                        defaultValue={item['Batch No.']}
+                        className={`${(item.old_batch_no !== null) && (item['Batch No.'] !== item.old_batch_no) ? "bg-red-300 text-black" : ""}`}
+                        disabled
+                      />
+                    </Field>
+
+                    <Label>Particular</Label>
+                    <Field>
+                      <Input
+                        name="particular"
+                        defaultValue={item.PARTICULARS}
+                        disabled
+                        className=''
+                      />
+                    </Field>
+
+                    <Label>Current Qty</Label>
+                    <Field>
+                      <Input
+                        name="particular"
+                        defaultValue={item.old_Qty ? item.old_Qty : item.Qty}
+                        disabled
+                      />
+                    </Field>
+
+                    {invoice?.discrepancy === 1 &&
+                      <><Label>Changed to</Label>
+                        <Field>
+                          <Input
+                            name="qty"
+                            defaultValue={item.Qty}
+                            disabled
+                            className={`${(item.old_Qty !== null) && (item.Qty !== item.old_Qty) ? "bg-red-300 text-black" : ""}`}
+                          />
+                        </Field>
+                      </>
+                    }
+
+                    <Label>Expiry</Label>
+                    <Field>
+                      <Input
+                        name="expiry"
+                        defaultValue={item['Exp.']}
+                        disabled
+                        className={`${(item.old_expiry !== null) && (item['Exp.'] !== item.old_expiry) ? "bg-red-300 text-black" : ""}`}
+                      />
+                    </Field>
+                  </div>
+                </div>
+
+              ))}
+
+              <Field className='flex mt-4'>
+                {discrepancy &&
+                  <p className='text-sm'>
+                    Discrepancy Status: {discrepancy ? "Yes" : "No"}
+                  </p>
+                }
+              </Field>
+
+            </FieldGroup>
+
             <DialogFooter className=''>
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>

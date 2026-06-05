@@ -33,6 +33,7 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
 import { FileText, LogOut, LayoutDashboard, Key } from "lucide-react";
@@ -43,6 +44,7 @@ import { usePathname } from "next/navigation"
 export function AppSidebar() {
 
     const pathname = usePathname();
+    const {toggleSidebar} = useSidebar()
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -104,7 +106,16 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/account/dashboard"
+                                className={`${pathname === "/account/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <LayoutDashboard size={18} />
+                                <span>Dashboard</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/account/dashboard"
                                 className={`${pathname === "/account/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -115,7 +126,17 @@ export function AppSidebar() {
                         </SidebarMenuItem>
                         {/* Invoices */}
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/account/dashboard/check"
+                                className={`${pathname === "/account/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
+                            >
+                                <FileText size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/account/dashboard/check"
                                 className={`${pathname === "/account/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -126,7 +147,17 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/account/dashboard/invoices"
+                                className={`${pathname === "/account/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
+                            >
+                                <FileText size={18} />
+                                <span>Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/account/dashboard/invoices"
                                 className={`${pathname === "/account/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}

@@ -4,6 +4,7 @@ import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import Filter from '@/components/Filter';
 import { fetchAttendedInvoices } from '@/lib/actions/reviewer-checker';
+import InvoiceCard from '@/components/admin/InvoiceCard';
 
 type PageProps = {
     searchParams: Promise<{
@@ -45,10 +46,19 @@ const Invoices = async ({ searchParams }: PageProps) => {
                     </div>
 
                 </div>
-                <div className='bg-white  p-4'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+
+                <div className='bg-white p-4'>
+
+                    <div className='md:hidden space-y-2'>
+                        <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
+                    </div>
+
+                    <div className='hidden md:flex'>
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                    </div>
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
+
             </section>
         </div>
     )

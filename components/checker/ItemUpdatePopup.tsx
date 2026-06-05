@@ -315,8 +315,7 @@ const ItemUpdatePopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                     </Field>
                   </div>
                 )
-              })
-              }
+              })}
             </FieldGroup>
 
 

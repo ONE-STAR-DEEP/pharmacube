@@ -5,6 +5,7 @@ import SearchComponent from '@/components/SearchComponent';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import Filter from '@/components/account/Filter';
 import { fetchAccountInvoices } from '@/lib/actions/account';
+import InvoiceCard from '@/components/account/InvoiceCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -50,7 +51,14 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
         </div>
         <div className='bg-white p-4'>
-          <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+
+          <div className='md:hidden space-y-2'>
+            <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
+          </div>
+
+          <div className='hidden md:flex'>
+            <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+          </div>
           <Pagination totalPages={data.pagination?.totalPages || 1} />
         </div>
       </section>

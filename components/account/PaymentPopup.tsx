@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { fetchInvoiceByVNo, fetchInvoiceItems } from '@/lib/actions/invoice'
 import { BillItem, Invoice, PaymentData } from '@/utils/types/DataTypes'
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updatePayment } from '@/lib/actions/account'
 
@@ -109,7 +109,7 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                     min-h-[20vh]
                     max-h-[80vh] 
                     flex flex-col
-                    p-8
+                    p-4
                     overflow-y-auto
                     "
         >
@@ -124,7 +124,7 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
               </div>
             </DialogHeader>
 
-            <FieldGroup >
+            <FieldGroup className='hidden md:flex'>
               <div className="grid grid-cols-[40px_100px_1fr_100px] gap-2 mb-0">
                 <Label>SNo</Label>
                 <Label>HSN</Label>
@@ -251,6 +251,130 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
               </div>
 
             </FieldGroup>
+
+            <FieldGroup className='md:hidden'>
+              {data?.map((item, index) => (
+
+                <div key={item.id}>
+                  <span>Item {index + 1}</span>
+                  <div className="grid grid-cols-[20%_80%] space-y-2 mb-0 border p-2 rounded-lg">
+
+                    <Label>HSN</Label>
+                    <Field>
+                      <Input
+                        name="hsn"
+                        defaultValue={item["HSN CODE"]}
+                        disabled
+                      />
+                    </Field>
+
+                    <Label>Particular</Label>
+                    <Field>
+                      <Input
+                        name="particular"
+                        defaultValue={item.PARTICULARS}
+                        disabled
+                      />
+                    </Field>
+
+                    <Label>Qty</Label>
+                    <Field>
+                      <Input
+                        name="qty"
+                        defaultValue={item.Qty}
+                        disabled
+                      />
+                    </Field>
+                  </div>
+                </div>
+              ))}
+              <div className='flex items-center justify-between mx-2 font-bold'>
+                <span>Invoice Amount</span>
+                <span>₹{invoice?.['Inv Amt']}</span>
+              </div>
+
+              <div className='mt-4'>
+
+                <h2 className='text-lg font-semibold mb-4'>Payment Details</h2>
+                <FieldGroup className='grid grid-cols-1 md:grid-cols-[30%_70%] '>
+
+                  <Field className="space-y-2">
+                    <FieldLabel>Amount</FieldLabel>
+
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder={String(invoice?.['Inv Amt'])}
+                      value={paymentData.amount ?? ""}
+                      className="h-8"
+                      required
+                      onChange={(e) => {
+                        const value =
+                          Number(e.target.value) <= 0
+                            ? 0
+                            : Number(e.target.value);
+
+                        setPaymentData((prev) => ({
+                          ...prev,
+                          amount: value,
+                        }));
+                      }}
+                    />
+                  </Field>
+
+                  <Field className="space-y-2">
+                    <FieldLabel>Remark</FieldLabel>
+
+                    <Input
+                      placeholder="Enter remark"
+                      className="h-8"
+                      onChange={(e) => {
+                        setPaymentData((prev) => ({
+                          ...prev,
+                          remark: e.target.value
+                        }))
+                      }}
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Mode of Payment</FieldLabel>
+
+                    <Select onValueChange={(value) => {
+                      setPaymentData((prev) => ({
+                        ...prev,
+                        mode: value
+                      }))
+                    }}
+                      required
+                    >
+                      <SelectTrigger className="w-full h-8">
+                        <SelectValue placeholder="Select payment mode" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Payment Modes</SelectLabel>
+
+                          {paymentModes.map((mode) => (
+                            <SelectItem
+                              key={mode}
+                              value={mode}
+                              className="h-6"
+                            >
+                              {mode}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+
+                </FieldGroup>
+              </div>
+
+            </FieldGroup>
+
             <DialogFooter className=''>
               <DialogClose asChild>
                 <Button variant="outline" type='button'>Close</Button>

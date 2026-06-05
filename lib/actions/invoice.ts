@@ -606,7 +606,7 @@ export const fetchAllValidInvoices = async (
     }
 };
 
-export const approveInvoice = async (Vno: string, Vtyp: string) => {
+export const approveInvoice = async (Vno: number, Vtyp: string) => {
 
     const conn = await db.getConnection();
 
@@ -630,8 +630,7 @@ export const approveInvoice = async (Vno: string, Vtyp: string) => {
             WHERE
             Vtyp = '${Vtyp}'
             AND Vno = ?
-            `,
-            [Vno]
+            `, [Vno]
         );
 
         const data = rows[0]
@@ -646,18 +645,6 @@ export const approveInvoice = async (Vno: string, Vtyp: string) => {
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
 
-        const rule = transitions[type as Role];
-
-        if (status === rule.to) {
-            return { success: false, message: "Invoice is already approved at this stage" };
-        }
-
-        if (status !== rule.from) {
-            return {
-                success: false,
-                message: "You are not allowed to approve this invoice at its current stage"
-            };
-        }
 
         await conn.execute(
             `
@@ -666,7 +653,7 @@ export const approveInvoice = async (Vno: string, Vtyp: string) => {
             warehouse = ?
             WHERE Vtyp = '${Vtyp}' AND Vno = ? AND status = ?
             `,
-            [rule.to, userId, Vno, rule.from]
+            [1, userId, Vno, 0]
         );
 
         return { success: true, message: successMessages[type as Role], };

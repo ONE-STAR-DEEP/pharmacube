@@ -33,6 +33,7 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
 import { FileText, LogOut, LayoutDashboard, FileX, Key, FileCheck, FileUp, FileClock, FileUser } from "lucide-react";
@@ -43,6 +44,7 @@ import { usePathname } from "next/navigation"
 export function AppSidebar() {
 
     const pathname = usePathname();
+    const { toggleSidebar } = useSidebar()
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -103,7 +105,16 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/fullAccess/dashboard"
+                                className={`${pathname === "/fullAccess/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <LayoutDashboard size={18} />
+                                <span>Review Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/fullAccess/dashboard"
                                 className={`${pathname === "/fullAccess/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -113,7 +124,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/fullAccess/dashboard/check"
+                                className={`${pathname === "/fullAccess/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileCheck size={18} />
+                                <span>Check Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/fullAccess/dashboard/check"
                                 className={`${pathname === "/fullAccess/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -123,7 +143,18 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/fullAccess/dashboard/warehouse"
+                                className={`${pathname === "/fullAccess/dashboard/warehouse" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+
+                            >
+                                <FileClock size={18} />
+                                <span>Warehouse</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/fullAccess/dashboard/warehouse"
                                 className={`${pathname === "/fullAccess/dashboard/warehouse" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -134,7 +165,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/fullAccess/dashboard/allInvoices"
+                                className={`${pathname === "/fullAccess/dashboard/allInvoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileText size={18} />
+                                <span>All Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/fullAccess/dashboard/allInvoices"
                                 className={`${pathname === "/fullAccess/dashboard/allInvoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -145,7 +185,16 @@ export function AppSidebar() {
                         </SidebarMenuItem>
 
                         {/* Invoices */}
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/fullAccess/dashboard/invoices"
+                                className={`${pathname === "/fullAccess/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileUp size={18} />
+                                <span>Attended Invoices</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/fullAccess/dashboard/invoices"
                                 className={`${pathname === "/fullAccess/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -155,7 +204,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/fullAccess/dashboard/clientDelivery"
+                                className={`${pathname === "/fullAccess/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileUser size={18} />
+                                <span>CDC</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/fullAccess/dashboard/clientDelivery"
                                 className={`${pathname === "/fullAccess/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -165,7 +223,16 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="hidden md:flex">
+                            <Link
+                                href="/fullAccess/dashboard/discrepancies"
+                                className={`${pathname === "/fullAccess/dashboard/discrepancies" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
+                            >
+                                <FileX size={18} />
+                                <span>Discrepancies</span>
+                            </Link>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="md:hidden" onClick={toggleSidebar}>
                             <Link
                                 href="/fullAccess/dashboard/discrepancies"
                                 className={`${pathname === "/fullAccess/dashboard/discrepancies" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}

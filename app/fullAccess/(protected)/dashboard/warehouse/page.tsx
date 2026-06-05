@@ -6,6 +6,7 @@ import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import { RefreshOnFocus } from '@/components/warehouse/pendingRefresh';
 import Filter from '@/components/Filter';
 import { fetchWarehouseInvoices } from '@/lib/actions/reviewer-checker';
+import InvoiceCard from '@/components/warehouse/InvoiceCard';
 
 type PageProps = {
   searchParams: Promise<{
@@ -28,7 +29,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
   const status = params?.status
   const Vtyp = params?.Vtyp
 
-  const pendingInvoices = await fetchWarehouseInvoices({page, limit, search, Vtyp});
+  const pendingInvoices = await fetchWarehouseInvoices({ page, limit, search, Vtyp });
 
   return (
     <div className='p-4 space-y-4'>
@@ -50,7 +51,14 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
         </div>
         <div className='bg-white  p-4'>
-          <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={pendingInvoiceColumns} />
+
+          <div className='md:hidden space-y-2'>
+            <InvoiceCard data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} />
+          </div>
+
+          <div className='hidden md:flex'>
+            <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={pendingInvoiceColumns} />
+          </div>
           <Pagination totalPages={pendingInvoices.pagination?.totalPages || 1} />
         </div>
       </section>
