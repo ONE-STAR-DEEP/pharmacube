@@ -10,6 +10,7 @@ import { InvoiceData } from "@/utils/types/DataTypes"
 import { Button } from "../ui/button";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
+import Logs from "./Logs";
 
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -114,6 +115,8 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                 }}>
                   View
                 </Button>
+
+                <Logs id={invoice.id} Vno={Number(invoice.Vno)} Vtyp={invoice.Vtyp} />
                 {
                   invoice.recipt &&
                   <Button className="m-0 px-2" onClick={() => {

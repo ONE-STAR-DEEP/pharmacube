@@ -183,3 +183,25 @@ export type EInvoiceType = {
   EWayReason: string | null;
   EWayStatus: string | null;
 };
+
+export type OperationLog = {
+  id: number;
+
+  warehouse_name: string | null;
+  warehouse_type: string | null;
+
+  checker_name: string | null;
+  checker_type: string | null;
+
+  reviewer_name: string | null;
+  reviewer_type: string | null;
+
+  account_name: string | null;
+  account_type: string | null;
+
+  rider_name: string | null;
+  rider_type: string | null;
+
+  delivery_name: string | null;
+  delivery_type: string | null;
+}

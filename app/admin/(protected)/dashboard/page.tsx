@@ -21,7 +21,7 @@ const Dashboard = async () => {
   const chartData = await dashboardStats2()
 
   return (
-    <div className='space-y-4 py-4'>
+    <div className='space-y-4 py-4 px-2 md:px-0'>
       {/* <ChartAreaInteractive/> */}
       <ChartBarInteractive data={data?.data || []} />
       <div className='grid grid-cols-[30%_70%] gap-2 mr-4'>

@@ -1,4 +1,5 @@
 "use client"
+
 import {
     Dialog,
     DialogClose,
@@ -36,7 +37,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { Users, FileText, LogOut, Home, LayoutDashboard, FileX, Key, FileUser } from "lucide-react";
+import { Users, FileText, LogOut, LayoutDashboard, FileX, Key, FileUser } from "lucide-react";
 import Image from "next/image";
 import { logout } from "@/lib/logout";
 import { usePathname } from "next/navigation"
@@ -95,7 +96,7 @@ export function AppSidebar() {
                             width={50}
                         />
                         <p>
-                            Pharma Cube PC
+                            Pharma Cube
                         </p>
                     </div>
                 </SidebarHeader>

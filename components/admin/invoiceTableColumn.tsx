@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
 import { markAsUrgent } from "@/lib/actions/invoice";
+import Logs from "./Logs";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -166,7 +167,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Action",
     size: 200,
     cell: ({ row }) => {
-      const VNo = row.original.Vno;
+      const VNo = Number(row.original.Vno);
       const id = row.original.id
       const Vtyp = row.original.Vtyp;
       const recipt = row.original.recipt;
@@ -183,7 +184,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }
           router.refresh()
         } catch (error) {
-
+          console.log(error)
         }
       }
 
@@ -194,6 +195,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }}>
             View
           </Button>
+
+          <Logs id={id} Vno={VNo} Vtyp={Vtyp} />
           {
             recipt &&
             <Button className="m-0 px-2" onClick={() => {
@@ -202,7 +205,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }
 
           {
-            (!show && status < 6 ) && <Button onClick={handleClick}>
+            (!show && status < 6) && <Button onClick={handleClick}>
               Urgent
             </Button>
           }

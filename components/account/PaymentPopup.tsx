@@ -81,7 +81,9 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
       if (!invoice) {
         return;
       }
+      console.log("clicked")
       const res = await updatePayment(paymentData, invoice['Bill No'], invoice?.id);
+      console.log("executed")
 
       if (!res.success) {
         alert(res.message);
@@ -170,85 +172,6 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                 <span>₹{invoice?.['Inv Amt']}</span>
               </div>
 
-              <div className='mt-4'>
-
-                <h2 className='text-lg font-semibold mb-4'>Payment Details</h2>
-                <FieldGroup className='grid grid-cols-1 md:grid-cols-[30%_70%] '>
-
-                  <Field className="space-y-2">
-                    <FieldLabel>Amount</FieldLabel>
-
-                    <Input
-                      type="number"
-                      min={0}
-                      placeholder={String(invoice?.['Inv Amt'])}
-                      value={paymentData.amount ?? ""}
-                      className="h-8"
-                      required
-                      onChange={(e) => {
-                        const value =
-                          Number(e.target.value) <= 0
-                            ? 0
-                            : Number(e.target.value);
-
-                        setPaymentData((prev) => ({
-                          ...prev,
-                          amount: value,
-                        }));
-                      }}
-                    />
-                  </Field>
-
-                  <Field className="space-y-2">
-                    <FieldLabel>Remark</FieldLabel>
-
-                    <Input
-                      placeholder="Enter remark"
-                      className="h-8"
-                      onChange={(e) => {
-                        setPaymentData((prev) => ({
-                          ...prev,
-                          remark: e.target.value
-                        }))
-                      }}
-                    />
-                  </Field>
-
-                  <Field>
-                    <FieldLabel>Mode of Payment</FieldLabel>
-
-                    <Select onValueChange={(value) => {
-                      setPaymentData((prev) => ({
-                        ...prev,
-                        mode: value
-                      }))
-                    }}
-                      required
-                    >
-                      <SelectTrigger className="w-full h-8">
-                        <SelectValue placeholder="Select payment mode" />
-                      </SelectTrigger>
-
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Payment Modes</SelectLabel>
-
-                          {paymentModes.map((mode) => (
-                            <SelectItem
-                              key={mode}
-                              value={mode}
-                              className="h-6"
-                            >
-                              {mode}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </Field>
-
-                </FieldGroup>
-              </div>
 
             </FieldGroup>
 
@@ -293,7 +216,7 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                 <span>₹{invoice?.['Inv Amt']}</span>
               </div>
 
-              <div className='mt-4'>
+              {/* <div className='mt-4'>
 
                 <h2 className='text-lg font-semibold mb-4'>Payment Details</h2>
                 <FieldGroup className='grid grid-cols-1 md:grid-cols-[30%_70%] '>
@@ -371,9 +294,89 @@ const PaymentPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
                   </Field>
 
                 </FieldGroup>
-              </div>
+              </div> */}
 
             </FieldGroup>
+
+            <div className='mt-4'>
+
+              <h2 className='text-lg font-semibold mb-4'>Payment Details</h2>
+              <FieldGroup className='grid grid-cols-1 md:grid-cols-[30%_70%] '>
+
+                <Field className="space-y-2">
+                  <FieldLabel>Amount</FieldLabel>
+
+                  <Input
+                    type="number"
+                    min={0}
+                    placeholder={String(invoice?.['Inv Amt'])}
+                    value={paymentData.amount ?? ""}
+                    className="h-8"
+                    required
+                    onChange={(e) => {
+                      const value =
+                        Number(e.target.value) <= 0
+                          ? 0
+                          : Number(e.target.value);
+
+                      setPaymentData((prev) => ({
+                        ...prev,
+                        amount: value,
+                      }));
+                    }}
+                  />
+                </Field>
+
+                <Field className="space-y-2">
+                  <FieldLabel>Remark</FieldLabel>
+
+                  <Input
+                    placeholder="Enter remark"
+                    className="h-8"
+                    onChange={(e) => {
+                      setPaymentData((prev) => ({
+                        ...prev,
+                        remark: e.target.value
+                      }))
+                    }}
+                  />
+                </Field>
+
+                <Field>
+                  <FieldLabel>Mode of Payment</FieldLabel>
+
+                  <Select onValueChange={(value) => {
+                    setPaymentData((prev) => ({
+                      ...prev,
+                      mode: value
+                    }))
+                  }}
+                    required
+                  >
+                    <SelectTrigger className="w-full h-8">
+                      <SelectValue placeholder="Select payment mode" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Payment Modes</SelectLabel>
+
+                        {paymentModes.map((mode) => (
+                          <SelectItem
+                            key={mode}
+                            value={mode}
+                            className="h-6"
+                          >
+                            {mode}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+              </FieldGroup>
+            </div>
 
             <DialogFooter className=''>
               <DialogClose asChild>

@@ -128,7 +128,7 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
     const type = session?.type;
     const iss = session?.iss;
 
-    if (!userId || type !== "account" || iss !== "pharmacube") {
+    if (!userId || iss !== "pharmacube") {
         return { success: false, message: "Unauthorized" };
     }
 
