@@ -204,6 +204,7 @@ export const fetchLogs = async (id: number) => {
             `
         SELECT
             sp.id,
+            sp.discrepancy_at,
 
             uw.name AS warehouse_name,
             uw.type AS warehouse_type,

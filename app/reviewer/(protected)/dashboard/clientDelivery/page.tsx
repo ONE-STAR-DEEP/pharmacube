@@ -52,7 +52,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
                     </div>
 
                     <div className='hidden md:flex'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
                     </div>
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>

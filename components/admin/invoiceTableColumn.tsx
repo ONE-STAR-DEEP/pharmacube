@@ -7,6 +7,7 @@ import { IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import Logs from "./Logs";
+import { useRole } from "../UserContext";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -131,10 +132,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
       const value = row.getValue("status") as number;
 
-      if (value === 2) {
-
-      }
-
       const colorMap = {
         0: "text-red-600",
         1: "text-blue-600",
@@ -167,6 +164,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Action",
     size: 200,
     cell: ({ row }) => {
+      const { role } = useRole()
       const VNo = Number(row.original.Vno);
       const id = row.original.id
       const Vtyp = row.original.Vtyp;
@@ -196,7 +194,11 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             View
           </Button>
 
-          <Logs id={id} Vno={VNo} Vtyp={Vtyp} />
+          {
+            role === "admin" &&
+            <Logs id={id} Vno={VNo} Vtyp={Vtyp} />
+          }
+
           {
             recipt &&
             <Button className="m-0 px-2" onClick={() => {

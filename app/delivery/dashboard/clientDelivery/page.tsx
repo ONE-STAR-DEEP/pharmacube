@@ -1,3 +1,4 @@
+import InvoiceCard from '@/components/admin/InvoiceCard';
 import { invoiceColumns } from '@/components/admin/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Filter from '@/components/Filter';
@@ -28,7 +29,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const Vtyp = params?.Vtyp;
 
     const data = await fetchDeliveredInvoices(page, limit, search, Vtyp);
-    
+
     return (
         <div className='p-4 space-y-8'>
             <header className='bg-white p-4'>
@@ -38,15 +39,23 @@ const Invoices = async ({ searchParams }: PageProps) => {
             </header>
 
             <section className='space-y-2'>
+
                 <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
                     <div className='max-w-100 flex gap-4'>
                         <SearchComponent placeholder='Search invoice' />
                         <Filter />
                     </div>
-
                 </div>
+
                 <div className='bg-white  p-4'>
-                    <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+
+                    <div className='md:hidden space-y-2'>
+                        <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
+                    </div>
+
+                    <div className='hidden md:flex'>
+                        <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
+                    </div>
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
             </section>

@@ -113,6 +113,7 @@ export function AppSidebar() {
                         </SidebarMenuItem>
                         {/* Invoices */}
 
+                        {/* 
                         <SidebarMenuItem
                             onClick={toggleSidebar}
                         >
@@ -122,9 +123,12 @@ export function AppSidebar() {
                                 <FileText size={18} />
                                 <span className="text-base font-medium">All Invoices</span>
                             </Link>
-                        </SidebarMenuItem>
+                        </SidebarMenuItem> 
+                        */}
 
-                         <SidebarMenuItem>
+                        <SidebarMenuItem
+                            onClick={toggleSidebar}
+                        >
                             <Link
                                 href="/delivery/dashboard/clientDelivery"
                                 className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition"

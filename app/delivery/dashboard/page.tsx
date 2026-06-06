@@ -48,11 +48,6 @@ const Invoices = async ({ searchParams }: PageProps) => {
           <DeliveryCard data={Array.isArray(data.data) ? data.data : []} />
         </div>
 
-        {/* <div className='bg-white  p-4'>
-          <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
-          <Pagination totalPages={data.pagination?.totalPages || 1} />
-        </div> */}
-
       </section>
 
     </div>

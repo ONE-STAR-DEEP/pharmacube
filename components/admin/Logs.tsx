@@ -9,7 +9,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { FieldGroup } from "@/components/ui/field"
 import { fetchLogs } from "@/lib/actions/admin"
@@ -69,6 +68,9 @@ const Logs = ({ id, Vno, Vtyp }: {
 
                         <span>Account</span> 
                         <span>: {data?.account_name ?? "NA"}</span> 
+
+                        <span>Discrepancy</span> 
+                        <span className="capitalize font-semibold">: {data?.discrepancy_at === "no" ? "No" : `during ${data?.discrepancy_at}`}</span> 
 
                     </FieldGroup>
                     <DialogFooter>

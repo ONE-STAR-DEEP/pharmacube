@@ -5,7 +5,7 @@ import { getCurrentUserSafe } from "../sessionCheck";
 import fs from "fs"
 import path from "path"
 import { Readable } from "stream"
-import { BillItem } from "@/utils/types/DataTypes";
+import { BillItem, InvoiceData } from "@/utils/types/DataTypes";
 
 export async function uploadFile(file: File) {
 
@@ -81,6 +81,7 @@ export const updateDelivery = async (
                 discrepancy = 1,
                 delivery = ?,
                 recipt = ?,
+                discrepancy_at = "delivery",
                 remark = ?
                 WHERE id = ?
                 `,
@@ -150,6 +151,104 @@ export const updateDelivery = async (
         return {
             success: false,
             message: "Failed to update invoice items",
+        };
+    } finally {
+        if (conn) conn.release();
+    }
+};
+
+export const fetchAllValidInvoices = async (
+    page: number = 1,
+    limit: number = 20,
+    search?: string,
+    Vtyp?: string,
+    status?: number
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+    const iss = session?.iss;
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+        const offset = (page - 1) * limit;
+
+        const safeLimit = Math.min(100, Number(limit) || 10);
+        const safeOffset = Math.max(0, Number(offset) || 0);
+
+        const conditions = ["status != 7"];
+        const params: any[] = [];
+
+        if (search) {
+            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ? )`);
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        if (Vtyp) {
+            conditions.push(`Vtyp = ?`);
+            params.push(Vtyp);
+        }
+
+        if (Number(status) === 7) {
+            conditions.push(`discrepancy = 1`);
+        }
+
+        if (status && status != 7) {
+            conditions.push(`status = ?`);
+            params.push(status);
+        }
+
+        const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+        const [rows]: any = await conn.execute(
+            `
+            SELECT 
+            sp.*,
+            (sp.Amt01 + sp.Taxamt + sp.Rndamt) AS InvAmt,
+            acm.name AS partyName
+            FROM Salepurchase1 sp
+            LEFT JOIN Acm acm ON sp.Acno = acm.code
+            ${where}
+            ORDER BY sp.inserted_at DESC
+            LIMIT ${safeLimit} OFFSET ${safeOffset}
+            `,
+            params
+        );
+
+        const [countResult]: any = await conn.execute(
+            `
+            SELECT COUNT(*) as total
+            FROM Salepurchase1
+            ${where}
+            `,
+            params
+        );
+
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / safeLimit);
+
+        return {
+            success: true,
+            data: rows as InvoiceData[],
+            pagination: {
+                total,
+                totalPages,
+                currentPage: page,
+                limit: safeLimit,
+            },
+        };
+
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to fetch data",
         };
     } finally {
         if (conn) conn.release();

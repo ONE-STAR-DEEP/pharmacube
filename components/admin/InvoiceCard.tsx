@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
 import Logs from "./Logs";
+import { useRole } from "../UserContext";
 
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -59,6 +60,7 @@ const STATUS_LABEL: Record<number, string> = {
 const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
 
   const router = useRouter();
+  const { role } = useRole();
 
   const handleClick = async (id: number) => {
 
@@ -116,7 +118,11 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                   View
                 </Button>
 
-                <Logs id={invoice.id} Vno={Number(invoice.Vno)} Vtyp={invoice.Vtyp} />
+                {
+                  role === "admin" &&
+                  <Logs id={invoice.id} Vno={Number(invoice.Vno)} Vtyp={invoice.Vtyp} />
+                }
+
                 {
                   invoice.recipt &&
                   <Button className="m-0 px-2" onClick={() => {

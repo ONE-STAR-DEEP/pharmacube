@@ -247,7 +247,6 @@ export const fetchPendingInvoices = async ({
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-
         if (!type || !(type in transitions)) {
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
@@ -726,7 +725,8 @@ export const updateInvoiceItems = async (
                 SET 
                 status = 2,
                 checker = ?,
-                discrepancy = 1
+                discrepancy = 1,
+                discrepancy_at = "check"
                 WHERE id = ?
                 `,
                 [userId, invoiceId]

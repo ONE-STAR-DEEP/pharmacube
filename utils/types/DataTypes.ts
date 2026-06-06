@@ -186,6 +186,7 @@ export type EInvoiceType = {
 
 export type OperationLog = {
   id: number;
+  discrepancy_at: string;
 
   warehouse_name: string | null;
   warehouse_type: string | null;

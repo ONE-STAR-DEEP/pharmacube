@@ -3,7 +3,6 @@ import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import DashboardHeader from '@/components/warehouse/DashboardHeader';
 import Filter from '@/components/account/Filter';
-import { fetchPendingInvoices } from '@/lib/actions/reviewer-checker';
 import { invoiceColumns } from '@/components/reviewer/checkerTable';
 import { fetchCheckerInvoices } from '@/lib/actions/account';
 import InvoiceCard from '@/components/warehouse/CheckerCard';
