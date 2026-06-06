@@ -206,7 +206,8 @@ export const fetchAttendedInvoices = async (
     page: number = 1,
     limit: number = 20,
     search?: string,
-    Vtyp?: string
+    Vtyp?: string,
+    status?: number
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -226,22 +227,36 @@ export const fetchAttendedInvoices = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const searchTerm = search ? `%${search}%` : `%`;
-        const Vtype = Vtyp ? `%${Vtyp}%` : `%`;
+        const conditions = [`status >= 1`];
+        const params: any[] = [];
 
-        const where = `
-        WHERE (
-        status >= 1
-        AND Vtyp LIKE ?
-        AND
-            (
-            Vno LIKE ?
-            OR GSTVno  LIKE ?
-            )
-        )
-        `;
+        if (search) {
+            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ?)`);
+            params.push(`%${search}%`, `%${search}%`);
+        }
 
-        const params: any[] = [Vtype, searchTerm, searchTerm];
+        if (Vtyp) {
+            if (Array.isArray(Vtyp)) {
+                conditions.push(
+                    `Vtyp IN (${Vtyp.map(() => "?").join(", ")})`
+                );
+                params.push(...Vtyp);
+            } else {
+                conditions.push(`Vtyp = ?`);
+                params.push(Vtyp);
+            }
+        }
+
+        if (Number(status) === 7) {
+            conditions.push(`discrepancy = 1`);
+        }
+
+        if (status && status != 7) {
+            conditions.push(`status = ?`);
+            params.push(status);
+        }
+
+        const where = `WHERE ${conditions.join(" AND ")}`;
 
         const [rows]: any = await conn.execute(
             `

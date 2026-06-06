@@ -19,12 +19,14 @@ export const fetchAllValidInvoices = async (
     { page = 1,
         limit = 20,
         search,
-        Vtyp
+        Vtyp,
+        status
     }: {
         page: number;
         limit: number;
         search?: string;
-        Vtyp?: string | string[]
+        Vtyp?: string | string[];
+        status?: number;
     }
 ) => {
     const session = await getCurrentUserSafe();
@@ -67,6 +69,15 @@ export const fetchAllValidInvoices = async (
                 conditions.push(`Vtyp = ?`);
                 params.push(Vtyp);
             }
+        }
+
+        if (Number(status) === 7) {
+            conditions.push(`discrepancy = 1`);
+        }
+
+        if (status && status != 7) {
+            conditions.push(`status = ?`);
+            params.push(status);
         }
 
         const where = `WHERE ${conditions.join(" AND ")}`;

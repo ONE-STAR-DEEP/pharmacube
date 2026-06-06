@@ -105,7 +105,7 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/fullAccess/dashboard"
                                 className={`${pathname === "/fullAccess/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -124,7 +124,7 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/fullAccess/dashboard/check"
                                 className={`${pathname === "/fullAccess/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -144,7 +144,7 @@ export function AppSidebar() {
                         </SidebarMenuItem>
 
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/fullAccess/dashboard/warehouse"
                                 className={`${pathname === "/fullAccess/dashboard/warehouse" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -165,7 +165,7 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/fullAccess/dashboard/allInvoices"
                                 className={`${pathname === "/fullAccess/dashboard/allInvoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -185,7 +185,7 @@ export function AppSidebar() {
                         </SidebarMenuItem>
 
                         {/* Invoices */}
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/fullAccess/dashboard/invoices"
                                 className={`${pathname === "/fullAccess/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -204,7 +204,7 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/fullAccess/dashboard/clientDelivery"
                                 className={`${pathname === "/fullAccess/dashboard/clientDelivery" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -223,7 +223,7 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/fullAccess/dashboard/discrepancies"
                                 className={`${pathname === "/fullAccess/dashboard/discrepancies" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}

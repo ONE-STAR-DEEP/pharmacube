@@ -40,7 +40,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
             </header>
 
             <section className='space-y-2'>
-                <div className='px-4 py-3 w-full flex flex-col md:flex-row gap-2 items-start bg-white'>
+                <div className='px-4 py-3 w-full flex flex-col gap-2 md:flex-row md:justify-between md:items-center bg-white'>
                     <div className='max-w-100 flex gap-4'>
                         <SearchComponent placeholder='Search invoice' />
                         <Filter />

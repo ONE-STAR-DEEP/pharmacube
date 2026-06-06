@@ -5,13 +5,14 @@ import SearchComponent from '@/components/SearchComponent';
 import { fetchAllValidInvoices } from '@/lib/actions/invoice';
 import Filter from '@/components/Filter';
 import InvoiceCard from '@/components/admin/InvoiceCard';
+import StatusFilter from '@/components/StatusFilter';
 
 type PageProps = {
     searchParams: Promise<{
         page?: string;
         limit?: string;
         search?: string;
-        status?: string;
+        status?: number;
         Vtyp?: string;
     }>;
 };
@@ -28,7 +29,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
     const Vtyp = params?.Vtyp
 
-    const data = await fetchAllValidInvoices(page, limit, search, Vtyp);
+    const data = await fetchAllValidInvoices(page, limit, search, Vtyp, status);
 
     return (
         <div className='p-4 space-y-8'>
@@ -39,15 +40,18 @@ const Invoices = async ({ searchParams }: PageProps) => {
             </header>
 
             <section className='space-y-2'>
-                <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
+                <div className='px-4 py-3 w-full flex flex-col gap-2 md:flex-row md:justify-between md:items-center bg-white'>
                     <div className='max-w-100 flex gap-4'>
                         <SearchComponent placeholder='Search invoice' />
                         <Filter />
                     </div>
-
+                    <div className='flex items-center gap-2'>
+                        <span className='text-sm ml-1 font-semibold'>Status</span>
+                        <StatusFilter />
+                    </div>
                 </div>
-                <div className='bg-white  p-4'>
 
+                <div className='bg-white  p-4'>
 
                     <div className='md:hidden space-y-2'>
                         <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />

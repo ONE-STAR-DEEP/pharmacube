@@ -106,7 +106,7 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarMenu>
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/account/dashboard"
                                 className={`${pathname === "/account/dashboard" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -126,7 +126,7 @@ export function AppSidebar() {
                         </SidebarMenuItem>
                         {/* Invoices */}
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/account/dashboard/check"
                                 className={`${pathname === "/account/dashboard/check" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -147,7 +147,7 @@ export function AppSidebar() {
                             </Link>
                         </SidebarMenuItem>
 
-                        <SidebarMenuItem className="hidden md:flex">
+                        <SidebarMenuItem className="hidden md:block">
                             <Link
                                 href="/account/dashboard/invoices"
                                 className={`${pathname === "/account/dashboard/invoices" ? "text-[#008dbc] font-semibold border-l-3 scale-110 border-[#008dbc]" : "hover:bg-primary/50 hover:text-white"} flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition`}
@@ -172,7 +172,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <button
                                 onClick={() => { setOpen(true) }}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-primary/50 hover:text-white transition text-left"
                             >
                                 <Key size={18} />
                                 <span>Change Password</span>
@@ -183,7 +183,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <button
                                 onClick={logout}
-                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-muted transition text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-primary/50 hover:text-white transition text-left"
                             >
                                 <LogOut size={18} />
                                 <span>Logout</span>

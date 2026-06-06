@@ -514,7 +514,8 @@ export const fetchAllValidInvoices = async (
     page: number = 1,
     limit: number = 20,
     search?: string,
-    Vtyp?: string
+    Vtyp?: string,
+    status?: number
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -534,28 +535,33 @@ export const fetchAllValidInvoices = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const searchTerm = search ? `%${search}%` : `%`;
-        const Vtype = Vtyp ? `%${Vtyp}%` : `%`;
+        const conditions = ["status != 7"];
+        const params: any[] = [];
 
-        const where = `
-        WHERE (
-        status >= ?
-        AND Vtyp LIKE ?
-        AND
-            (
-            Vno LIKE ?
-            OR GSTVno  LIKE ?
-            )
-        )
-        `;
+        if (search) {
+            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ? )`);
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        if (Vtyp) {
+            conditions.push(`Vtyp = ?`);
+            params.push(Vtyp);
+        }
+
+        if (Number(status) === 7) {
+            conditions.push(`discrepancy = 1`);
+        }
+
+        if (status && status != 7) {
+            conditions.push(`status = ?`);
+            params.push(status);
+        }
+
+        const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
         if (!type || !(type in transitions)) {
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
-
-        const rule = transitions[type as Role];
-
-        const params: any[] = [rule.to, Vtype, searchTerm, searchTerm];
 
         const [rows]: any = await conn.execute(
             `
