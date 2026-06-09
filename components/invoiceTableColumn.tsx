@@ -48,7 +48,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     accessorKey: "Vdt",
     header: "Date",
-    size: 80,
+    size: 100,
     cell: ({ row }) => {
       const value = row.getValue("Vdt") as string;
       const date = new Date(value);

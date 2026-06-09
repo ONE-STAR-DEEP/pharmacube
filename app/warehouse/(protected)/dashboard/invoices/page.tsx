@@ -6,6 +6,7 @@ import { fetchAllValidInvoices } from '@/lib/actions/invoice';
 import Filter from '@/components/Filter';
 import InvoiceCard from '@/components/admin/InvoiceCard';
 import StatusFilter from '@/components/StatusFilter';
+import DateFilter from '@/components/DateFilter';
 
 type PageProps = {
     searchParams: Promise<{
@@ -14,6 +15,8 @@ type PageProps = {
         search?: string;
         status?: number;
         Vtyp?: string;
+        startDate?: string;
+        endDate?: string;
     }>;
 };
 
@@ -24,12 +27,13 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const limit = Number(params?.limit) || 20;
 
     const search = params?.search
-
+    const startDate = params?.startDate
+    const endDate = params?.endDate
     const status = params?.status
 
     const Vtyp = params?.Vtyp
 
-    const data = await fetchAllValidInvoices(page, limit, search, Vtyp, status);
+    const data = await fetchAllValidInvoices(page, limit, search, Vtyp, status, startDate, endDate);
 
     return (
         <div className='p-4 space-y-8'>
@@ -45,12 +49,15 @@ const Invoices = async ({ searchParams }: PageProps) => {
                         <SearchComponent placeholder='Search invoice' />
                         <Filter />
                     </div>
-                    <div className='flex items-center gap-2'>
-                        <span className='text-sm ml-1 font-semibold'>Status</span>
-                        <StatusFilter />
+                    <div className='flex items-center justify-between gap-4'>
+                        <div className='flex items-center gap-2'>
+                            <span className='text-sm ml-1 font-semibold'>Status</span>
+                            <StatusFilter />
+                        </div>
+                        <DateFilter />
                     </div>
-
                 </div>
+
                 <div className='bg-white  p-4'>
                     <div className='space-y-2 md:hidden'>
                         <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />

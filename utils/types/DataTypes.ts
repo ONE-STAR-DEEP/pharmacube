@@ -187,6 +187,14 @@ export type EInvoiceType = {
 export type OperationLog = {
   id: number;
   discrepancy_at: string;
+  discrepancy_time: string;
+  warehouse_time: string;
+  checker_time: string;
+  reviewer_time: string;
+  delivery_time: string;
+  account_time: string;
+  urgent_time: string;
+  urgent_marked_by: string;
 
   warehouse_name: string | null;
   warehouse_type: string | null;
@@ -206,3 +214,15 @@ export type OperationLog = {
   delivery_name: string | null;
   delivery_type: string | null;
 }
+
+export type RiderLocationLog = {
+  id: number;
+  rider_id: number;
+  invoice_id: number;
+  lat: string;
+  lng: string;
+  accuracy: string;
+  action: "accepted" | "picked" | "delivered";
+  created_at: string;
+  rider_time: string | null;
+};

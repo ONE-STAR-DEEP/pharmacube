@@ -1,6 +1,7 @@
 import InvoiceCard from '@/components/admin/InvoiceCard';
 import { invoiceColumns } from '@/components/admin/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
+import DateFilter from '@/components/DateFilter';
 import Filter from '@/components/Filter';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
@@ -14,6 +15,8 @@ type PageProps = {
         search?: string;
         status?: number;
         Vtyp?: string;
+        startDate?: string;
+        endDate?: string;
     }>;
 };
 
@@ -26,10 +29,11 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const search = params?.search
 
     const status = params?.status
-
+    const startDate = params?.startDate
+    const endDate = params?.endDate
     const Vtyp = params?.Vtyp;
 
-    const data = await fetchInvoices(page, limit, search, Vtyp, status);
+    const data = await fetchInvoices({ page, limit, search, Vtyp, status, startDate, endDate });
 
     return (
         <div className='p-4 space-y-8'>
@@ -45,11 +49,15 @@ const Invoices = async ({ searchParams }: PageProps) => {
                         <SearchComponent placeholder='Search invoice' />
                         <Filter />
                     </div>
-                    <div className='flex items-center gap-2'>
-                        <span className='text-sm ml-1 font-semibold'>Status</span>
-                        <StatusFilter />
+                    <div className='flex items-center justify-between gap-4'>
+                        <div className='flex items-center gap-2'>
+                            <span className='text-sm ml-1 font-semibold'>Status</span>
+                            <StatusFilter />
+                        </div>
+                        <DateFilter />
                     </div>
                 </div>
+
                 <div className='bg-white  p-4'>
                     <div className='md:hidden space-y-2'>
                         <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />

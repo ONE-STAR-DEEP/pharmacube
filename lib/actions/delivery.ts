@@ -76,13 +76,15 @@ export const updateDelivery = async (
             await conn.execute(
                 `
                 UPDATE Salepurchase1
-                SET 
+                SET
                 status = 8,
                 discrepancy = 1,
                 delivery = ?,
                 recipt = ?,
                 discrepancy_at = "delivery",
-                remark = ?
+                discrepancy_time = NOW(), 
+                remark = ?,
+                delivery_time = NOW()
                 WHERE id = ?
                 `,
                 [userId, reciptUrl, remark, id]
@@ -131,6 +133,7 @@ export const updateDelivery = async (
                 status = 7,
                 delivery = ?,
                 recipt = ?,
+                delivery_time = NOW(),
                 remark = ?
                 WHERE id = ? 
                 `,

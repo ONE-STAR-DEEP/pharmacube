@@ -20,13 +20,17 @@ export const fetchAllValidInvoices = async (
         limit = 20,
         search,
         Vtyp,
-        status
+        status,
+        startDate,
+        endDate
     }: {
         page: number;
         limit: number;
         search?: string;
         Vtyp?: string | string[];
         status?: number;
+        startDate?: string;
+        endDate?: string;
     }
 ) => {
     const session = await getCurrentUserSafe();
@@ -55,8 +59,28 @@ export const fetchAllValidInvoices = async (
         const params: any[] = [];
 
         if (search) {
-            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ?)`);
-            params.push(`%${search}%`, `%${search}%`);
+
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+
+                    params.push(...partyCodes);
+                }
+            }
         }
 
         if (Vtyp) {
@@ -78,6 +102,11 @@ export const fetchAllValidInvoices = async (
         if (status && status != 7) {
             conditions.push(`status = ?`);
             params.push(status);
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
         }
 
         const where = `WHERE ${conditions.join(" AND ")}`;
@@ -197,7 +226,7 @@ export const updatePayment = async (data: PaymentData, GSTVno: string, invoiceId
         }
 
         const [update]: any = await conn.query(`
-            UPDATE Salepurchase1 set payment = 1, status = ?, account = ? where id = ?
+            UPDATE Salepurchase1 set payment = 1, status = ?, account = ?,  account_time = NOW() where id = ?
             `,
             [status, userId, invoiceId]
         );
@@ -359,7 +388,6 @@ export const fetchCheckerInvoices = async ({
         if (conn) conn.release();
     }
 };
-
 
 export const fetchAccountInvoices = async ({
     page = 1,

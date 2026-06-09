@@ -1,6 +1,7 @@
 import DiscrepancyCard from '@/components/admin/discrepancyCard';
 import { invoiceColumns } from '@/components/admin/discrepancyTableColumn';
 import { DataTable } from '@/components/Datatable';
+import DateFilter from '@/components/DateFilter';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
 import { fetchDiscrepancies } from '@/lib/actions/invoice';
@@ -11,6 +12,8 @@ type PageProps = {
         limit?: string;
         search?: string;
         status?: string;
+        startDate?: string;
+        endDate?: string;
     }>;
 };
 
@@ -21,10 +24,11 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const limit = Number(params?.limit) || 10;
 
     const search = params?.search
-
+    const startDate = params?.startDate
+    const endDate = params?.endDate
     const status = params?.status
 
-    const data = await fetchDiscrepancies(page, limit, search);
+    const data = await fetchDiscrepancies(page, limit, search, startDate, endDate);
 
     return (
         <div className='p-4 space-y-8'>
@@ -39,7 +43,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
                     <div className='max-w-60'>
                         <SearchComponent placeholder='Search invoice' />
                     </div>
-
+                    <DateFilter />
                 </div>
 
                 <div className='bg-white  p-4'>

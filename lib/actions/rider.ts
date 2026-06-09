@@ -104,7 +104,8 @@ export const approveForDelivery = async (
                 UPDATE Salepurchase1
                 SET
                 status = 3,
-                reviewer = ?
+                reviewer = ?,
+                reviewer_time = NOW()
                 WHERE Vno = ?
                 AND Vtyp = '${Vtyp}'
                 `,
@@ -481,7 +482,9 @@ export const fetchPendingInvoicesByRiderID = async (
 export const fetchAllInvoicesByRiderID = async (
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    startDate?: string,
+    endDate?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -501,21 +504,40 @@ export const fetchAllInvoicesByRiderID = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const searchTerm = search ? `%${search}%` : `%`;
+        const conditions = ["rider = ?"];
+        const params: any[] = [userId];
 
-        const where = `
-        WHERE (
-        rider = ?
-        AND
-            (
-            Vno LIKE ?
-            OR GSTVno  LIKE ?
-            OR Vtyp LIKE ?
-            )
-        )
-        `;
+        if (search) {
 
-        const params: any[] = [userId, searchTerm, searchTerm, searchTerm];
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+
+                    params.push(...partyCodes);
+                }
+            }
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
+        }
+
+        const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
         const [rows]: any = await conn.execute(
             `
@@ -569,7 +591,9 @@ export const fetchAllInvoicesByRiderID = async (
 export const fetchAcceptedInvoicesByRiderID = async (
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    startDate?: string,
+    endDate?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -589,23 +613,40 @@ export const fetchAcceptedInvoicesByRiderID = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const searchTerm = search ? `%${search}%` : `%`;
+        const conditions = ["status >= 3 AND status < 6 AND rider = ?"];
+        const params: any[] = [userId];
 
-        const where = `
-        WHERE (
-        status >= 3
-        AND status < 6
-        AND rider = ?
-        AND
-            (
-            Vno LIKE ?
-            OR GSTVno  LIKE ?
-            OR Vtyp LIKE ?
-            )
-        )
-        `;
+        if (search) {
 
-        const params: any[] = [userId, searchTerm, searchTerm, searchTerm];
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+
+                    params.push(...partyCodes);
+                }
+            }
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
+        }
+
+        const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
         const [rows]: any = await conn.execute(
             `
@@ -659,7 +700,9 @@ export const fetchAcceptedInvoicesByRiderID = async (
 export const fetchDeliveredInvoicesByRiderID = async (
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    startDate?: string,
+    endDate?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -679,23 +722,40 @@ export const fetchDeliveredInvoicesByRiderID = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const searchTerm = search ? `%${search}%` : `%`;
+        const conditions = ["status >= 6 AND status < 8 AND rider = ?"];
+        const params: any[] = [userId];
 
-        const where = `
-        WHERE (
-        status >= 6
-        AND status <= 8
-        AND rider = ?
-        AND
-            (
-            Vno LIKE ?
-            OR GSTVno  LIKE ?
-            OR Vtyp LIKE ?
-            )
-        )
-        `;
+        if (search) {
 
-        const params: any[] = [userId, searchTerm, searchTerm, searchTerm];
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+
+                    params.push(...partyCodes);
+                }
+            }
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
+        }
+
+        const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
         const [rows]: any = await conn.execute(
             `

@@ -6,6 +6,7 @@ import { fetchAllValidInvoices } from '@/lib/actions/invoice';
 import Filter from '@/components/Filter';
 import InvoiceCard from '@/components/admin/InvoiceCard';
 import StatusFilter from '@/components/StatusFilter';
+import DateFilter from '@/components/DateFilter';
 
 type PageProps = {
     searchParams: Promise<{
@@ -14,6 +15,8 @@ type PageProps = {
         search?: string;
         status?: number;
         Vtyp?: string;
+        startDate?: string;
+        endDate?: string;
     }>;
 };
 
@@ -26,10 +29,11 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const search = params?.search
 
     const status = params?.status
-
+    const startDate = params?.startDate
+    const endDate = params?.endDate
     const Vtyp = params?.Vtyp
 
-    const data = await fetchAllValidInvoices(page, limit, search, Vtyp, status);
+    const data = await fetchAllValidInvoices(page, limit, search, Vtyp, status, startDate, endDate);
 
     return (
         <div className='p-4 space-y-8'>
@@ -42,12 +46,15 @@ const Invoices = async ({ searchParams }: PageProps) => {
             <section className='space-y-2'>
                 <div className='px-4 py-3 w-full flex flex-col gap-2 md:flex-row md:justify-between md:items-center bg-white'>
                     <div className='max-w-100 flex gap-4'>
-                        <SearchComponent placeholder='Search invoice' />
+                        <SearchComponent placeholder='Search Vno or Party' />
                         <Filter />
                     </div>
-                    <div className='flex items-center gap-2'>
-                        <span className='text-sm ml-1 font-semibold'>Status</span>
-                        <StatusFilter />
+                    <div className='flex items-center justify-between gap-4'>
+                        <div className='flex items-center gap-2'>
+                            <span className='text-sm ml-1 font-semibold'>Status</span>
+                            <StatusFilter />
+                        </div>
+                        <DateFilter />
                     </div>
                 </div>
 

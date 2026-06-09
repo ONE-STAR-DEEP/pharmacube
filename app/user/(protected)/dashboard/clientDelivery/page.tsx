@@ -1,6 +1,7 @@
 import InvoiceCard from '@/components/admin/InvoiceCard';
 import { invoiceColumns } from '@/components/admin/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
+import DateFilter from '@/components/DateFilter';
 import Filter from '@/components/Filter';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
@@ -13,6 +14,8 @@ type PageProps = {
         search?: string;
         status?: string;
         Vtyp?: string;
+        startDate?: string;
+        endDate?: string;
     }>;
 };
 
@@ -25,10 +28,11 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const search = params?.search
 
     const status = params?.status
-
+    const startDate = params?.startDate
+    const endDate = params?.endDate
     const Vtyp = params?.Vtyp;
 
-    const data = await fetchDeliveredInvoices(page, limit, search, Vtyp);
+    const data = await fetchDeliveredInvoices(page, limit, search, Vtyp, startDate, endDate);
 
     return (
         <div className='p-4 space-y-8'>
@@ -44,10 +48,10 @@ const Invoices = async ({ searchParams }: PageProps) => {
                         <SearchComponent placeholder='Search invoice' />
                         <Filter />
                     </div>
-
+                    <DateFilter />
                 </div>
-                <div className='bg-white  p-4'>
 
+                <div className='bg-white  p-4'>
                     <div className='hidden md:flex'>
                         <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
                     </div>

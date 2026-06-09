@@ -1,9 +1,11 @@
 import InvoiceCard from '@/components/admin/InvoiceCard';
 import { invoiceColumns } from '@/components/admin/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
+import DateFilter from '@/components/DateFilter';
 import Filter from '@/components/Filter';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';
+import StatusFilter from '@/components/StatusFilter';
 import { fetchInvoices } from '@/lib/actions/admin';
 
 type PageProps = {
@@ -11,8 +13,10 @@ type PageProps = {
         page?: string;
         limit?: string;
         search?: string;
-        status?: string;
+        status?: number;
         Vtyp?: string;
+        startDate?: string;
+        endDate?: string;
     }>;
 };
 
@@ -24,11 +28,15 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
     const search = params?.search
 
+    const startDate = params?.startDate
+
+    const endDate = params?.endDate
+
     const status = params?.status
 
     const Vtyp = params?.Vtyp;
 
-    const data = await fetchInvoices(page, limit, search, Vtyp);
+    const data = await fetchInvoices({ page, limit, search, Vtyp, status, startDate, endDate });
 
     return (
         <div className='p-4 space-y-8'>
@@ -39,13 +47,20 @@ const Invoices = async ({ searchParams }: PageProps) => {
             </header>
 
             <section className='space-y-2'>
-                <div className='px-4 py-3 w-full flex justify-between items-center bg-white'>
+                <div className='px-4 py-3 w-full flex flex-col gap-2 md:flex-row md:justify-between md:items-center bg-white'>
                     <div className='max-w-100 flex gap-4'>
-                        <SearchComponent placeholder='Search invoice' />
+                        <SearchComponent placeholder='Search Vno or Party' />
                         <Filter />
                     </div>
-
+                    <div className='flex items-center justify-between gap-4'>
+                        <div className='flex items-center gap-2'>
+                            <span className='text-sm ml-1 font-semibold'>Status</span>
+                            <StatusFilter />
+                        </div>
+                        <DateFilter />
+                    </div>
                 </div>
+
                 <div className='bg-white  p-4'>
 
                     <div className='hidden md:flex'>

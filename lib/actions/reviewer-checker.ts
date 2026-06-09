@@ -207,12 +207,13 @@ export const fetchAttendedInvoices = async (
     limit: number = 20,
     search?: string,
     Vtyp?: string,
-    status?: number
+    status?: number,
+    startDate?: string,
+    endDate?: string
 ) => {
     const session = await getCurrentUserSafe();
 
     const userId = session?.id;
-    const type = session?.type;
     const iss = session?.iss;
 
     if (!userId || iss !== "pharmacube") {
@@ -231,8 +232,28 @@ export const fetchAttendedInvoices = async (
         const params: any[] = [];
 
         if (search) {
-            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ?)`);
-            params.push(`%${search}%`, `%${search}%`);
+
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+
+                    params.push(...partyCodes);
+                }
+            }
         }
 
         if (Vtyp) {
@@ -254,6 +275,11 @@ export const fetchAttendedInvoices = async (
         if (status && status != 7) {
             conditions.push(`status = ?`);
             params.push(status);
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
         }
 
         const where = `WHERE ${conditions.join(" AND ")}`;

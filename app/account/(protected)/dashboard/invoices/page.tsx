@@ -6,6 +6,7 @@ import Filter from '@/components/account/Filter';
 import { fetchAllValidInvoices } from '@/lib/actions/account';
 import InvoiceCard from '@/components/admin/InvoiceCard';
 import StatusFilter from '@/components/account/StatusFilter';
+import DateFilter from '@/components/DateFilter';
 
 type PageProps = {
     searchParams: Promise<{
@@ -14,6 +15,8 @@ type PageProps = {
         search?: string;
         status?: number;
         Vtyp?: string;
+        startDate?: string;
+        endDate?: string;
     }>;
 };
 
@@ -26,10 +29,11 @@ const Invoices = async ({ searchParams }: PageProps) => {
     const search = params?.search
 
     const status = params?.status
-
+    const startDate = params?.startDate
+    const endDate = params?.endDate
     const Vtyp = params?.Vtyp
 
-    const data = await fetchAllValidInvoices({ page, limit, search, Vtyp: Vtyp ? Vtyp : ["S1", "S2"], status });
+    const data = await fetchAllValidInvoices({ page, limit, search, Vtyp: Vtyp ? Vtyp : ["S1", "S2"], status, startDate, endDate });
 
     return (
         <div className='p-4 space-y-8'>
@@ -45,9 +49,12 @@ const Invoices = async ({ searchParams }: PageProps) => {
                         <SearchComponent placeholder='Search invoice' />
                         <Filter />
                     </div>
-                    <div className='flex items-center gap-2'>
-                        <span className='text-sm ml-1 font-semibold'>Status</span>
-                        <StatusFilter />
+                    <div className='flex items-center justify-between gap-4'>
+                        <div className='flex items-center gap-2'>
+                            <span className='text-sm ml-1 font-semibold'>Status</span>
+                            <StatusFilter />
+                        </div>
+                        <DateFilter />
                     </div>
                 </div>
 

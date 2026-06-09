@@ -2,14 +2,25 @@
 
 import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
-import { InvoiceData, OperationLog } from "@/utils/types/DataTypes";
+import { InvoiceData, OperationLog, RiderLocationLog } from "@/utils/types/DataTypes";
 
-export const fetchInvoices = async (
-    page: number = 1,
-    limit: number = 20,
-    search?: string,
-    Vtyp?: string,
-    status?: number
+export const fetchInvoices = async ({
+    page = 1,
+    limit = 20,
+    search,
+    Vtyp,
+    status,
+    startDate,
+    endDate
+}: {
+    page: number;
+    limit: number;
+    search?: string;
+    Vtyp?: string;
+    status?: number;
+    startDate?: string;
+    endDate?: string;
+}
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -32,8 +43,27 @@ export const fetchInvoices = async (
         const params: any[] = [];
 
         if (search) {
-            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ? )`);
-            params.push(`%${search}%`, `%${search}%`);
+
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+
+                    params.push(...partyCodes);
+                }
+            }
         }
 
         if (Vtyp) {
@@ -48,6 +78,11 @@ export const fetchInvoices = async (
         if (status && status != 7) {
             conditions.push(`status = ?`);
             params.push(status);
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
         }
 
         const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -105,7 +140,9 @@ export const fetchDeliveredInvoices = async (
     page: number = 1,
     limit: number = 20,
     search?: string,
-    Vtyp?: string
+    Vtyp?: string,
+    startDate?: string,
+    endDate?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -128,13 +165,33 @@ export const fetchDeliveredInvoices = async (
         const params: any[] = [];
 
         if (search) {
-            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ?)`);
-            params.push(`%${search}%`, `%${search}%`);
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+                const partyCodes = parties.map((party: any) => party.code);
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+                    params.push(...partyCodes);
+                }
+            }
         }
 
         if (Vtyp) {
             conditions.push(`Vtyp = ?`);
             params.push(Vtyp);
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
         }
 
         const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -205,6 +262,16 @@ export const fetchLogs = async (id: number) => {
         SELECT
             sp.id,
             sp.discrepancy_at,
+            
+            CONVERT_TZ(sp.discrepancy_time, '+00:00', '+05:30') AS discrepancy_time,
+            CONVERT_TZ(sp.warehouse_time, '+00:00', '+05:30') AS warehouse_time,
+            CONVERT_TZ(sp.checker_time, '+00:00', '+05:30') AS checker_time,
+            CONVERT_TZ(sp.reviewer_time, '+00:00', '+05:30') AS reviewer_time,
+            CONVERT_TZ(sp.delivery_time, '+00:00', '+05:30') AS delivery_time,
+            CONVERT_TZ(sp.account_time, '+00:00', '+05:30') AS account_time,
+            CONVERT_TZ(sp.urgent_time, '+00:00', '+05:30') AS urgent_time,
+    
+            sp.urgent_marked_by,
 
             uw.name AS warehouse_name,
             uw.type AS warehouse_type,
@@ -241,6 +308,38 @@ export const fetchLogs = async (id: number) => {
         return {
             success: true,
             data: rows[0] as OperationLog
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const fetchRiderLogs = async (id: number) => {
+
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const iss = session?.iss;
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    try {
+        const [rows]: any = await db.execute(
+            `
+    SELECT
+        *,
+        CONVERT_TZ(created_at, '+00:00', '+05:30') AS created_at
+    FROM rider_locations
+    WHERE invoice_id = ?;
+    `,
+            [id]
+        );
+
+        return {
+            success: true,
+            data: rows as RiderLocationLog[]
         }
     } catch (error) {
         console.error(error);

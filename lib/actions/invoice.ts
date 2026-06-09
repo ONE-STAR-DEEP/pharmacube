@@ -514,7 +514,9 @@ export const fetchAllValidInvoices = async (
     limit: number = 20,
     search?: string,
     Vtyp?: string,
-    status?: number
+    status?: number,
+    startDate?: string,
+    endDate?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -538,8 +540,26 @@ export const fetchAllValidInvoices = async (
         const params: any[] = [];
 
         if (search) {
-            conditions.push(`(Vno LIKE ? OR GSTVno LIKE ? )`);
-            params.push(`%${search}%`, `%${search}%`);
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+                    params.push(...partyCodes);
+                }
+            }
         }
 
         if (Vtyp) {
@@ -554,6 +574,11 @@ export const fetchAllValidInvoices = async (
         if (status && status != 7) {
             conditions.push(`status = ?`);
             params.push(status);
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
         }
 
         const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -655,7 +680,8 @@ export const approveInvoice = async (Vno: number, Vtyp: string) => {
             `
             UPDATE Salepurchase1 
             SET status = ?,
-            warehouse = ?
+            warehouse = ?,
+            warehouse_time = NOW()
             WHERE Vtyp = '${Vtyp}' AND Vno = ? AND status = ?
             `,
             [1, userId, Vno, 0]
@@ -725,6 +751,7 @@ export const updateInvoiceItems = async (
                 SET 
                 status = 2,
                 checker = ?,
+                checker_time = NOW(),
                 discrepancy = 1,
                 discrepancy_at = "check"
                 WHERE id = ?
@@ -737,7 +764,8 @@ export const updateInvoiceItems = async (
                 UPDATE Salepurchase1
                 SET 
                 status = 2,
-                checker = ?
+                checker = ?,
+                checker_time = NOW()
                 WHERE id = ? 
                 `,
                 [userId, invoiceId]
@@ -845,6 +873,7 @@ export const discrepancyAction = async (
             UPDATE Salepurchase1
             SET discrepancy = 2,
             reviewer = ?,
+            reviewer_time = NOW(),
             status = 3
             WHERE id = ?
         `,
@@ -873,7 +902,9 @@ export const discrepancyAction = async (
 export const fetchDiscrepancies = async (
     page: number = 1,
     limit: number = 20,
-    search?: string
+    search?: string,
+    startDate?: string,
+    endDate?: string
 ) => {
     const session = await getCurrentUserSafe();
 
@@ -893,19 +924,40 @@ export const fetchDiscrepancies = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const searchTerm = search ? `%${search}%` : `%`;
+        const conditions = [];
+        const params: any[] = [];
 
-        const where = `
-        WHERE (
-            (
-            Vno LIKE ?
-            OR GSTVno  LIKE ?
-            OR Vtyp LIKE ?
-            )
-        )
-        `;
+        if (search) {
 
-        const params: any[] = [searchTerm, searchTerm, searchTerm];
+            if (Number(search)) {
+                conditions.push(`(Vno LIKE ?)`);
+                params.push(`%${search}%`);
+            }
+
+            else {
+                const [parties]: any = await conn.execute(
+                    `SELECT code FROM Acm WHERE name LIKE ?`,
+                    [`${search}%`]
+                );
+
+                const partyCodes = parties.map((party: any) => party.code);
+
+                if (partyCodes.length > 0) {
+                    conditions.push(
+                        `Acno IN (${partyCodes.map(() => "?").join(",")})`
+                    );
+
+                    params.push(...partyCodes);
+                }
+            }
+        }
+
+        if (startDate && endDate) {
+            conditions.push(`Vdt >= ? AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)`);
+            params.push(startDate, endDate);
+        }
+
+        const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
         const [rows]: any = await conn.execute(
             `
@@ -1122,10 +1174,12 @@ export const markAsUrgent = async (
             `
                 UPDATE Salepurchase1
                 SET
-                urgent = true
+                urgent = true,
+                urgent_time = NOW(),
+                urgent_marked_by = ?
                 WHERE id = ?
                 `,
-            [id]
+            [userId, id]
         );
 
         await conn.commit();
