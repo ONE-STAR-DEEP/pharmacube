@@ -28,7 +28,7 @@ export default function DateFilter() {
 
         params.set("startDate", format(startDate, "yyyy-MM-dd"));
         params.set("endDate", format(endDate, "yyyy-MM-dd"));
-        params.set("page", format("page", "1"));
+        params.set("page", "1");
 
         setOpen(false)
 
