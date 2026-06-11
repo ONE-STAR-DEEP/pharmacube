@@ -46,7 +46,7 @@ const Dashboard = async ({ searchParams }: PageProps) => {
       <ChartBarMultiple data={chartData?.data || defaultDashboardStats} />
       <div className='p-4 bg-white rounded-lg border border-black/15 space-y-8'>
         <div>
-          <h2 className="text-lg font-semibold">User-wise Action Summary - <span className='text-xs'>({date})</span></h2>
+          <h2 className="text-lg font-semibold">User-wise Action Summary - <span className='text-xs'>({date ? date : "Today"})</span></h2>
           <p className="text-sm text-muted-foreground">
             Number of invoices processed by each user across all workflow stages.
           </p>
