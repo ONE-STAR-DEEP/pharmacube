@@ -62,7 +62,6 @@ const Invoices = async ({ searchParams }: PageProps) => {
                         <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
                     </div>
 
-                    {/* <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} /> */}
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
             </section>

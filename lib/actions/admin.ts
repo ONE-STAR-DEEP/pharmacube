@@ -161,7 +161,7 @@ export const fetchDeliveredInvoices = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const conditions = ["status = 7 OR status = 8"];
+        const conditions = ["(status = 7 OR status = 8)"];
         const params: any[] = [];
 
         if (search) {
