@@ -176,7 +176,7 @@ export const invoiceColumns: ColumnDef<DiscrepancyInvoiceData>[] = [
 
               <FieldGroup className="grid grid-cols-[30%_70%]">
                 <span>Discrepancy</span>
-                <span className="">: During {found_at ? found_at : "NA"}</span>
+                <span className="">: {found_at ? `During ${found_at}` : "NA"}</span>
 
                 <span>Marked by</span>
                 <span className="capitalize">: {marked_by ? marked_by : "NA"}</span>
