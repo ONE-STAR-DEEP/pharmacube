@@ -171,14 +171,14 @@ export const userActionReport = async (date?: string) => {
 
     if (date) {
         where = `
-            WHERE Vdt >= ?
-            AND Vdt < DATE_ADD(?, INTERVAL 1 DAY)
+            sp.Vdt >= ?
+            AND sp.Vdt < DATE_ADD(?, INTERVAL 1 DAY)
         `;
         params = [date, date];
     } else {
         where = `
-            WHERE Vdt >= CURDATE()
-            AND Vdt < CURDATE() + INTERVAL 1 DAY
+            sp.Vdt >= CURDATE()
+            AND sp.Vdt < DATE_ADD(CURDATE(), INTERVAL 1 DAY)
         `;
     }
 
@@ -209,7 +209,8 @@ LEFT JOIN Salepurchase1 sp
         sp.account,
         sp.urgent_marked_by
     )
-    ${where}
+    AND sp.Vdt >= ?
+    AND sp.Vdt < DATE_ADD(?, INTERVAL 1 DAY)
 
 GROUP BY u.id, u.name, u.type
 ORDER BY u.name;
