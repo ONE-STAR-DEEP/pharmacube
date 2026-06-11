@@ -1,10 +1,22 @@
 "use client";
-import { InvoiceData } from "@/utils/types/DataTypes";
+
+import { DiscrepancyInvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { FieldGroup } from "../ui/field";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -20,7 +32,7 @@ export const STATUS_LABEL: Record<number, string> = {
   10: "Discrepancy Resolved",
 };
 
-export const invoiceColumns: ColumnDef<InvoiceData>[] = [
+export const invoiceColumns: ColumnDef<DiscrepancyInvoiceData>[] = [
   {
     id: "sno",
     header: "S.No",
@@ -28,10 +40,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
 
       const searchParams = useSearchParams();
-
       const page = Number(searchParams.get("page"));
       const limit = Number(searchParams.get("limit"));
-
       return (((page - 1) * limit) + (row.index + 1))
     }
   },
@@ -45,11 +55,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Date",
     cell: ({ row }) => {
       const value = row.getValue("Vdt") as string;
-
       const date = new Date(value);
-
       const formatted = date.toLocaleDateString("en-GB");
-
       return formatted;
     },
     size: 100
@@ -68,7 +75,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     accessorKey: "NoOfItem",
     header: "Items",
     size: 80
-
   },
   {
     accessorKey: "InvAmt",
@@ -144,15 +150,53 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
       const VNo = row.original.Vno;
       const Vtyp = row.original.Vtyp;
-
-      const router = useRouter();
+      const marked_at = row.original.marked_at;
+      const marked_by = row.original.marked_by;
+      const resolved_by = row.original.resolved_by;
+      const found_at = row.original.found_at;
+      const [open, setOpen] = useState(false);
       return (
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           <Button className="m-0 px-2" onClick={() => {
             window.open(`/invoice/${Vtyp}-${VNo}/discrepancy`, "_blank", "noopener,noreferrer")
           }}>
             View
           </Button>
+
+          <Button onClick={() => setOpen(true)}>Logs</Button>
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Operation Logs</DialogTitle>
+                <DialogDescription>
+                  Review the complete history of operations and the workers involved.
+                </DialogDescription>
+              </DialogHeader>
+
+              <FieldGroup className="grid grid-cols-[30%_70%]">
+                <span>Discrepancy</span>
+                <span className="capitalize">: During {found_at ? found_at : "NA"}</span>
+
+                <span>Marked by</span>
+                <span className="capitalize">: {marked_by ? marked_by : "NA"}</span>
+
+                <span>Marked at</span>
+                <span className="capitalize">: {marked_at ? new Date(marked_at).toLocaleString() : "NA"}</span>
+
+                <span>Resolved by</span>
+                <span className="capitalize">: {resolved_by ? resolved_by : "NA"}</span>
+
+              </FieldGroup>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Close</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
         </div>
       )
     },

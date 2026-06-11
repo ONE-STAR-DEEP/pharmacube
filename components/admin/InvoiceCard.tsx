@@ -13,6 +13,29 @@ import { useRouter } from "next/navigation";
 import Logs from "./Logs";
 import { useRole } from "../UserContext";
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { FieldGroup } from "../ui/field";
+import { useState } from "react";
+import { changeStage } from "@/lib/actions/admin";
+
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
   1: "Yes",
@@ -40,6 +63,14 @@ const discColorMap = {
   2: "text-blue-600",
 };
 
+const STAGE_LABEL: Record<number, string> = {
+  0: "Warehouse",
+  1: "Checking",
+  2: "Review",
+  3: "Account/Rider",
+  6: "Delivery",
+}
+
 const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
   1: "Sent to Checker",
@@ -61,6 +92,9 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
 
   const router = useRouter();
   const { role } = useRole();
+  const [openMove, setOpenMove] = useState(false);
+  const [stage, setStage] = useState(0)
+  const [stageLoading, setStageLoading] = useState(false)
 
   const handleClick = async (id: number) => {
 
@@ -73,6 +107,24 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
       router.refresh()
     } catch (error) {
 
+    }
+  }
+
+  const handleSubmit = async (id: number) => {
+    if (stageLoading) return;
+    setStageLoading(true)
+    try {
+      const res = await changeStage(id, stage)
+      if (!res.success) {
+        alert("Failed to update. Try again.")
+        return
+      }
+      router.refresh()
+      setOpenMove(false)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setStageLoading(false)
     }
   }
 
@@ -111,7 +163,7 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                 <span>: {invoice["InvAmt"]}</span>
               </div>
 
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex items-center mt-2 justify-end gap-1">
                 <Button className="m-0 px-2" onClick={() => {
                   window.open(`/invoice/${invoice.Vtyp}-${invoice.Vno}`, "_blank", "noopener,noreferrer")
                 }}>
@@ -134,7 +186,60 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
                     Urgent
                   </Button>
                 }
+                {
+                  invoice.status < 7 &&
+                  <Button onClick={() => setOpenMove(true)}>
+                    Move invoice
+                  </Button>
+                }
               </div>
+
+              <Dialog open={openMove} onOpenChange={setOpenMove}>
+                <DialogContent className="sm:max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle>Move Invoice</DialogTitle>
+                    <DialogDescription>
+                      Choose the stage you want to move this invoice to. Relevant logs will be regenerated based on the selected stage.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="text-lg">
+                    Invoice No: <span className="text-orange-600 font-bold">{invoice.GSTVno}</span>
+                  </div>
+                  <div className="">
+                    Current stage: <span className="text-orange-600 font-bold">{STAGE_LABEL[invoice.status]}</span>
+                  </div>
+
+                  <FieldGroup className="grid grid-cols-[10%_90%] mb-4">
+                    <div className="my-auto">Stage:</div>
+
+                    <Select onValueChange={(value) => { setStage(Number(value)) }}>
+                      <SelectTrigger className="w-full max-w-48">
+                        <SelectValue placeholder="Select a stage" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Stages</SelectLabel>
+                          <SelectItem value="0">Warehouse</SelectItem>
+                          <SelectItem value="1">Checking</SelectItem>
+                          <SelectItem value="2">Review</SelectItem>
+                          <SelectItem value="3">Accounts/Rider</SelectItem>
+                          <SelectItem value="6">Delivery</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+
+                  </FieldGroup>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Close</Button>
+                    </DialogClose>
+                    <Button onClick={() => handleSubmit(invoice.id)}>Submit</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
             </AccordionContent>
           </AccordionItem>
         </Accordion >

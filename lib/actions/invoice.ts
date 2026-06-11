@@ -2,7 +2,7 @@
 
 import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
-import { BillItem, EInvoiceType, Invoice, InvoiceData } from "@/utils/types/DataTypes";
+import { BillItem, DiscrepancyInvoiceData, EInvoiceType, Invoice, InvoiceData } from "@/utils/types/DataTypes";
 
 
 type Role = "warehouse" | "checker" | "reviewer" | "rider" | "delivery" | "account" | "fullAccess";
@@ -833,14 +833,14 @@ export const discrepancyAction = async (
         await conn.execute(
             `
             INSERT INTO discrepancy_table (
-            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id, marked_at, found_at, resolved_by
             )
             SELECT
-            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, 0, 0, 0, 10, discrepancy, Rndamt, id
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, 10, discrepancy, Rndamt, id, NOW(), discrepancy_at, ?
             FROM Salepurchase1
             WHERE id = ?
             `,
-            [invoiceId]
+            [userId, invoiceId]
         );
 
         for (const item of billItems) {
@@ -964,22 +964,28 @@ export const fetchDiscrepancies = async (
             SELECT 
             sp.*,
             (sp.Amt01 + sp.Taxamt + sp.Rndamt) AS InvAmt,
-            acm.name AS partyName
+            acm.name AS partyName,
+            u.name AS marked_by,
+            ur.name AS resolved_by,
+            CONVERT_TZ(sp.marked_at, '+00:00', '+05:30') AS marked_at
             FROM discrepancy_table sp
-            LEFT JOIN Acm acm ON sp.Acno = acm.code
+            LEFT JOIN Acm acm 
+            ON sp.Acno = acm.code
+            LEFT JOIN users u ON sp.marked_by = u.id
+            LEFT JOIN users ur ON sp.resolved_by = ur.id
             ${where}
             ORDER BY sp.inserted_at DESC
             LIMIT ${safeLimit} OFFSET ${safeOffset}
-            `,
+        `,
             params
         );
 
         const [countResult]: any = await conn.execute(
             `
-        SELECT COUNT(*) as total
-        FROM discrepancy_table
-        ${where}
-        `,
+                SELECT COUNT(*) as total
+                FROM discrepancy_table
+                ${where}
+            `,
             params
         );
 
@@ -988,7 +994,7 @@ export const fetchDiscrepancies = async (
 
         return {
             success: true,
-            data: rows as InvoiceData[],
+            data: rows as DiscrepancyInvoiceData[],
             pagination: {
                 total,
                 totalPages,

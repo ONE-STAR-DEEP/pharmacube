@@ -8,6 +8,7 @@ import { useRole } from "./UserContext";
 import Tnx from "./account/Tnx";
 import { useRouter, useSearchParams } from "next/navigation";
 import { markAsUrgent } from "@/lib/actions/invoice";
+import { Discrepancy_LABEL } from "./invWithDiscTableColumn";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -25,6 +26,7 @@ export const STATUS_LABEL: Record<number, string> = {
   200: "Payment Received",
   210: "Excessive Payment Received"
 };
+
 export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "sno",
@@ -33,7 +35,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     cell: ({ row }) => {
 
       const searchParams = useSearchParams();
-
       const page = Number(searchParams.get("page"));
       const limit = Number(searchParams.get("limit"));
 
@@ -86,6 +87,41 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     },
   },
   {
+    accessorKey: "payment",
+    header: "Payment",
+    size: 70,
+    cell: ({ row }) => {
+      const value = Boolean(row.getValue("payment"));
+      return (
+        <div className="flex items-center" >
+          <p className={`${value ? "text-emerald-700" : "text-orange-600"} font-semibold`}>
+            {value ? "paid" : "pending"}</p>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "discrepancy",
+    header: "Discrepancy",
+    size: 80,
+    cell: ({ row }) => {
+      const value = Number(row.original.discrepancy);
+
+      const colorMap = {
+        0: "text-green-600",
+        1: "text-red-600",
+        2: "text-blue-600",
+      };
+
+      return (
+        <div className="flex items-center">
+          <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
+            {Discrepancy_LABEL[value]}</p>
+        </div>
+      )
+    },
+  },
+  {
     accessorKey: "status",
     header: "Status",
     size: 160,
@@ -130,7 +166,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const { role } = useRole();
       const id = row.original.id;
       const isUrgent = Boolean(row.original.urgent);
-      const show = !isUrgent && (role !== "account" && role !== "rider")
+      const status = Number(row.original.status);
+      const show = !isUrgent && (role !== "account" && role !== "rider" && role !== "delivery")
       const router = useRouter();
       const handleClick = async () => {
 
@@ -142,7 +179,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
           }
           router.refresh()
         } catch (error) {
-
+          console.log(error)
         }
       }
       return (
@@ -159,7 +196,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
             }}>Recipt</Button>
           }
           {
-            show && <Button onClick={handleClick}>
+            (show && status < 6) && <Button onClick={handleClick}>
               Urgent
             </Button>
           }

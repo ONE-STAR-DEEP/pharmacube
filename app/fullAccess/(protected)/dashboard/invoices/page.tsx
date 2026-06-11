@@ -1,4 +1,4 @@
-import { invoiceColumns } from '@/components/invoiceTableColumn';
+import { invoiceColumns } from '@/components/admin/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
 import Pagination from '@/components/paginationComponent';
 import SearchComponent from '@/components/SearchComponent';

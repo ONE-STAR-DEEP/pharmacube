@@ -1,13 +1,45 @@
 "use client";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+import { FieldGroup } from "@/components/ui/field"
+import { changeStage, fetchLogs, fetchRiderLogs } from "@/lib/actions/admin"
+import { OperationLog, RiderLocationLog } from "@/utils/types/DataTypes"
+import { useEffect, useState } from "react"
+
 import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
-import { IndianRupee } from "lucide-react";
+import { EllipsisVertical, IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
 import { markAsUrgent } from "@/lib/actions/invoice";
-import Logs from "./Logs";
-import { useRole } from "../UserContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -162,18 +194,25 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
-    size: 200,
+    size: 60,
     cell: ({ row }) => {
-      const { role } = useRole()
       const VNo = Number(row.original.Vno);
       const id = row.original.id
       const Vtyp = row.original.Vtyp;
       const recipt = row.original.recipt;
+      const GSTVno = row.original.GSTVno;
       const router = useRouter();
       const show = Boolean(row.original.urgent);
       const status = Number(row.original.status);
-      const handleClick = async () => {
+      const [open, setOpen] = useState(false);
+      const [openMove, setOpenMove] = useState(false);
+      const [stage, setStage] = useState(0)
+      const [stageLoading, setStageLoading] = useState(false)
+      const [openActionLogs, setOpenActionLogs] = useState(false);
+      const [data, setData] = useState<OperationLog | null>(null);
+      const [riderData, setRiderData] = useState<RiderLocationLog[] | null>(null);
 
+      const handleClick = async () => {
         try {
           const res = await markAsUrgent(id)
           if (!res.success) {
@@ -186,32 +225,226 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         }
       }
 
+      useEffect(() => {
+        const loadData = async () => {
+          if (!open) return
+          const res = await fetchLogs(id);
+          if (!res?.success) {
+            alert("Failed to fetch logs.")
+            return;
+          }
+          setData(res?.data || null);
+        }
+        loadData()
+      }, [open])
+
+      useEffect(() => {
+        const loadData = async () => {
+          if (!openActionLogs) return
+          const res = await fetchRiderLogs(id);
+          if (!res?.success) {
+            alert("Failed to fetch logs.")
+            return;
+          }
+          setRiderData(res?.data || null);
+          console.log(res?.data);
+          console.log(riderData);
+        }
+        loadData()
+      }, [openActionLogs])
+
+      const handleSubmit = async () => {
+        if (stageLoading) return;
+        setStageLoading(true)
+        try {
+          const res = await changeStage(id, stage)
+          if (!res.success) {
+            alert("Failed to update. Try again.")
+            return
+          }
+          router.refresh()
+          setOpenMove(false)
+        } catch (error) {
+          console.log(error)
+        } finally {
+          setStageLoading(false)
+        }
+      }
+
+      const accepted = riderData?.find(log => log.action === "accepted");
+      const picked = riderData?.find(log => log.action === "picked");
+      const delivered = riderData?.find(log => log.action === "delivered");
+
       return (
         <div className="flex gap-2 items-center">
-          <Button className="m-0 px-2" onClick={() => {
-            window.open(`/invoice/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer")
-          }}>
-            View
-          </Button>
 
-          {
-            role === "admin" &&
-            <Logs id={id} Vno={VNo} Vtyp={Vtyp} />
-          }
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost"><EllipsisVertical /></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40" align="start">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Invoice Actions</DropdownMenuLabel>
 
-          {
-            recipt &&
-            <Button className="m-0 px-2" onClick={() => {
-              window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
-            }}>Recipt</Button>
-          }
+                <DropdownMenuItem
+                  onClick={() => {
+                    window.open(`/invoice/${Vtyp}-${VNo}`, "_blank", "noopener,noreferrer")
+                  }}>
+                  View Invoice
+                </DropdownMenuItem>
 
-          {
-            (!show && status < 6) && <Button onClick={handleClick}>
-              Urgent
-            </Button>
-          }
-        </div>
+                <DropdownMenuItem onClick={() => setOpen(true)}>
+                  Logs
+                </DropdownMenuItem>
+
+                {
+                  status < 7 &&
+                  <DropdownMenuItem onClick={() => setOpenMove(true)}>
+                    Move invoice
+                  </DropdownMenuItem>
+                }
+
+                {
+                  (!show && status < 6) && <DropdownMenuItem onClick={handleClick}>
+                    Mark Urgent
+                  </DropdownMenuItem>
+                }
+
+                {
+                  recipt && <DropdownMenuItem onClick={() => {
+                    window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
+                  }}>
+                    Recipt
+                  </DropdownMenuItem>
+                }
+
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Operation Logs</DialogTitle>
+                <DialogDescription>
+                  Review the complete history of operations and the workers involved.
+                </DialogDescription>
+              </DialogHeader>
+
+              <FieldGroup className="grid grid-cols-[30%_70%]">
+                <span>Warehouse</span>
+                <span className="capitalize">: {data?.warehouse_name ?? "NA"} - {data?.warehouse_time ? new Date(data.warehouse_time).toLocaleString() : "NA"}</span>
+
+                <span>Checked by</span>
+                <span className="capitalize">: {data?.checker_name ?? "NA"} - {data?.checker_time ? new Date(data.checker_time).toLocaleString() : "NA"}</span>
+
+                <span>Reviewed by</span>
+                <span className="capitalize">: {data?.reviewer_name ?? "NA"} - {data?.reviewer_time ? new Date(data.reviewer_time).toLocaleString() : "NA"}</span>
+
+                <span>Assigned Rider</span>
+                <span className="capitalize">: {data?.rider_name ?? "NA"} - <span className="text-orange-600 font-semibold hover:cursor-pointer hover:underline" onClick={() => setOpenActionLogs(true)}>Action Logs</span></span>
+
+                <span>Delivery</span>
+                <span className="capitalize">: {data?.delivery_name ?? "NA"} - {data?.delivery_time ? new Date(data.delivery_time).toLocaleString() : "NA"}</span>
+
+                <span>Account</span>
+                <span className="capitalize">: {data?.account_name ?? "NA"} - {data?.account_time ? new Date(data.account_time).toLocaleString() : "NA"}</span>
+
+                <span>Discrepancy</span>
+                <span className="capitalize font-semibold">: {data?.discrepancy_at === "no" ? "No" : `during ${data?.discrepancy_at}`} - {data?.discrepancy_time ? new Date(data.discrepancy_time).toLocaleString() : "NA"}</span>
+              </FieldGroup>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Close</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={openMove} onOpenChange={setOpenMove}>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Move Invoice</DialogTitle>
+                <DialogDescription>
+                  Choose the stage you want to move this invoice to. Relevant logs will be regenerated based on the selected stage.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="text-lg">
+                Invoice No: <span className="text-orange-600 font-bold">{GSTVno}</span>
+              </div>
+
+              <FieldGroup className="grid grid-cols-[10%_90%]">
+                <div className="my-auto">Stage:</div>
+
+                <Select onValueChange={(value) => { setStage(Number(value)) }}>
+                  <SelectTrigger className="w-full max-w-48">
+                    <SelectValue placeholder="Select a stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Stages</SelectLabel>
+                      <SelectItem value="0">Warehouse</SelectItem>
+                      <SelectItem value="1">Checking</SelectItem>
+                      <SelectItem value="2">Review</SelectItem>
+                      <SelectItem value="3">Accounts/Rider</SelectItem>
+                      <SelectItem value="6">Delivery</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+
+              </FieldGroup>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Close</Button>
+                </DialogClose>
+                <Button onClick={() => handleSubmit()}>Submit</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={openActionLogs} onOpenChange={setOpenActionLogs}>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Rider Action Logs</DialogTitle>
+                <DialogDescription>
+                  Review the rider actions.
+                </DialogDescription>
+              </DialogHeader>
+
+              <FieldGroup className="grid grid-cols-[30%_70%]">
+                <span>Accepted at</span>
+                <span>
+                  : {accepted?.created_at
+                    ? new Date(accepted.created_at).toLocaleString()
+                    : "NA"}
+                </span>
+                <span>Picked at</span>
+                <span>
+                  : {picked?.created_at
+                    ? new Date(picked.created_at).toLocaleString()
+                    : "NA"}
+                </span>
+
+                <span>Delivered at</span>
+                <span>
+                  : {delivered?.created_at
+                    ? new Date(delivered.created_at).toLocaleString()
+                    : "NA"}
+                </span>
+              </FieldGroup>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Close</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+        </div >
       )
     },
   },

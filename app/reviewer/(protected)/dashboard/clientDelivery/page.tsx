@@ -1,5 +1,5 @@
 import InvoiceCard from '@/components/admin/InvoiceCard';
-import { invoiceColumns } from '@/components/admin/invoiceTableColumn';
+import { invoiceColumns } from '@/components/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
 import DateFilter from '@/components/DateFilter';
 import Filter from '@/components/Filter';

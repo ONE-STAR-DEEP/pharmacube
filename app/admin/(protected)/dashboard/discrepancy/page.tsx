@@ -46,7 +46,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
                     </div>
                     <DateFilter />
                 </div>
-                
+
                 <div className='bg-white  p-4'>
 
                     <div className='hidden md:flex'>
@@ -57,7 +57,6 @@ const Invoices = async ({ searchParams }: PageProps) => {
                         <DiscrepancyCard data={Array.isArray(data.data) ? data.data : []} />
                     </div>
 
-                    {/* <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} /> */}
                     <Pagination totalPages={data.pagination?.totalPages || 1} />
                 </div>
             </section>

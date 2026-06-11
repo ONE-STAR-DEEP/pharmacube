@@ -161,7 +161,7 @@ export const fetchDeliveredInvoices = async (
         const safeLimit = Math.min(100, Number(limit) || 10);
         const safeOffset = Math.max(0, Number(offset) || 0);
 
-        const conditions = ["status = 7"];
+        const conditions = ["status = 7 OR status = 8"];
         const params: any[] = [];
 
         if (search) {
@@ -343,5 +343,38 @@ export const fetchRiderLogs = async (id: number) => {
         }
     } catch (error) {
         console.error(error);
+    }
+}
+
+export const changeStage = async (id: number, stage: number) => {
+
+
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const iss = session?.iss;
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    try {
+        const [rows]: any = await db.execute(
+            `
+            UPDATE Salepurchase1 set status = ? where id = ?;
+            `,
+            [stage, id]
+        );
+
+        return {
+            success: true,
+            message: "Invoice Transferred Successfully!"
+        }
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Invoice Transfer Failed!"
+        }
     }
 }

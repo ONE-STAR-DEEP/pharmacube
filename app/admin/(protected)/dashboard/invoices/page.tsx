@@ -64,7 +64,6 @@ const Invoices = async ({ searchParams }: PageProps) => {
                     <div className='hidden md:flex'>
                         <DataTable data={Array.isArray(data.data) ? data.data : []} columns={invoiceColumns} />
                     </div>
-
                     <div className='md:hidden space-y-2'>
                         <InvoiceCard data={Array.isArray(data.data) ? data.data : []} />
                     </div>

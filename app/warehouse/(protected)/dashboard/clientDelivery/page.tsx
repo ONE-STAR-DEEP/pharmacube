@@ -1,5 +1,5 @@
 import InvoiceCard from '@/components/admin/InvoiceCard';
-import { invoiceColumns } from '@/components/admin/invoiceTableColumn';
+import { invoiceColumns } from '@/components/invoiceTableColumn';
 import { DataTable } from '@/components/Datatable';
 import DateFilter from '@/components/DateFilter';
 import Filter from '@/components/Filter';
@@ -24,10 +24,7 @@ const Invoices = async ({ searchParams }: PageProps) => {
 
     const page = Number(params?.page) || 1;
     const limit = Number(params?.limit) || 20;
-
     const search = params?.search
-
-    const status = params?.status
     const startDate = params?.startDate
     const endDate = params?.endDate
     const Vtyp = params?.Vtyp;

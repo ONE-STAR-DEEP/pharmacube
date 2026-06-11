@@ -20,7 +20,6 @@ const Logs = ({ id, Vno, Vtyp }: {
     Vno: number;
     Vtyp: string;
 }) => {
-
     const [open, setOpen] = useState(false);
     const [openActionLogs, setOpenActionLogs] = useState(false);
     const [data, setData] = useState<OperationLog | null>(null);
@@ -69,8 +68,8 @@ const Logs = ({ id, Vno, Vtyp }: {
                             Review the complete history of operations and the workers involved.
                         </DialogDescription>
                     </DialogHeader>
-                    <FieldGroup className="grid grid-cols-[30%_70%]">
 
+                    <FieldGroup className="grid grid-cols-[30%_70%]">
                         <span>Warehouse</span>
                         <span className="capitalize">: {data?.warehouse_name ?? "NA"} - {data?.warehouse_time ? new Date(data.warehouse_time).toLocaleString() : "NA"}</span>
 
@@ -91,8 +90,8 @@ const Logs = ({ id, Vno, Vtyp }: {
 
                         <span>Discrepancy</span>
                         <span className="capitalize font-semibold">: {data?.discrepancy_at === "no" ? "No" : `during ${data?.discrepancy_at}`} - {data?.discrepancy_time ? new Date(data.discrepancy_time).toLocaleString() : "NA"}</span>
-
                     </FieldGroup>
+
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button variant="outline">Close</Button>

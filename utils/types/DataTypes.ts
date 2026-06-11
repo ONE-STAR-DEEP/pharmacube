@@ -110,6 +110,35 @@ export interface InvoiceData {
   InvAmt: string;
 }
 
+export interface DiscrepancyInvoiceData {
+  id: number;
+  Acno: number;
+  Vno: string;
+  GSTVno: string;
+  Vdt: string;        // ISO date string
+  Vtyp: string;
+  partyName: string;
+  NoOfItem: number;
+  Uid: string;
+  Ouid: string;
+  mTime: string;      // e.g. " 5:51PM"
+  Amt01: string;      // numeric but stored as string
+  disamtit: string;   // negative string
+  Taxamt: string;
+  Rndamt: string;
+  inserted_at: string; // ISO date string
+  status: number;
+  discrepancy?: number;
+  payment: boolean;
+  urgent: boolean;
+  recipt: string;
+  InvAmt: string;
+  marked_at: string;
+  found_at: string;
+  marked_by: string;
+  resolved_by: string;
+}
+
 export type DeliveryBoy = {
   id: number;
   name: string;
