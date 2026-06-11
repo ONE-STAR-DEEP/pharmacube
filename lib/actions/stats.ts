@@ -209,8 +209,7 @@ LEFT JOIN Salepurchase1 sp
         sp.account,
         sp.urgent_marked_by
     )
-    AND sp.Vdt >= ?
-    AND sp.Vdt < DATE_ADD(?, INTERVAL 1 DAY)
+    ${where}
 
 GROUP BY u.id, u.name, u.type
 ORDER BY u.name;
