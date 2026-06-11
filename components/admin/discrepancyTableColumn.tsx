@@ -168,15 +168,15 @@ export const invoiceColumns: ColumnDef<DiscrepancyInvoiceData>[] = [
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-sm">
               <DialogHeader>
-                <DialogTitle>Operation Logs</DialogTitle>
+                <DialogTitle>Discrepancy Logs</DialogTitle>
                 <DialogDescription>
-                  Review the complete history of operations and the workers involved.
+                  Audit discrepancy records by user, timestamp, and processing stage.
                 </DialogDescription>
               </DialogHeader>
 
               <FieldGroup className="grid grid-cols-[30%_70%]">
                 <span>Discrepancy</span>
-                <span className="capitalize">: During {found_at ? found_at : "NA"}</span>
+                <span className="">: During {found_at ? found_at : "NA"}</span>
 
                 <span>Marked by</span>
                 <span className="capitalize">: {marked_by ? marked_by : "NA"}</span>

@@ -57,7 +57,7 @@ export function ChartBarMultiple({ data }: { data: DashboardStats }) {
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Department Performance</CardTitle>
-        <CardDescription>Today's processing activity and completion status</CardDescription>
+        <CardDescription>Processing activity and completion status for selected date or current date.</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>

@@ -17,6 +17,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { DashboardStat } from "@/utils/types/DataTypes"
+import { CustomTooltip } from "./ToolTip"
 
 export const description = "An interactive bar chart"
 
@@ -170,6 +171,7 @@ export function ChartBarInteractive(data: Props) {
                 <span className="text-lg leading-none font-bold sm:text-3xl">
                   {total[key as keyof typeof total].toLocaleString()}
                 </span>
+                
               </button>
             )
           })}
@@ -203,7 +205,7 @@ export function ChartBarInteractive(data: Props) {
                 })
               }}
             />
-            <ChartTooltip
+            {/* <ChartTooltip
               content={
                 <ChartTooltipContent
                   className="w-[150px]"
@@ -217,7 +219,8 @@ export function ChartBarInteractive(data: Props) {
                   }}
                 />
               }
-            />
+            /> */}
+            <ChartTooltip content={<CustomTooltip />} />
             <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
           </BarChart>
         </ChartContainer>

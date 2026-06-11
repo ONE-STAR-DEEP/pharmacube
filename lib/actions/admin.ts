@@ -263,13 +263,13 @@ export const fetchLogs = async (id: number) => {
             sp.id,
             sp.discrepancy_at,
             
-            CONVERT_TZ(sp.discrepancy_time, '+00:00', '+05:30') AS discrepancy_time,
-            CONVERT_TZ(sp.warehouse_time, '+00:00', '+05:30') AS warehouse_time,
-            CONVERT_TZ(sp.checker_time, '+00:00', '+05:30') AS checker_time,
-            CONVERT_TZ(sp.reviewer_time, '+00:00', '+05:30') AS reviewer_time,
-            CONVERT_TZ(sp.delivery_time, '+00:00', '+05:30') AS delivery_time,
-            CONVERT_TZ(sp.account_time, '+00:00', '+05:30') AS account_time,
-            CONVERT_TZ(sp.urgent_time, '+00:00', '+05:30') AS urgent_time,
+            sp.discrepancy_time,
+            sp.warehouse_time,
+            sp.checker_time,
+            sp.reviewer_time,
+            sp.delivery_time,
+            sp.account_time,
+            sp.urgent_time,
     
             sp.urgent_marked_by,
 
@@ -330,7 +330,7 @@ export const fetchRiderLogs = async (id: number) => {
             `
     SELECT
         *,
-        CONVERT_TZ(created_at, '+00:00', '+05:30') AS created_at
+        created_at
     FROM rider_locations
     WHERE invoice_id = ?;
     `,

@@ -255,3 +255,17 @@ export type RiderLocationLog = {
   created_at: string;
   rider_time: string | null;
 };
+
+export type UserActionReport = {
+  id: number;
+  name: string;
+  type: string;
+
+  warehouse: number;
+  checker: number;
+  reviewer: number;
+  rider: number;
+  delivery: number;
+  account: number;
+  urgentMarked: number;
+};
