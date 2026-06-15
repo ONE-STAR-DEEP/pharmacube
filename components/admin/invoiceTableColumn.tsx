@@ -29,7 +29,7 @@ import { InvoiceData } from "@/utils/types/DataTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
-import { EllipsisVertical, IndianRupee } from "lucide-react";
+import { EllipsisVertical, FileImage, IndianRupee } from "lucide-react";
 import { Discrepancy_LABEL } from "../invWithDiscTableColumn";
 import { markAsUrgent } from "@/lib/actions/invoice";
 import {
@@ -83,11 +83,8 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     header: "Date",
     cell: ({ row }) => {
       const value = row.getValue("Vdt") as string;
-
       const date = new Date(value);
-
       const formatted = date.toLocaleDateString("en-GB");
-
       return formatted;
     },
     size: 100
@@ -163,7 +160,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
     size: 160,
     cell: ({ row }) => {
       const value = row.getValue("status") as number;
-
       const colorMap = {
         0: "text-red-600",
         1: "text-blue-600",
@@ -181,7 +177,6 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
         200: "text-emerald-600",
         210: "text-amber-600"
       };
-
       return (
         <div className="flex items-center">
           <p className={`capitalize font-medium ${colorMap[value as keyof typeof colorMap]}`}>
@@ -194,7 +189,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
   {
     id: "action",
     header: "Action",
-    size: 60,
+    size: 100,
     cell: ({ row }) => {
       const VNo = Number(row.original.Vno);
       const id = row.original.id
@@ -276,7 +271,7 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
       const delivered = riderData?.find(log => log.action === "delivered");
 
       return (
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center">
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -310,17 +305,18 @@ export const invoiceColumns: ColumnDef<InvoiceData>[] = [
                   </DropdownMenuItem>
                 }
 
-                {
-                  recipt && <DropdownMenuItem onClick={() => {
-                    window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
-                  }}>
-                    Recipt
-                  </DropdownMenuItem>
-                }
-
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {
+            recipt &&
+            <Button variant={"ghost"} onClick={() => {
+              window.open(`https://opp.pharmacube.in${recipt}`, "_blank", "noopener,noreferrer")
+            }}>
+              <FileImage className="" />
+            </Button>
+          }
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-sm">
