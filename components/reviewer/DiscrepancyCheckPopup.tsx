@@ -12,22 +12,10 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { discrepancyAction, fetchInvoiceByVNo, fetchInvoiceItems, updateInvoiceItems } from '@/lib/actions/invoice'
-import { BillItem, DeliveryBoy, Invoice } from '@/utils/types/DataTypes'
+import { BillItem, Invoice } from '@/utils/types/DataTypes'
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { fetchDeliveryBoy, approveForDelivery } from '@/lib/actions/rider'
-
-type SelectOption = {
-  label: string;
-  value: string;
-};
-
-const mapUsersToOptions = (users: DeliveryBoy[]): SelectOption[] => {
-  return users.map((user) => ({
-    label: `${user.name} (${user.email})`,
-    value: user.id.toString(),
-  }));
-};
+import { approveForDelivery } from '@/lib/actions/rider'
 
 const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => {
 
@@ -94,7 +82,6 @@ const DiscrepancyCheckPopup = ({ VNo, Vtyp }: { VNo: string; Vtyp: string }) => 
     } finally {
       setLoading(false);
     }
-
   }
 
   return (

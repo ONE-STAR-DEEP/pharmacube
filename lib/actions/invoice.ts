@@ -1109,6 +1109,8 @@ export const fetchDiscrepancyItems = async (
             discrepancy_items.Ftrate AS 'Rate',
             discrepancy_items.Dis AS 'DIS%',
             discrepancy_items.old_Qty AS 'old_Qty',
+            discrepancy_items.old_expiry AS 'old_expiry',
+            discrepancy_items.old_batch_no AS 'old_batch_no',
             CASE
             WHEN discrepancy_items.CGST > 0 THEN discrepancy_items.CGST
             WHEN discrepancy_items.SGST > 0 THEN discrepancy_items.SGST

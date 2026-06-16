@@ -17,11 +17,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import { DiscrepancyInvoiceData } from "@/utils/types/DataTypes"
+import { BillItem, DiscrepancyInvoiceData, Invoice } from "@/utils/types/DataTypes"
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
 import { FieldGroup } from "../ui/field";
 import { useState } from "react";
+import { fetchDiscrepancyeByVNo, fetchDiscrepancyItems } from "@/lib/actions/invoice";
+import DicsrepancyView from "./DicsrepancyView";
 
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -69,7 +70,6 @@ const STATUS_LABEL: Record<number, string> = {
 
 const DiscrepancyCard = ({ data }: { data: DiscrepancyInvoiceData[] }) => {
 
-  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   return (
@@ -104,12 +104,10 @@ const DiscrepancyCard = ({ data }: { data: DiscrepancyInvoiceData[] }) => {
                 <span>: {invoice["InvAmt"]}</span>
               </div>
 
-              <div className="flex items-center justify-end">
-                <Button className="m-0 px-2" onClick={() => {
-                  window.open(`/invoice/${invoice.Vtyp}-${invoice.Vno}/discrepancy`, "_blank", "noopener,noreferrer")
-                }}>
-                  View
-                </Button>
+              <div className="flex items-center justify-end gap-1">
+
+                <DicsrepancyView Vno={invoice.Vno} Vtyp={invoice.Vtyp} />
+
                 <Button onClick={() => setOpen(true)}>Logs</Button>
               </div>
 
@@ -144,10 +142,12 @@ const DiscrepancyCard = ({ data }: { data: DiscrepancyInvoiceData[] }) => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
             </AccordionContent>
           </AccordionItem>
         </Accordion >
       ))}
+
     </>
   );
 };

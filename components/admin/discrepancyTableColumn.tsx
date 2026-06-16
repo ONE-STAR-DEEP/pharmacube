@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { FieldGroup } from "../ui/field";
+import DicsrepancyView from "./DicsrepancyView";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -155,13 +156,18 @@ export const invoiceColumns: ColumnDef<DiscrepancyInvoiceData>[] = [
       const resolved_by = row.original.resolved_by;
       const found_at = row.original.found_at;
       const [open, setOpen] = useState(false);
+
+
+
       return (
         <div className="flex items-center gap-1">
-          <Button className="m-0 px-2" onClick={() => {
+          
+          <DicsrepancyView Vno={VNo} Vtyp={Vtyp}/>
+          {/* <Button className="m-0 px-2" onClick={() => {
             window.open(`/invoice/${Vtyp}-${VNo}/discrepancy`, "_blank", "noopener,noreferrer")
           }}>
             View
-          </Button>
+          </Button> */}
 
           <Button onClick={() => setOpen(true)}>Logs</Button>
 
