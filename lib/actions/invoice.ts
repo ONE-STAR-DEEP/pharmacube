@@ -669,12 +669,9 @@ export const approveInvoice = async (Vno: number, Vtyp: string) => {
             return { success: false, message: "Invoice not found or may have been removed" };
         }
 
-        const status = Number(data.status);
-
         if (!type || !(type in transitions)) {
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
-
 
         await conn.execute(
             `
@@ -1206,3 +1203,59 @@ export const markAsUrgent = async (
         if (conn) conn.release();
     }
 };
+
+export const approveSelectedInvoice = async (ids: number[]) => {
+
+    const conn = await db.getConnection();
+
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+    const iss = session?.iss;
+
+
+    if (!userId || iss !== "pharmacube") {
+        return { success: false, message: "Unauthorized" };
+    }
+
+    if (!ids.length) {
+        return {
+            success: false,
+            message: "No invoices selected"
+        };
+    }
+
+    try {
+
+        if (!type || !(type in transitions)) {
+            return { success: false, message: "Access denied. Please log in with valid permissions" };
+        }
+
+        const placeholders = ids.map(() => "?").join(",");
+
+        await conn.execute(
+            `
+            UPDATE Salepurchase1
+            SET status = ?,
+            warehouse = ?,
+            warehouse_time = NOW()
+            WHERE id IN (${placeholders})
+            AND status = ?
+            `,
+            [1, userId, ...ids, 0]
+        );
+
+        return { success: true, message: successMessages[type as Role], };
+
+    } catch (error) {
+        console.log(error)
+        return {
+            success: false,
+            message: "Something went wrong while approving the invoice"
+        }
+    }
+    finally {
+        if (conn) conn.release();
+    }
+}

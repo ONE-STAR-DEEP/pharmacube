@@ -9,7 +9,7 @@ import { Loader } from 'lucide-react';
 type LocationCoords = {
   lat: number;
   lng: number;
-  accuracy: number; // meters
+  accuracy: number;
 };
 
 const getCurrentLocation = (): Promise<LocationCoords> => {

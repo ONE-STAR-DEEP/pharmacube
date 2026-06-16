@@ -160,7 +160,7 @@ export const riderAction = async (
 
         const [check]: any = await conn.execute(
             `
-            SELECT status FROM Salepurchase1
+            SELECT status, rider FROM Salepurchase1
             Where id = ?
             `,
             [id]
@@ -179,6 +179,14 @@ export const riderAction = async (
             return {
                 success: false,
                 message: "Already delivered"
+            };
+        }
+
+        if (check[0].rider !== null) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: "Already assigned"
             };
         }
 
@@ -218,6 +226,153 @@ export const riderAction = async (
         };
     } finally {
         if (conn) conn.release();
+    }
+};
+
+export const riderAcceptMultiple = async (
+    data: {
+        ids: number[];
+        lat: number;
+        lng: number;
+        accuracy: number;
+        action: string;
+    }
+) => {
+    const session = await getCurrentUserSafe();
+
+    const userId = session?.id;
+    const type = session?.type;
+
+    if (!userId || type !== "rider") {
+        return {
+            success: false,
+            message: "Unauthorized",
+        };
+    }
+
+    const conn = await db.getConnection();
+
+    try {
+        const { ids: ids, lat, lng, accuracy, action } = data;
+
+        if (!ids.length) {
+            return {
+                success: false,
+                message: "No invoices selected",
+            };
+        }
+
+        const status = newStatus[action as keyof typeof newStatus];
+
+        if (!status) {
+            return {
+                success: false,
+                message: "Invalid action",
+            };
+        }
+
+        await conn.beginTransaction();
+
+        const placeholders = ids.map(() => "?").join(",");
+
+        const [invoices]: any = await conn.execute(
+            `
+            SELECT id, status, rider
+            FROM Salepurchase1
+            WHERE id IN (${placeholders})
+            `,
+            ids
+        );
+
+        if (invoices.length !== ids.length) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: "One or more invoices not found",
+            };
+        }
+
+        const delivered = invoices.find(
+            (invoice: any) => Number(invoice.status) === 6
+        );
+
+        if (delivered) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: `Invoice ${delivered.id} is already delivered`,
+            };
+        }
+
+        const assigned = invoices.find(
+            (invoice: any) => invoice.rider !== null
+        );
+
+        if (assigned && action === "accepted") {
+            await conn.rollback();
+            return {
+                success: false,
+                message: `Invoice ${assigned.id} is already assigned`,
+            };
+        }
+
+        const [updateResult]: any = await conn.execute(
+            `
+            UPDATE Salepurchase1
+                SET
+                status = ?,
+                rider = ?
+                WHERE id IN (${placeholders})
+            `,
+            [status, userId, ...ids]
+        );
+
+        if (updateResult.affectedRows !== ids.length) {
+            await conn.rollback();
+            return {
+                success: false,
+                message: "Some invoices were assigned by another rider",
+            };
+        }
+
+        const values = ids
+            .map(() => "(?, ?, ?, ?, ?, ?)")
+            .join(",");
+
+        const insertParams = ids.flatMap((invoiceId) => [
+            userId,
+            invoiceId,
+            lat,
+            lng,
+            accuracy,
+            action,
+        ]);
+
+        await conn.execute(
+            `
+            INSERT INTO rider_locations
+            (rider_id, invoice_id, lat, lng, accuracy, action)
+            VALUES ${values}
+            `,
+            insertParams
+        );
+
+        await conn.commit();
+
+        return {
+            success: true,
+            message: `${ids.length} invoice(s) accepted successfully`,
+        };
+    } catch (error) {
+        await conn.rollback();
+        console.error(error);
+
+        return {
+            success: false,
+            message: "Failed to perform action, Try Again",
+        };
+    } finally {
+        conn.release();
     }
 };
 

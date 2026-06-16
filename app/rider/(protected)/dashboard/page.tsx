@@ -47,12 +47,6 @@ const Invoices = async ({ searchParams }: PageProps) => {
         <div className='space-y-2 p-2 bg-white'>
           <RequestCard data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} action='accepted' />
         </div>
-
-        {/* <section className='space-y-0'>
-          <div className='bg-white  p-4'>
-            <DataTable data={Array.isArray(pendingInvoices.data) ? pendingInvoices.data : []} columns={assignedInvoiceColumns} />
-          </div>
-        </section> */}
       </div>
 
       <div>

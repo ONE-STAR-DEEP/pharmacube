@@ -6,10 +6,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { InvoiceData } from "@/utils/types/DataTypes"
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
+import { DiscrepancyInvoiceData } from "@/utils/types/DataTypes"
 import { Button } from "../ui/button";
-import { markAsUrgent } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
+import { FieldGroup } from "../ui/field";
+import { useState } from "react";
 
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -55,23 +67,10 @@ const STATUS_LABEL: Record<number, string> = {
   210: "Excessive Payment Received"
 };
 
-const DiscrepancyCard = ({ data }: { data: InvoiceData[] }) => {
+const DiscrepancyCard = ({ data }: { data: DiscrepancyInvoiceData[] }) => {
 
   const router = useRouter();
-
-  const handleClick = async (id: number) => {
-
-    try {
-      const res = await markAsUrgent(id)
-      if (!res.success) {
-        alert("Failed to update. Try again.")
-        return
-      }
-      router.refresh()
-    } catch (error) {
-
-    }
-  }
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -111,7 +110,40 @@ const DiscrepancyCard = ({ data }: { data: InvoiceData[] }) => {
                 }}>
                   View
                 </Button>
+                <Button onClick={() => setOpen(true)}>Logs</Button>
               </div>
+
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="sm:max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle>Discrepancy Logs</DialogTitle>
+                    <DialogDescription>
+                      Audit discrepancy records by user, timestamp, and processing stage.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <FieldGroup className="grid grid-cols-[30%_70%]">
+                    <span>Discrepancy</span>
+                    <span className="">: {invoice.found_at ? `During ${invoice.found_at}` : "NA"}</span>
+
+                    <span>Marked by</span>
+                    <span className="capitalize">: {invoice.marked_by ? invoice.marked_by : "NA"}</span>
+
+                    <span>Marked at</span>
+                    <span className="capitalize">: {invoice.marked_at ? new Date(invoice.marked_at).toLocaleString() : "NA"}</span>
+
+                    <span>Resolved by</span>
+                    <span className="capitalize">: {invoice.resolved_by ? invoice.resolved_by : "NA"}</span>
+
+                  </FieldGroup>
+
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Close</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </AccordionContent>
           </AccordionItem>
         </Accordion >
