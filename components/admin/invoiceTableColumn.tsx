@@ -40,6 +40,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Logs from "./Logs";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",

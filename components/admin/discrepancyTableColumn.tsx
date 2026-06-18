@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog"
 import { FieldGroup } from "../ui/field";
 import DicsrepancyView from "./DicsrepancyView";
+import { Label } from "../ui/label";
+import DiscrepancyLog from "./DiscrepancyLog";
 
 export const STATUS_LABEL: Record<number, string> = {
   0: "Pending",
@@ -149,25 +151,31 @@ export const invoiceColumns: ColumnDef<DiscrepancyInvoiceData>[] = [
     header: "Action",
     size: 120,
     cell: ({ row }) => {
+      const sp1_id = row.original.sp1_id;
       const VNo = row.original.Vno;
       const Vtyp = row.original.Vtyp;
       const marked_at = row.original.marked_at;
       const marked_by = row.original.marked_by;
       const resolved_by = row.original.resolved_by;
       const found_at = row.original.found_at;
+
+      const warehouse = row.original.warehouse;
+      const checker = row.original.checker;
+      const reviewer = row.original.reviewer;
+      const rider = row.original.rider;
+      const delivery = row.original.delivery;
+
+      const warehouse_time = row.original.warehouse_time;
+      const checker_time = row.original.checker_time;
+      const reviewer_time = row.original.reviewer_time;
+      const delivery_time = row.original.delivery_time;
+
       const [open, setOpen] = useState(false);
-
-
 
       return (
         <div className="flex items-center gap-1">
-          
-          <DicsrepancyView Vno={VNo} Vtyp={Vtyp}/>
-          {/* <Button className="m-0 px-2" onClick={() => {
-            window.open(`/invoice/${Vtyp}-${VNo}/discrepancy`, "_blank", "noopener,noreferrer")
-          }}>
-            View
-          </Button> */}
+
+          <DicsrepancyView Vno={VNo} Vtyp={Vtyp} />
 
           <Button onClick={() => setOpen(true)}>Logs</Button>
 
@@ -180,6 +188,26 @@ export const invoiceColumns: ColumnDef<DiscrepancyInvoiceData>[] = [
                 </DialogDescription>
               </DialogHeader>
 
+              <Label className="text-lg">Processing</Label>
+              <FieldGroup className="grid grid-cols-[30%_70%]">
+                <span>Warehouse</span>
+                <span className="capitalize">: {warehouse ?? "NA"} - {warehouse_time ? new Date(warehouse_time).toLocaleString() : "NA"}</span>
+
+                <span>Checked by</span>
+                <span className="capitalize">: {checker ?? "NA"} - {checker_time ? new Date(checker_time).toLocaleString() : "NA"}</span>
+
+                <span>Reviewed by</span>
+                <span className="capitalize">: {reviewer ?? "NA"} - {reviewer_time ? new Date(reviewer_time).toLocaleString() : "NA"}</span>
+
+                <span>Assigned Rider</span>
+                <span className="capitalize flex gap-1">: {rider ?? "NA"} - <DiscrepancyLog id={sp1_id} /></span>
+
+                <span>Delivery</span>
+                <span className="capitalize">: {delivery ?? "NA"} - {delivery_time ? new Date(delivery_time).toLocaleString() : "NA"}</span>
+
+              </FieldGroup>
+
+              <Label className="text-lg">Discrepancy</Label>
               <FieldGroup className="grid grid-cols-[30%_70%]">
                 <span>Discrepancy</span>
                 <span className="">: {found_at ? `During ${found_at}` : "NA"}</span>

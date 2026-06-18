@@ -17,12 +17,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import { BillItem, DiscrepancyInvoiceData, Invoice } from "@/utils/types/DataTypes"
+import { DiscrepancyInvoiceData, RiderLocationLog } from "@/utils/types/DataTypes"
 import { Button } from "../ui/button";
 import { FieldGroup } from "../ui/field";
-import { useState } from "react";
-import { fetchDiscrepancyeByVNo, fetchDiscrepancyItems } from "@/lib/actions/invoice";
+import { useEffect, useState } from "react";
 import DicsrepancyView from "./DicsrepancyView";
+import { Label } from "../ui/label";
+import { fetchRiderLogs } from "@/lib/actions/admin";
+import DiscrepancyLog from "./DiscrepancyLog";
 
 const Discrepancy_LABEL: Record<number, string> = {
   0: "No",
@@ -120,6 +122,26 @@ const DiscrepancyCard = ({ data }: { data: DiscrepancyInvoiceData[] }) => {
                     </DialogDescription>
                   </DialogHeader>
 
+                  <Label className="text-lg">Processing</Label>
+                  <FieldGroup className="grid grid-cols-[30%_70%]">
+                    <span>Warehouse</span>
+                    <span className="capitalize">: {invoice.warehouse ?? "NA"} - {invoice.warehouse_time ? new Date(invoice.warehouse_time).toLocaleString() : "NA"}</span>
+
+                    <span>Checked by</span>
+                    <span className="capitalize">: {invoice.checker ?? "NA"} - {invoice.checker_time ? new Date(invoice.checker_time).toLocaleString() : "NA"}</span>
+
+                    <span>Reviewed by</span>
+                    <span className="capitalize">: {invoice.reviewer ?? "NA"} - {invoice.reviewer_time ? new Date(invoice.reviewer_time).toLocaleString() : "NA"}</span>
+
+                    <span>Assigned Rider</span>
+                    <span className="capitalize flex gap-1">: {invoice.rider ?? "NA"} - <DiscrepancyLog id={invoice.id} /></span>
+
+                    <span>Delivery</span>
+                    <span className="capitalize">: {invoice.delivery ?? "NA"} - {invoice.delivery_time ? new Date(invoice.delivery_time).toLocaleString() : "NA"}</span>
+
+                  </FieldGroup>
+
+                  <Label className="text-lg">Discrepancy</Label>
                   <FieldGroup className="grid grid-cols-[30%_70%]">
                     <span>Discrepancy</span>
                     <span className="">: {invoice.found_at ? `During ${invoice.found_at}` : "NA"}</span>

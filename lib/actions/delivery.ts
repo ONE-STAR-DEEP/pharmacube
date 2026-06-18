@@ -93,7 +93,7 @@ export const updateDelivery = async (
             await conn.execute(
                 `
             INSERT INTO discrepancy_table (
-            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id, marked_at, found_at, marked_by
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id, marked_at, found_at, marked_by, warehouse, checker, reviewer, rider, delivery, account, urgent_marked_by, warehouse_time, checker_time, reviewer_time, delivery_time, account_time, urgent_time
             )
             SELECT
             Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, 8, 1, Rndamt, id,  NOW(), discrepancy_at,
@@ -101,11 +101,13 @@ export const updateDelivery = async (
                 WHEN discrepancy_at = 'check' THEN checker
                 WHEN discrepancy_at = 'delivery' THEN delivery
                 ELSE NULL
-            END
+            END, 
+            warehouse, checker, reviewer, rider, ? , account, urgent_marked_by, warehouse_time, checker_time, reviewer_time, NOW(), account_time, urgent_time
+
             FROM Salepurchase1
             WHERE id = ?
             `,
-                [id]
+                [userId, id]
             );
 
             for (const item of billItems) {

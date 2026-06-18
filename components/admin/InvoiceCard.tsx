@@ -172,7 +172,7 @@ const InvoiceCard = ({ data }: { data: InvoiceData[] }) => {
 
                 {
                   role === "admin" &&
-                  <Logs id={invoice.id} Vno={Number(invoice.Vno)} Vtyp={invoice.Vtyp} />
+                  <Logs id={invoice.id} />
                 }
 
                 {

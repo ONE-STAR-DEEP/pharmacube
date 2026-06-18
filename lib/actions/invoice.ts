@@ -830,14 +830,14 @@ export const discrepancyAction = async (
         await conn.execute(
             `
             INSERT INTO discrepancy_table (
-            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id, marked_at, found_at, resolved_by
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, status, discrepancy, Rndamt, sp1_id, marked_at, found_at, resolved_by, warehouse, checker, reviewer, delivery, account, urgent_marked_by, warehouse_time, checker_time, reviewer_time, delivery_time, account_time, urgent_time 
             )
             SELECT
-            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, 10, discrepancy, Rndamt, id, NOW(), discrepancy_at, ?
+            Vno, Vtyp, Vdt, Acno, GSTVno, NoOfItem, Uid, Ouid, mTime, Amt01, disamtit, Taxamt, 10, discrepancy, Rndamt, id, NOW(), discrepancy_at, ?, warehouse, checker, ?, delivery, account, urgent_marked_by, warehouse_time, checker_time, NOW(), delivery_time, account_time, urgent_time
             FROM Salepurchase1
             WHERE id = ?
             `,
-            [userId, invoiceId]
+            [userId, userId, invoiceId]
         );
 
         for (const item of billItems) {
@@ -964,12 +964,20 @@ export const fetchDiscrepancies = async (
             acm.name AS partyName,
             u.name AS marked_by,
             ur.name AS resolved_by,
-            CONVERT_TZ(sp.marked_at, '+00:00', '+05:30') AS marked_at
+            uw.name AS warehouse,
+            uc.name AS checker,
+            ur.name AS reviewer,
+            ud.name AS delivery,
+            ua.name AS account
             FROM discrepancy_table sp
             LEFT JOIN Acm acm 
             ON sp.Acno = acm.code
             LEFT JOIN users u ON sp.marked_by = u.id
+            LEFT JOIN users uw ON sp.warehouse = uw.id
+            LEFT JOIN users uc ON sp.checker = uc.id
             LEFT JOIN users ur ON sp.resolved_by = ur.id
+            LEFT JOIN users ud ON sp.delivery = ud.id
+            LEFT JOIN users ua ON sp.account = ua.id
             ${where}
             ORDER BY sp.inserted_at DESC
             LIMIT ${safeLimit} OFFSET ${safeOffset}

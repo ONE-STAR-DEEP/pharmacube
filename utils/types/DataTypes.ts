@@ -84,7 +84,6 @@ export type UserData = {
   plus: boolean;
   created_at: string; // ISO date string
 };
-
 export interface InvoiceData {
   id: number;
   Acno: number;
@@ -112,6 +111,7 @@ export interface InvoiceData {
 
 export interface DiscrepancyInvoiceData {
   id: number;
+  sp1_id: number;
   Acno: number;
   Vno: string;
   GSTVno: string;
@@ -137,6 +137,19 @@ export interface DiscrepancyInvoiceData {
   found_at: string;
   marked_by: string;
   resolved_by: string;
+  warehouse: number;
+  checker: number;
+  reviewer: number;
+  rider: number;
+  delivery: number;
+  account: number;
+  urgent_marked_by: number;
+  warehouse_time: string;
+  checker_time: string;
+  reviewer_time: string;
+  delivery_time: string;
+  account_time: string;
+  urgent_time: string;
 }
 
 export type DeliveryBoy = {

@@ -15,10 +15,8 @@ import { fetchLogs, fetchRiderLogs } from "@/lib/actions/admin"
 import { OperationLog, RiderLocationLog } from "@/utils/types/DataTypes"
 import { useEffect, useState } from "react"
 
-const Logs = ({ id, Vno, Vtyp }: {
+const Logs = ({ id }: {
     id: number;
-    Vno: number;
-    Vtyp: string;
 }) => {
     const [open, setOpen] = useState(false);
     const [openActionLogs, setOpenActionLogs] = useState(false);
@@ -47,8 +45,6 @@ const Logs = ({ id, Vno, Vtyp }: {
                 return;
             }
             setRiderData(res?.data || null);
-            console.log(res?.data);
-            console.log(riderData);
         }
         loadData()
     }, [openActionLogs])

@@ -160,7 +160,7 @@ export const riderAction = async (
 
         const [check]: any = await conn.execute(
             `
-            SELECT status, rider FROM Salepurchase1
+            SELECT status, rider, Vno, Vtyp, discrepancy FROM Salepurchase1
             Where id = ?
             `,
             [id]
@@ -200,6 +200,19 @@ export const riderAction = async (
                 `,
             [status, userId, id]
         );
+
+        if (Number(check[0].discrepancy) > 0 && action === "accepted") {
+            await conn.execute(
+                `
+                UPDATE discrepancy_table
+                SET
+                status = ?,
+                rider = ?
+                WHERE Vno = ? AND Vtyp = ?
+                `,
+                [status, userId, check[0].Vno, check[0].Vtyp]
+            );
+        }
 
         await conn.execute(
             `
@@ -277,7 +290,7 @@ export const riderAcceptMultiple = async (
 
         const [invoices]: any = await conn.execute(
             `
-            SELECT id, status, rider
+            SELECT id, status, rider, Vno, Vtyp, discrepancy
             FROM Salepurchase1
             WHERE id IN (${placeholders})
             `,
@@ -316,6 +329,23 @@ export const riderAcceptMultiple = async (
             };
         }
 
+        await Promise.all(
+            invoices.map(async (invoice: any) => {
+                if (Number(invoice.discrepancy) > 0 && action === "accepted") {
+                    await conn.execute(
+                        `
+                UPDATE discrepancy_table
+                SET
+                    status = ?,
+                    rider = ?
+                WHERE Vno = ? AND Vtyp = ?
+                `,
+                        [status, userId, invoice.Vno, invoice.Vtyp]
+                    );
+                }
+            })
+        );
+
         const [updateResult]: any = await conn.execute(
             `
             UPDATE Salepurchase1
@@ -326,6 +356,8 @@ export const riderAcceptMultiple = async (
             `,
             [status, userId, ...ids]
         );
+
+
 
         if (updateResult.affectedRows !== ids.length) {
             await conn.rollback();
