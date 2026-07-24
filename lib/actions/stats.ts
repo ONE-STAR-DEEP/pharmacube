@@ -25,7 +25,7 @@ export const dashboardStats = async () => {
             COUNT(*) AS total,
             CAST(SUM(CASE WHEN status > 0 THEN 1 ELSE 0 END) AS UNSIGNED) AS attended
             FROM Salepurchase1
-            WHERE Vdt >= NOW() - INTERVAL 200 DAY
+            WHERE Vdt >= NOW() - INTERVAL 90 DAY
             GROUP BY DATE_FORMAT(Vdt, '%Y-%m-%d')
             ORDER BY DATE_FORMAT(Vdt, '%Y-%m-%d') ASC;
             `)
