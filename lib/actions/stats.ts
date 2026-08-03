@@ -4,7 +4,6 @@ import db from "@/utils/db/mysqlPool";
 import { getCurrentUserSafe } from "../sessionCheck";
 import { DashboardStat, DashboardStats, UserActionReport } from "@/utils/types/DataTypes";
 
-
 export const dashboardStats = async () => {
     const session = await getCurrentUserSafe();
 
@@ -15,11 +14,9 @@ export const dashboardStats = async () => {
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
 
-        const [data]: any = await conn.query(`
+        const [data]: any = await db.query(`
             SELECT
             DATE_FORMAT(Vdt, '%Y-%m-%d') AS date,
             COUNT(*) AS total,
@@ -44,10 +41,6 @@ export const dashboardStats = async () => {
             message: "Something went wrong"
         };
 
-    } finally {
-        if (conn) {
-            conn.release()
-        }
     }
 
 }
@@ -62,8 +55,6 @@ export const dashboardStats2 = async (date?: string) => {
     if (!userId || (type !== "user" && type !== "admin")) {
         return { success: false, message: "Unauthorized" };
     }
-
-    const conn = await db.getConnection();
 
     let where = "";
     let params: any[] = [];
@@ -83,7 +74,7 @@ export const dashboardStats2 = async (date?: string) => {
 
     try {
 
-        const [data]: any = await conn.query(`
+        const [data]: any = await db.query(`
             SELECT
             JSON_OBJECT(
             'user', 'warehouse',
@@ -145,10 +136,6 @@ export const dashboardStats2 = async (date?: string) => {
             message: "Something went wrong"
         };
 
-    } finally {
-        if (conn) {
-            conn.release()
-        }
     }
 
 }
@@ -163,8 +150,6 @@ export const userActionReport = async (date?: string) => {
     if (!userId || (type !== "user" && type !== "admin")) {
         return { success: false, message: "Unauthorized" };
     }
-
-    const conn = await db.getConnection();
 
     let where = "";
     let params: any[] = [];
@@ -184,8 +169,8 @@ export const userActionReport = async (date?: string) => {
 
     try {
 
-        const [data]: any = await conn.query(`
-SELECT
+        const [data]: any = await db.query(`
+    SELECT
     u.id,
     u.name,
     u.type,
@@ -229,10 +214,6 @@ ORDER BY u.name;
             message: "Something went wrong"
         };
 
-    } finally {
-        if (conn) {
-            conn.release()
-        }
     }
 
 }

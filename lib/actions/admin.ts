@@ -31,8 +31,6 @@ export const fetchInvoices = async ({
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
         const offset = (page - 1) * limit;
 
@@ -49,7 +47,7 @@ export const fetchInvoices = async ({
                 params.push(`%${search}%`);
             }
             else {
-                const [parties]: any = await conn.execute(
+                const [parties]: any = await db.execute(
                     `SELECT code FROM Acm WHERE name LIKE ?`,
                     [`${search}%`]
                 );
@@ -87,7 +85,7 @@ export const fetchInvoices = async ({
 
         const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             sp.*,
@@ -102,7 +100,7 @@ export const fetchInvoices = async ({
             params
         );
 
-        const [countResult]: any = await conn.execute(
+        const [countResult]: any = await db.execute(
             `
             SELECT COUNT(*) as total
             FROM Salepurchase1
@@ -131,8 +129,6 @@ export const fetchInvoices = async ({
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -153,8 +149,6 @@ export const fetchDeliveredInvoices = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
         const offset = (page - 1) * limit;
 
@@ -170,7 +164,7 @@ export const fetchDeliveredInvoices = async (
                 params.push(`%${search}%`);
             }
             else {
-                const [parties]: any = await conn.execute(
+                const [parties]: any = await db.execute(
                     `SELECT code FROM Acm WHERE name LIKE ?`,
                     [`${search}%`]
                 );
@@ -196,7 +190,7 @@ export const fetchDeliveredInvoices = async (
 
         const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             sp.*,
@@ -211,7 +205,7 @@ export const fetchDeliveredInvoices = async (
             params
         );
 
-        const [countResult]: any = await conn.execute(
+        const [countResult]: any = await db.execute(
             `
       SELECT COUNT(*) as total
       FROM Salepurchase1
@@ -240,8 +234,6 @@ export const fetchDeliveredInvoices = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 

@@ -50,11 +50,9 @@ export const fetchInvoiceByVNo = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `SELECT 
                 Acm.name,
                 Acm.address,
@@ -101,8 +99,6 @@ export const fetchInvoiceByVNo = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -127,10 +123,8 @@ export const fetchEInvoice = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT *
             FROM EInvoice
@@ -151,8 +145,6 @@ export const fetchEInvoice = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -169,10 +161,8 @@ export const fetchInvoiceItems = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `SELECT
             Salepurchase2.id,
             Salepurchase2.Qty,
@@ -213,8 +203,6 @@ export const fetchInvoiceItems = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -238,8 +226,6 @@ export const fetchPendingInvoices = async ({
     if (!userId || iss !== "pharmacube") {
         return { success: false, message: "Unauthorized" };
     }
-
-    const conn = await db.getConnection();
 
     try {
         const offset = (page - 1) * limit;
@@ -275,7 +261,7 @@ export const fetchPendingInvoices = async ({
 
         const where = `WHERE ${conditions.join(" AND ")}`;
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             sp.*,
@@ -289,7 +275,7 @@ export const fetchPendingInvoices = async ({
         `,
             params
         );
-        const [countResult]: any = await conn.execute(
+        const [countResult]: any = await db.execute(
             `
       SELECT COUNT(*) as total
       FROM Salepurchase1
@@ -318,8 +304,6 @@ export const fetchPendingInvoices = async ({
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -339,8 +323,6 @@ export const fetchInvoicesToCheck = async (
     if (!userId || iss !== "pharmacube" || !plus) {
         return { success: false, message: "Unauthorized" };
     }
-
-    const conn = await db.getConnection();
 
     try {
         const offset = (page - 1) * limit;
@@ -368,7 +350,7 @@ export const fetchInvoicesToCheck = async (
 
         const params: any[] = [searchTerm, searchTerm, searchTerm];
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             sp.*,
@@ -382,7 +364,7 @@ export const fetchInvoicesToCheck = async (
         `,
             params
         );
-        const [countResult]: any = await conn.execute(
+        const [countResult]: any = await db.execute(
             `
       SELECT COUNT(*) as total
       FROM Salepurchase1
@@ -411,8 +393,6 @@ export const fetchInvoicesToCheck = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -430,8 +410,6 @@ export const fetchDiscrepancyInvoices = async (
     if (!userId || iss !== "pharmacube") {
         return { success: false, message: "Unauthorized" };
     }
-
-    const conn = await db.getConnection();
 
     try {
         const offset = (page - 1) * limit;
@@ -461,7 +439,7 @@ export const fetchDiscrepancyInvoices = async (
 
         const params: any[] = [rule.from, searchTerm, searchTerm, searchTerm];
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             sp.*,
@@ -475,7 +453,7 @@ export const fetchDiscrepancyInvoices = async (
             params
         );
 
-        const [countResult]: any = await conn.execute(
+        const [countResult]: any = await db.execute(
             `
       SELECT COUNT(*) as total
       FROM Salepurchase1
@@ -504,9 +482,8 @@ export const fetchDiscrepancyInvoices = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
-    }
+    } 
+    
 };
 
 export const fetchAllValidInvoices = async (
@@ -528,8 +505,6 @@ export const fetchAllValidInvoices = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
         const offset = (page - 1) * limit;
 
@@ -546,7 +521,7 @@ export const fetchAllValidInvoices = async (
             }
 
             else {
-                const [parties]: any = await conn.execute(
+                const [parties]: any = await db.execute(
                     `SELECT code FROM Acm WHERE name LIKE ?`,
                     [`${search}%`]
                 );
@@ -587,7 +562,7 @@ export const fetchAllValidInvoices = async (
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             sp.*,
@@ -602,7 +577,7 @@ export const fetchAllValidInvoices = async (
             params
         );
 
-        const [countResult]: any = await conn.execute(
+        const [countResult]: any = await db.execute(
             `
             SELECT COUNT(*) as total
             FROM Salepurchase1
@@ -631,14 +606,10 @@ export const fetchAllValidInvoices = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
 export const approveInvoice = async (Vno: number, Vtyp: string) => {
-
-    const conn = await db.getConnection();
 
     const session = await getCurrentUserSafe();
 
@@ -652,7 +623,7 @@ export const approveInvoice = async (Vno: number, Vtyp: string) => {
     }
 
     try {
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             status
@@ -673,7 +644,7 @@ export const approveInvoice = async (Vno: number, Vtyp: string) => {
             return { success: false, message: "Access denied. Please log in with valid permissions" };
         }
 
-        await conn.execute(
+        await db.execute(
             `
             UPDATE Salepurchase1 
             SET status = ?,
@@ -692,9 +663,6 @@ export const approveInvoice = async (Vno: number, Vtyp: string) => {
             success: false,
             message: "Something went wrong while approving the invoice"
         }
-    }
-    finally {
-        if (conn) conn.release();
     }
 }
 
@@ -913,8 +881,6 @@ export const fetchDiscrepancies = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
         const offset = (page - 1) * limit;
 
@@ -932,7 +898,7 @@ export const fetchDiscrepancies = async (
             }
 
             else {
-                const [parties]: any = await conn.execute(
+                const [parties]: any = await db.execute(
                     `SELECT code FROM Acm WHERE name LIKE ?`,
                     [`${search}%`]
                 );
@@ -956,7 +922,7 @@ export const fetchDiscrepancies = async (
 
         const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `
             SELECT 
             sp.*,
@@ -985,7 +951,7 @@ export const fetchDiscrepancies = async (
             params
         );
 
-        const [countResult]: any = await conn.execute(
+        const [countResult]: any = await db.execute(
             `
                 SELECT COUNT(*) as total
                 FROM discrepancy_table
@@ -1014,8 +980,6 @@ export const fetchDiscrepancies = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -1032,11 +996,9 @@ export const fetchDiscrepancyeByVNo = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
 
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `SELECT 
                 Acm.name,
                 Acm.address,
@@ -1082,8 +1044,6 @@ export const fetchDiscrepancyeByVNo = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -1100,10 +1060,8 @@ export const fetchDiscrepancyItems = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
-        const [rows]: any = await conn.execute(
+        const [rows]: any = await db.execute(
             `SELECT
             discrepancy_items.id,
             discrepancy_items.Qty,
@@ -1144,8 +1102,6 @@ export const fetchDiscrepancyItems = async (
             success: false,
             message: "Failed to fetch data",
         };
-    } finally {
-        if (conn) conn.release();
     }
 };
 
@@ -1161,13 +1117,9 @@ export const markAsUrgent = async (
         return { success: false, message: "Unauthorized" };
     }
 
-    const conn = await db.getConnection();
-
     try {
 
-        await conn.beginTransaction();
-
-        const [check]: any = await conn.execute(
+        const [check]: any = await db.execute(
             `
             SELECT status FROM Salepurchase1
             Where id = ?
@@ -1176,14 +1128,13 @@ export const markAsUrgent = async (
         );
 
         if (!check[0]) {
-            await conn.rollback();
             return {
                 success: false,
                 message: "Invoice not found"
             };
         }
 
-        await conn.execute(
+        await db.execute(
             `
                 UPDATE Salepurchase1
                 SET
@@ -1195,28 +1146,21 @@ export const markAsUrgent = async (
             [userId, id]
         );
 
-        await conn.commit();
-
         return {
             success: true,
             message: "Set to Urgent",
         };
     } catch (error) {
-        await conn.rollback();
         console.error(error);
 
         return {
             success: false,
             message: "Failed to perform action, Try Again",
         };
-    } finally {
-        if (conn) conn.release();
-    }
+    } 
 };
 
 export const approveSelectedInvoice = async (ids: number[]) => {
-
-    const conn = await db.getConnection();
 
     const session = await getCurrentUserSafe();
 
@@ -1244,7 +1188,7 @@ export const approveSelectedInvoice = async (ids: number[]) => {
 
         const placeholders = ids.map(() => "?").join(",");
 
-        await conn.execute(
+        await db.execute(
             `
             UPDATE Salepurchase1
             SET status = ?,
@@ -1264,8 +1208,5 @@ export const approveSelectedInvoice = async (ids: number[]) => {
             success: false,
             message: "Something went wrong while approving the invoice"
         }
-    }
-    finally {
-        if (conn) conn.release();
     }
 }

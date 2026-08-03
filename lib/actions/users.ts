@@ -18,8 +18,6 @@ export const fetchUserData = async (
     return { success: false, message: "Unauthorized" };
   }
 
-  const conn = await db.getConnection();
-
   try {
     const offset = (page - 1) * limit;
 
@@ -38,7 +36,7 @@ export const fetchUserData = async (
 
     const params: any[] = [searchTerm, searchTerm, searchTerm];
 
-    const [rows]: any = await conn.execute(
+    const [rows]: any = await db.execute(
       `
       SELECT 
         id,
@@ -60,7 +58,7 @@ export const fetchUserData = async (
       params
     );
 
-    const [countResult]: any = await conn.execute(
+    const [countResult]: any = await db.execute(
       `
       SELECT COUNT(*) as total
       FROM users
@@ -89,8 +87,6 @@ export const fetchUserData = async (
       success: false,
       message: "Failed to fetch data",
     };
-  } finally {
-    if (conn) conn.release();
   }
 };
 
@@ -104,8 +100,6 @@ export const insertUser = async (data: UserFormData) => {
     return { success: false, message: "Unauthorized" };
   }
 
-  const conn = await db.getConnection();
-
   try {
 
     const address = data.address || null;
@@ -116,7 +110,7 @@ export const insertUser = async (data: UserFormData) => {
 
     const mobile = data.mobile.replace(/^0+/, "");
 
-    const [existing]: any = await conn.query(
+    const [existing]: any = await db.query(
       "SELECT id FROM users WHERE email = ? OR mobile = ? LIMIT 1",
       [data.email, mobile]
     );
@@ -128,7 +122,7 @@ export const insertUser = async (data: UserFormData) => {
       };
     }
 
-    const [result]: any = await conn.query(
+    const [result]: any = await db.query(
       `INSERT INTO users 
       (name, email, mobile, type, address, city, state, pincode, password, plus) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -157,8 +151,6 @@ export const insertUser = async (data: UserFormData) => {
       success: false,
       message: "Failed to insert user",
     };
-  } finally {
-    if (conn) conn.release();
   }
 };
 
@@ -172,8 +164,6 @@ export const updateUser = async (id: number, data: UserFormData) => {
     return { success: false, message: "Unauthorized" };
   }
 
-  const conn = await db.getConnection();
-
   try {
 
     const address = data.address || null;
@@ -184,7 +174,7 @@ export const updateUser = async (id: number, data: UserFormData) => {
 
     const mobile = data.mobile.replace(/^0+/, "");
 
-    const [existing]: any = await conn.query(
+    const [existing]: any = await db.query(
       "SELECT id FROM users WHERE id = ?",
       [id]
     );
@@ -196,7 +186,7 @@ export const updateUser = async (id: number, data: UserFormData) => {
       };
     }
 
-    const [result]: any = await conn.query(
+    const [result]: any = await db.query(
       `UPDATE users SET 
       name = ?,
       email = ?, 
@@ -236,8 +226,6 @@ export const updateUser = async (id: number, data: UserFormData) => {
       success: false,
       message: "Failed to update user",
     };
-  } finally {
-    if (conn) conn.release();
   }
 };
 
@@ -251,11 +239,9 @@ export const toggleUserState = async (id: number, state: boolean) => {
     return { success: false, message: "Unauthorized" };
   }
 
-  const conn = await db.getConnection();
-
   try {
 
-    const [existing]: any = await conn.query(
+    const [existing]: any = await db.query(
       "SELECT id FROM users WHERE id = ?",
       [id]
     );
@@ -267,7 +253,7 @@ export const toggleUserState = async (id: number, state: boolean) => {
       };
     }
 
-    const [result]: any = await conn.query(
+    const [result]: any = await db.query(
       `UPDATE users SET active = ? WHERE id = ?`,
       [
         state, id
@@ -285,8 +271,6 @@ export const toggleUserState = async (id: number, state: boolean) => {
       success: false,
       message: "Failed to update user",
     };
-  } finally {
-    if (conn) conn.release();
   }
 };
 
@@ -302,10 +286,8 @@ export const fetchUserByID = async (
     return { success: false, message: "Unauthorized" };
   }
 
-  const conn = await db.getConnection();
-
   try {
-    const [rows]: any = await conn.execute(
+    const [rows]: any = await db.execute(
       `
         SELECT 
         id,
@@ -336,8 +318,6 @@ export const fetchUserByID = async (
       success: false,
       message: "Failed to fetch data",
     };
-  } finally {
-    if (conn) conn.release();
   }
 };
 
@@ -370,6 +350,7 @@ export const changePassword = async (currentPassword: string, newPassword: strin
     );
 
     if (check.length === 0) {
+      await conn.rollback();
       return {
         success: false,
         message: "Failed to Find user."
@@ -377,6 +358,7 @@ export const changePassword = async (currentPassword: string, newPassword: strin
     }
 
     if (check[0].password !== currentPassword) {
+      await conn.rollback();
       return {
         success: false,
         message: "Current password does not match the stored password."
@@ -384,6 +366,7 @@ export const changePassword = async (currentPassword: string, newPassword: strin
     }
 
     if (check[0].password === newPassword) {
+      await conn.rollback();
       return {
         success: false,
         message: "New password is same as current Password."
